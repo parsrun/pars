@@ -30,69 +30,20 @@ jobs:
         run: pnpm build
 
       - name: Publish to npm (OIDC)
-        run: pnpm -r publish --access public --no-git-checks --provenance
+        run: |
+          for pkg in core types database cache queue storage email payments realtime server auth service service-adapters; do
+            cd packages/$pkg
+            npm publish --access public --provenance
+            cd ../..
+          done
 
-  publish-jsr:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: denoland/setup-deno@v1
-        with:
-          deno-version: v1.x
-
-      - name: Publish @parsrun/core to JSR
-        working-directory: packages/core
-        run: deno publish --allow-slow-types --unstable-sloppy-imports
-
-      - name: Publish @parsrun/types to JSR
-        working-directory: packages/types
-        run: deno publish --allow-slow-types --unstable-sloppy-imports
-
-      - name: Publish @parsrun/service to JSR
-        working-directory: packages/service
-        run: deno publish --allow-slow-types --unstable-sloppy-imports
-
-      - name: Publish @parsrun/auth to JSR
-        working-directory: packages/auth
-        run: deno publish --allow-slow-types --unstable-sloppy-imports
-
-      - name: Publish @parsrun/server to JSR
-        working-directory: packages/server
-        run: deno publish --allow-slow-types --unstable-sloppy-imports
-
-      - name: Publish @parsrun/database to JSR
-        working-directory: packages/database
-        run: deno publish --allow-slow-types --unstable-sloppy-imports
-
-      - name: Publish @parsrun/cache to JSR
-        working-directory: packages/cache
-        run: deno publish --allow-slow-types --unstable-sloppy-imports
-
-      - name: Publish @parsrun/email to JSR
-        working-directory: packages/email
-        run: deno publish --allow-slow-types --unstable-sloppy-imports
-
-      - name: Publish @parsrun/payments to JSR
-        working-directory: packages/payments
-        run: deno publish --allow-slow-types --unstable-sloppy-imports
-
-      - name: Publish @parsrun/queue to JSR
-        working-directory: packages/queue
-        run: deno publish --allow-slow-types --unstable-sloppy-imports
-
-      - name: Publish @parsrun/realtime to JSR
-        working-directory: packages/realtime
-        run: deno publish --allow-slow-types --unstable-sloppy-imports
-
-      - name: Publish @parsrun/storage to JSR
-        working-directory: packages/storage
-        run: deno publish --allow-slow-types --unstable-sloppy-imports
-
-      - name: Publish @parsrun/service-adapters to JSR
-        working-directory: packages/service-adapters
-        run: deno publish --allow-slow-types --unstable-sloppy-imports
+  # JSR publish disabled - code needs Deno compatibility fixes (process global)
+  # publish-jsr:
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     contents: read
+  #     id-token: write
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: denoland/setup-deno@v1
+  #     - run: deno publish --allow-slow-types
