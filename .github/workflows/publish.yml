@@ -34,15 +34,9 @@ jobs:
         run: npm install -g npm@latest
 
       - name: Publish to npm
-        run: |
-          set -e
-          for pkg in core types database cache queue storage email payments realtime server auth service service-adapters; do
-            echo "---------------------------------------------------"
-            echo "Publishing @parsrun/$pkg..."
-            cd packages/$pkg
-            npm publish --access public --provenance
-            cd ../..
-          done
+        run: pnpm -r publish --access public --no-git-checks
+        env:
+          NPM_CONFIG_PROVENANCE: true
 
   publish-jsr:
     needs: publish-npm
