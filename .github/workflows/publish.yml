@@ -67,7 +67,7 @@ jobs:
             cd packages/$pkg
             # Create deno.json from jsr.json for proper import resolution
             cp jsr.json deno.json
-            deno publish --allow-slow-types --no-check --unstable-sloppy-imports
+            deno publish --allow-slow-types --no-check --unstable-sloppy-imports --allow-dirty
             rm deno.json
             cd ../..
           done
