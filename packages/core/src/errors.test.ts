@@ -100,7 +100,7 @@ describe("@parsrun/core - Error Classes", () => {
       expect(error.challengeId).toBe("challenge-123");
       expect(error.code).toBe("TWO_FACTOR_REQUIRED");
       expect(error.statusCode).toBe(403);
-      expect(error.details?.challengeId).toBe("challenge-123");
+      expect(error.details?.["challengeId"]).toBe("challenge-123");
     });
 
     it("AccountLockedError should include lockedUntil", () => {
@@ -174,7 +174,7 @@ describe("@parsrun/core - Error Classes", () => {
       expect(error.code).toBe("RATE_LIMIT_EXCEEDED");
       expect(error.statusCode).toBe(429);
       expect(error.retryAfter).toBe(60);
-      expect(error.details?.retryAfter).toBe(60);
+      expect(error.details?.["retryAfter"]).toBe(60);
     });
 
     it("should work without retryAfter", () => {
@@ -190,7 +190,7 @@ describe("@parsrun/core - Error Classes", () => {
       expect(error.message).toBe("User not found");
       expect(error.code).toBe("NOT_FOUND");
       expect(error.statusCode).toBe(404);
-      expect(error.details?.resource).toBe("User");
+      expect(error.details?.["resource"]).toBe("User");
     });
 
     it("should accept custom message", () => {
@@ -218,8 +218,8 @@ describe("@parsrun/core - Error Classes", () => {
     it("should include field name", () => {
       const error = new DuplicateError("User", "email");
       expect(error.message).toBe("User already exists with this email");
-      expect(error.details?.resource).toBe("User");
-      expect(error.details?.field).toBe("email");
+      expect(error.details?.["resource"]).toBe("User");
+      expect(error.details?.["field"]).toBe("email");
     });
   });
 
