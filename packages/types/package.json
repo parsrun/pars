@@ -1,6 +1,6 @@
 {
   "name": "@parsrun/types",
-  "version": "0.1.16",
+  "version": "0.1.17",
   "description": "Core types and validation schemas for Pars framework",
   "type": "module",
   "main": "./dist/index.js",
