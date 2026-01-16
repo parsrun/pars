@@ -1,6 +1,10 @@
 {
   "name": "@parsrun/service",
   "version": "0.1.13",
+  "license": "MIT",
+  "compilerOptions": {
+    "lib": ["deno.window"]
+  },
   "exports": {
     ".": "./src/index.ts"
   },

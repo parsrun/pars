@@ -1,8 +1,12 @@
 {
   "name": "@parsrun/core",
   "version": "0.1.13",
+  "license": "MIT",
   "exports": {
     ".": "./src/index.ts"
+  },
+  "compilerOptions": {
+    "lib": ["deno.window"]
   },
   "publish": {
     "include": ["src/**/*.ts", "README.md", "LICENSE"],

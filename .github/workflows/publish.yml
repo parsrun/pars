@@ -43,3 +43,26 @@ jobs:
             npm publish --access public --provenance
             cd ../..
           done
+
+  publish-jsr:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Publish to JSR
+        run: |
+          for pkg in core types database cache queue storage email payments realtime server auth service service-adapters; do
+            echo "---------------------------------------------------"
+            echo "Publishing @parsrun/$pkg to JSR..."
+            cd packages/$pkg
+            deno publish --allow-slow-types --no-check --unstable-sloppy-imports || echo "Warning: $pkg publish failed, continuing..."
+            cd ../..
+          done
