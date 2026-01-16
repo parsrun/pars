@@ -1,6 +1,6 @@
 {
   "name": "@parsrun/database",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "exports": {
     ".": "./src/index.ts",
     "./adapters/postgres": "./src/adapters/postgres.ts",
