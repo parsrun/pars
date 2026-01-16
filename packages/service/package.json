@@ -1,6 +1,6 @@
 {
   "name": "@parsrun/service",
-  "version": "0.1.19",
+  "version": "0.1.20",
   "description": "Unified service layer for extracted microservices - RPC + Events",
   "keywords": [
     "pars",

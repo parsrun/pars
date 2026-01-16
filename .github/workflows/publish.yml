@@ -45,6 +45,7 @@ jobs:
           done
 
   publish-jsr:
+    needs: publish-npm
     runs-on: ubuntu-latest
     permissions:
       contents: read
