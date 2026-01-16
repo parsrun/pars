@@ -53,16 +53,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
       - uses: denoland/setup-deno@v2
         with:
           deno-version: v2.x
 
       - name: Publish to JSR
         run: |
+          set -e
           for pkg in core types database cache queue storage email payments realtime server auth service service-adapters; do
             echo "---------------------------------------------------"
             echo "Publishing @parsrun/$pkg to JSR..."
             cd packages/$pkg
-            deno publish --allow-slow-types --no-check --unstable-sloppy-imports || echo "Warning: $pkg publish failed, continuing..."
+            deno publish --allow-slow-types --no-check --unstable-sloppy-imports
             cd ../..
           done
