@@ -1,13 +1,13 @@
 {
   "name": "@parsrun/cache",
-  "version": "0.1.26",
+  "version": "0.1.27",
   "license": "MIT",
   "compilerOptions": {
     "lib": ["deno.window"]
   },
   "imports": {
-    "@parsrun/core": "npm:@parsrun/core",
-    "@parsrun/types": "npm:@parsrun/types"
+    "@parsrun/core": "npm:@parsrun/core@^0.1.0",
+    "@parsrun/types": "npm:@parsrun/types@^0.1.0"
   },
   "exports": {
     ".": "./src/index.ts"

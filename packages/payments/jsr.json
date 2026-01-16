@@ -1,14 +1,14 @@
 {
   "name": "@parsrun/payments",
-  "version": "0.1.26",
+  "version": "0.1.27",
   "license": "MIT",
   "compilerOptions": {
     "lib": ["deno.window"]
   },
   "imports": {
-    "@parsrun/core": "npm:@parsrun/core",
-    "@parsrun/types": "npm:@parsrun/types",
-    "@parsrun/database": "npm:@parsrun/database",
+    "@parsrun/core": "npm:@parsrun/core@^0.1.0",
+    "@parsrun/types": "npm:@parsrun/types@^0.1.0",
+    "@parsrun/database": "npm:@parsrun/database@^0.1.0",
     "drizzle-orm": "npm:drizzle-orm@^0.44.0"
   },
   "exports": {
