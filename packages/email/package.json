@@ -1,6 +1,6 @@
 {
   "name": "@parsrun/email",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "description": "Edge-compatible email sending for Pars - Resend, SendGrid, Postmark, AWS SES",
   "type": "module",
   "main": "./dist/index.js",
@@ -60,6 +60,12 @@
   ],
   "author": "EMS Tech Solutions",
   "license": "MIT",
+  "homepage": "https://pars.run",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/parsrun/pars",
+    "directory": "packages/email"
+  },
   "dependencies": {
     "@parsrun/core": "workspace:*",
     "@parsrun/types": "workspace:*"

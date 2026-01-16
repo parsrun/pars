@@ -1,6 +1,6 @@
 {
   "name": "@parsrun/database",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "description": "Database utilities for Pars - Drizzle ORM helpers, migrations, multi-runtime support",
   "type": "module",
   "main": "./dist/index.js",
@@ -46,6 +46,12 @@
   ],
   "author": "EMS Tech Solutions",
   "license": "MIT",
+  "homepage": "https://pars.run",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/parsrun/pars",
+    "directory": "packages/database"
+  },
   "dependencies": {
     "@parsrun/core": "workspace:*",
     "drizzle-orm": "^0.44.0"

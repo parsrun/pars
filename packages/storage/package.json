@@ -1,6 +1,6 @@
 {
   "name": "@parsrun/storage",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "description": "Edge-compatible storage abstraction for Pars - S3, R2, DO Spaces",
   "type": "module",
   "main": "./dist/index.js",
@@ -44,6 +44,12 @@
   ],
   "author": "EMS Tech Solutions",
   "license": "MIT",
+  "homepage": "https://pars.run",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/parsrun/pars",
+    "directory": "packages/storage"
+  },
   "dependencies": {
     "@parsrun/core": "workspace:*",
     "@parsrun/types": "workspace:*"
