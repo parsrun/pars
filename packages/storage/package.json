@@ -1,6 +1,6 @@
 {
   "name": "@parsrun/storage",
-  "version": "0.1.22",
+  "version": "0.1.23",
   "description": "Edge-compatible storage abstraction for Pars - S3, R2, DO Spaces",
   "type": "module",
   "main": "./dist/index.js",

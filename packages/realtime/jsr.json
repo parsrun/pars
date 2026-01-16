@@ -1,13 +1,14 @@
 {
   "name": "@parsrun/realtime",
-  "version": "0.1.22",
+  "version": "0.1.23",
   "license": "MIT",
   "compilerOptions": {
     "lib": ["deno.window"]
   },
   "imports": {
     "@parsrun/core": "npm:@parsrun/core",
-    "@parsrun/types": "npm:@parsrun/types"
+    "@parsrun/types": "npm:@parsrun/types",
+    "hono": "npm:hono@^4.0.0"
   },
   "exports": {
     ".": "./src/index.ts"

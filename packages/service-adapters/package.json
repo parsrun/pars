@@ -1,6 +1,6 @@
 {
   "name": "@parsrun/service-adapters",
-  "version": "0.1.22",
+  "version": "0.1.23",
   "description": "Service definitions for Pars extracted microservices",
   "keywords": [
     "pars",

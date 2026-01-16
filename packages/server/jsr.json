@@ -1,13 +1,17 @@
 {
   "name": "@parsrun/server",
-  "version": "0.1.22",
+  "version": "0.1.23",
   "license": "MIT",
   "compilerOptions": {
     "lib": ["deno.window"]
   },
   "imports": {
     "@parsrun/core": "npm:@parsrun/core",
-    "@parsrun/types": "npm:@parsrun/types"
+    "@parsrun/types": "npm:@parsrun/types",
+    "hono": "npm:hono@^4.6.0",
+    "hono/cors": "npm:hono@^4.6.0/cors",
+    "hono/csrf": "npm:hono@^4.6.0/csrf",
+    "arktype": "npm:arktype@^2.0.0"
   },
   "exports": {
     ".": "./src/index.ts"
