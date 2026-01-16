@@ -3,7 +3,7 @@
  * Request correlation and distributed tracing support
  */
 
-import type { HonoContext, HonoNext } from "../context.js";
+import type { HonoContext, HonoNext, TraceContext } from "../context.js";
 import { generateRequestId } from "../context.js";
 
 /**
@@ -43,20 +43,8 @@ export interface TracingOptions {
   trustIncoming?: boolean;
 }
 
-/**
- * W3C Trace Context - Parsed traceparent header
- * Format: {version}-{trace-id}-{parent-id}-{trace-flags}
- */
-export interface TraceContext {
-  /** Trace version (currently "00") */
-  version: string;
-  /** 32 hex character trace ID */
-  traceId: string;
-  /** 16 hex character parent span ID */
-  parentId: string;
-  /** Trace flags (sampled, etc.) */
-  traceFlags: number;
-}
+// TraceContext is imported from context.js
+export type { TraceContext } from "../context.js";
 
 /**
  * Parse W3C traceparent header
@@ -118,21 +106,6 @@ export function createTraceparent(
 ): string {
   const flags = sampled ? "01" : "00";
   return `00-${traceId}-${spanId}-${flags}`;
-}
-
-/**
- * Extended context for tracing
- * These values are set on the context for downstream middleware/handlers
- */
-declare module "../context.js" {
-  interface ServerContextVariables {
-    /** W3C trace context (if propagation is enabled) */
-    traceContext?: TraceContext;
-    /** Current span ID for this request */
-    spanId?: string;
-    /** Tracestate header value (for forwarding) */
-    traceState?: string;
-  }
 }
 
 /**

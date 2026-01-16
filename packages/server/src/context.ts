@@ -99,6 +99,21 @@ export interface ContextTenant {
  * Server context variables
  * Available in Hono context via c.get()
  */
+/**
+ * W3C Trace Context - Parsed traceparent header
+ * Format: {version}-{trace-id}-{parent-id}-{trace-flags}
+ */
+export interface TraceContext {
+  /** Trace version (currently "00") */
+  version: string;
+  /** 32 hex character trace ID */
+  traceId: string;
+  /** 16 hex character parent span ID */
+  parentId: string;
+  /** Trace flags (sampled, etc.) */
+  traceFlags: number;
+}
+
 export interface ServerContextVariables {
   /** Database adapter */
   db: DatabaseAdapter;
@@ -118,6 +133,12 @@ export interface ServerContextVariables {
   cookiePrefix: string | undefined;
   /** Custom context data */
   custom: Record<string, unknown>;
+  /** W3C trace context (if propagation is enabled) */
+  traceContext?: TraceContext;
+  /** Current span ID for this request */
+  spanId?: string;
+  /** Tracestate header value (for forwarding) */
+  traceState?: string;
 }
 
 /**

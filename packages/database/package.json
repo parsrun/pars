@@ -1,6 +1,6 @@
 {
   "name": "@parsrun/database",
-  "version": "0.1.28",
+  "version": "0.1.29",
   "description": "Database utilities for Pars - Drizzle ORM helpers, migrations, multi-runtime support",
   "type": "module",
   "main": "./dist/index.js",

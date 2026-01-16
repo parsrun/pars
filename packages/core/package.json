@@ -1,6 +1,6 @@
 {
   "name": "@parsrun/core",
-  "version": "0.1.28",
+  "version": "0.1.29",
   "description": "Core utilities and types for Pars framework - Edge compatible",
   "keywords": ["pars", "core", "utilities", "edge", "cloudflare", "deno", "bun"],
   "homepage": "https://pars.run",
