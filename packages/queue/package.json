@@ -1,0 +1,72 @@
+{
+  "name": "@parsrun/queue",
+  "version": "0.1.0",
+  "description": "Edge-compatible message queues for Pars - Memory, Cloudflare Queues, Upstash QStash",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./types": {
+      "types": "./dist/types.d.ts",
+      "import": "./dist/types.js"
+    },
+    "./adapters": {
+      "types": "./dist/adapters/index.d.ts",
+      "import": "./dist/adapters/index.js"
+    },
+    "./adapters/memory": {
+      "types": "./dist/adapters/memory.d.ts",
+      "import": "./dist/adapters/memory.js"
+    },
+    "./adapters/cloudflare": {
+      "types": "./dist/adapters/cloudflare.d.ts",
+      "import": "./dist/adapters/cloudflare.js"
+    },
+    "./adapters/qstash": {
+      "types": "./dist/adapters/qstash.d.ts",
+      "import": "./dist/adapters/qstash.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "queue",
+    "cloudflare-queues",
+    "qstash",
+    "upstash",
+    "edge",
+    "pars"
+  ],
+  "author": "EMS Tech Solutions",
+  "license": "MIT",
+  "dependencies": {
+    "@parsrun/core": "workspace:*",
+    "@parsrun/types": "workspace:*"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^2.0.0"
+  },
+  "peerDependencies": {
+    "@upstash/qstash": "^2.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@upstash/qstash": {
+      "optional": true
+    }
+  }
+}

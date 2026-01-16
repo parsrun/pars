@@ -1,0 +1,102 @@
+{
+  "name": "@parsrun/auth",
+  "version": "0.1.0",
+  "description": "Passwordless-first, multi-runtime authentication for Pars framework",
+  "keywords": [
+    "pars",
+    "auth",
+    "authentication",
+    "passwordless",
+    "otp",
+    "multi-tenant",
+    "multi-runtime",
+    "edge",
+    "cloudflare-workers",
+    "deno"
+  ],
+  "homepage": "https://pars.run",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/parsrun/pars",
+    "directory": "packages/auth"
+  },
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./storage": {
+      "types": "./dist/storage/index.d.ts",
+      "import": "./dist/storage/index.js"
+    },
+    "./session": {
+      "types": "./dist/session/index.d.ts",
+      "import": "./dist/session/index.js"
+    },
+    "./security": {
+      "types": "./dist/security/index.d.ts",
+      "import": "./dist/security/index.js"
+    },
+    "./providers": {
+      "types": "./dist/providers/index.d.ts",
+      "import": "./dist/providers/index.js"
+    },
+    "./providers/otp": {
+      "types": "./dist/providers/otp/index.d.ts",
+      "import": "./dist/providers/otp/index.js"
+    },
+    "./adapters": {
+      "types": "./dist/adapters/index.d.ts",
+      "import": "./dist/adapters/index.js"
+    },
+    "./adapters/hono": {
+      "types": "./dist/adapters/hono.d.ts",
+      "import": "./dist/adapters/hono.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist node_modules"
+  },
+  "dependencies": {
+    "@parsrun/core": "workspace:*",
+    "@parsrun/types": "workspace:*",
+    "jose": "^5.9.6"
+  },
+  "devDependencies": {
+    "drizzle-orm": "^0.38.4",
+    "hono": "^4.6.14",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  },
+  "peerDependencies": {
+    "hono": ">=4.0.0",
+    "ioredis": ">=5.0.0",
+    "@upstash/redis": ">=1.0.0",
+    "drizzle-orm": ">=0.30.0"
+  },
+  "peerDependenciesMeta": {
+    "hono": {
+      "optional": true
+    },
+    "ioredis": {
+      "optional": true
+    },
+    "@upstash/redis": {
+      "optional": true
+    },
+    "drizzle-orm": {
+      "optional": true
+    }
+  }
+}

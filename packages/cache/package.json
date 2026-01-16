@@ -1,0 +1,80 @@
+{
+  "name": "@parsrun/cache",
+  "version": "0.1.0",
+  "description": "Edge-compatible caching for Pars - Memory, Redis/Upstash, Cloudflare KV",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./types": {
+      "types": "./dist/types.d.ts",
+      "import": "./dist/types.js"
+    },
+    "./adapters": {
+      "types": "./dist/adapters/index.d.ts",
+      "import": "./dist/adapters/index.js"
+    },
+    "./adapters/memory": {
+      "types": "./dist/adapters/memory.d.ts",
+      "import": "./dist/adapters/memory.js"
+    },
+    "./adapters/redis": {
+      "types": "./dist/adapters/redis.d.ts",
+      "import": "./dist/adapters/redis.js"
+    },
+    "./adapters/upstash": {
+      "types": "./dist/adapters/upstash.d.ts",
+      "import": "./dist/adapters/upstash.js"
+    },
+    "./adapters/cloudflare-kv": {
+      "types": "./dist/adapters/cloudflare-kv.d.ts",
+      "import": "./dist/adapters/cloudflare-kv.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "cache",
+    "redis",
+    "upstash",
+    "cloudflare-kv",
+    "edge",
+    "pars"
+  ],
+  "author": "EMS Tech Solutions",
+  "license": "MIT",
+  "dependencies": {
+    "@parsrun/core": "workspace:*",
+    "@parsrun/types": "workspace:*"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^2.0.0"
+  },
+  "peerDependencies": {
+    "@upstash/redis": "^1.0.0",
+    "ioredis": "^5.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@upstash/redis": {
+      "optional": true
+    },
+    "ioredis": {
+      "optional": true
+    }
+  }
+}

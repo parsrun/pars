@@ -1,0 +1,75 @@
+{
+  "name": "@parsrun/realtime",
+  "version": "0.1.0",
+  "description": "Edge-compatible realtime for Pars - SSE, WebSocket, Durable Objects",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./types": {
+      "types": "./dist/types.d.ts",
+      "import": "./dist/types.js"
+    },
+    "./adapters": {
+      "types": "./dist/adapters/index.d.ts",
+      "import": "./dist/adapters/index.js"
+    },
+    "./adapters/sse": {
+      "types": "./dist/adapters/sse.d.ts",
+      "import": "./dist/adapters/sse.js"
+    },
+    "./adapters/durable-objects": {
+      "types": "./dist/adapters/durable-objects.d.ts",
+      "import": "./dist/adapters/durable-objects.js"
+    },
+    "./hono": {
+      "types": "./dist/hono.d.ts",
+      "import": "./dist/hono.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "realtime",
+    "websocket",
+    "sse",
+    "durable-objects",
+    "cloudflare",
+    "edge",
+    "pars"
+  ],
+  "author": "EMS Tech Solutions",
+  "license": "MIT",
+  "dependencies": {
+    "@parsrun/core": "workspace:*",
+    "@parsrun/types": "workspace:*"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241205.0",
+    "hono": "^4.6.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^2.0.0"
+  },
+  "peerDependencies": {
+    "hono": "^4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "hono": {
+      "optional": true
+    }
+  }
+}

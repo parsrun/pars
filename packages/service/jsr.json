@@ -1,0 +1,19 @@
+{
+  "name": "@parsrun/service",
+  "version": "0.1.0",
+  "exports": {
+    ".": "./src/index.ts",
+    "./rpc": "./src/rpc/index.ts",
+    "./events": "./src/events/index.ts",
+    "./resilience": "./src/resilience/index.ts",
+    "./tracing": "./src/tracing/index.ts",
+    "./definition": "./src/definition/index.ts",
+    "./discovery": "./src/discovery/index.ts",
+    "./health": "./src/health/index.ts",
+    "./metrics": "./src/metrics/index.ts"
+  },
+  "publish": {
+    "include": ["src/**/*.ts", "README.md", "LICENSE"],
+    "exclude": ["**/*.test.ts", "**/*.spec.ts"]
+  }
+}

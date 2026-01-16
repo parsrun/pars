@@ -1,0 +1,58 @@
+{
+  "name": "@parsrun/service-adapters",
+  "version": "0.1.0",
+  "description": "Service definitions for Pars extracted microservices",
+  "keywords": [
+    "pars",
+    "service",
+    "adapters",
+    "email",
+    "payments"
+  ],
+  "homepage": "https://pars.run",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/parsrun/pars",
+    "directory": "packages/service-adapters"
+  },
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./email": {
+      "types": "./dist/email/index.d.ts",
+      "import": "./dist/email/index.js"
+    },
+    "./payments": {
+      "types": "./dist/payments/index.d.ts",
+      "import": "./dist/payments/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist node_modules"
+  },
+  "dependencies": {
+    "@parsrun/core": "workspace:*",
+    "@parsrun/service": "workspace:*",
+    "@parsrun/email": "workspace:*",
+    "@parsrun/payments": "workspace:*"
+  },
+  "devDependencies": {
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

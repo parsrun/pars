@@ -1,0 +1,51 @@
+{
+  "name": "pars",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Edge-first business application framework for SaaS",
+  "keywords": [
+    "saas",
+    "multi-tenant",
+    "auth",
+    "edge",
+    "cloudflare-workers",
+    "hono"
+  ],
+  "homepage": "https://pars.run",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/parsrun/pars"
+  },
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "test": "turbo run test",
+    "test:watch": "turbo run test:watch",
+    "typecheck": "turbo run typecheck",
+    "lint": "turbo run lint",
+    "lint:fix": "turbo run lint:fix",
+    "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "turbo run build && changeset publish",
+    "release:npm": "turbo run build && pnpm -r publish --access public",
+    "release:jsr": "pnpm -r --filter './packages/*' exec deno publish --allow-slow-types",
+    "release:all": "pnpm release:npm && pnpm release:jsr"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.10",
+    "@types/node": "^22.10.2",
+    "@vitest/coverage-v8": "^2.1.9",
+    "prettier": "^3.4.2",
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  },
+  "packageManager": "pnpm@9.15.1",
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

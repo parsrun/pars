@@ -1,0 +1,80 @@
+{
+  "name": "@parsrun/email",
+  "version": "0.1.0",
+  "description": "Edge-compatible email sending for Pars - Resend, SendGrid, Postmark, AWS SES",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./types": {
+      "types": "./dist/types.d.ts",
+      "import": "./dist/types.js"
+    },
+    "./providers": {
+      "types": "./dist/providers/index.d.ts",
+      "import": "./dist/providers/index.js"
+    },
+    "./providers/resend": {
+      "types": "./dist/providers/resend.d.ts",
+      "import": "./dist/providers/resend.js"
+    },
+    "./providers/sendgrid": {
+      "types": "./dist/providers/sendgrid.d.ts",
+      "import": "./dist/providers/sendgrid.js"
+    },
+    "./providers/postmark": {
+      "types": "./dist/providers/postmark.d.ts",
+      "import": "./dist/providers/postmark.js"
+    },
+    "./providers/console": {
+      "types": "./dist/providers/console.d.ts",
+      "import": "./dist/providers/console.js"
+    },
+    "./templates": {
+      "types": "./dist/templates/index.d.ts",
+      "import": "./dist/templates/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "email",
+    "resend",
+    "sendgrid",
+    "postmark",
+    "edge",
+    "pars"
+  ],
+  "author": "EMS Tech Solutions",
+  "license": "MIT",
+  "dependencies": {
+    "@parsrun/core": "workspace:*",
+    "@parsrun/types": "workspace:*"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^2.0.0"
+  },
+  "peerDependencies": {
+    "resend": "^4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "resend": {
+      "optional": true
+    }
+  }
+}

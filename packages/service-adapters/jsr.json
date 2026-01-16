@@ -1,0 +1,13 @@
+{
+  "name": "@parsrun/service-adapters",
+  "version": "0.1.0",
+  "exports": {
+    ".": "./src/index.ts",
+    "./email": "./src/email/index.ts",
+    "./payments": "./src/payments/index.ts"
+  },
+  "publish": {
+    "include": ["src/**/*.ts", "README.md", "LICENSE"],
+    "exclude": ["**/*.test.ts", "**/*.spec.ts"]
+  }
+}

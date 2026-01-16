@@ -1,0 +1,18 @@
+{
+  "name": "@parsrun/core",
+  "version": "0.1.0",
+  "exports": {
+    ".": "./src/index.ts",
+    "./result": "./src/result.ts",
+    "./errors": "./src/errors.ts",
+    "./logger": "./src/logger.ts",
+    "./env": "./src/env.ts",
+    "./id": "./src/id.ts",
+    "./context": "./src/context.ts",
+    "./retry": "./src/retry.ts"
+  },
+  "publish": {
+    "include": ["src/**/*.ts", "README.md", "LICENSE"],
+    "exclude": ["**/*.test.ts", "**/*.spec.ts"]
+  }
+}

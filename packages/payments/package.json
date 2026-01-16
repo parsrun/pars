@@ -1,0 +1,91 @@
+{
+  "name": "@parsrun/payments",
+  "version": "0.1.0",
+  "description": "Edge-compatible payment processing for Pars - Stripe, Paddle, iyzico",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./types": {
+      "types": "./dist/types.d.ts",
+      "import": "./dist/types.js"
+    },
+    "./providers": {
+      "types": "./dist/providers/index.d.ts",
+      "import": "./dist/providers/index.js"
+    },
+    "./providers/stripe": {
+      "types": "./dist/providers/stripe.d.ts",
+      "import": "./dist/providers/stripe.js"
+    },
+    "./providers/paddle": {
+      "types": "./dist/providers/paddle.d.ts",
+      "import": "./dist/providers/paddle.js"
+    },
+    "./providers/iyzico": {
+      "types": "./dist/providers/iyzico.d.ts",
+      "import": "./dist/providers/iyzico.js"
+    },
+    "./webhooks": {
+      "types": "./dist/webhooks/index.d.ts",
+      "import": "./dist/webhooks/index.js"
+    },
+    "./billing": {
+      "types": "./dist/billing/index.d.ts",
+      "import": "./dist/billing/index.js"
+    },
+    "./usage": {
+      "types": "./dist/usage/index.d.ts",
+      "import": "./dist/usage/index.js"
+    },
+    "./dunning": {
+      "types": "./dist/dunning/index.d.ts",
+      "import": "./dist/dunning/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "payments",
+    "stripe",
+    "paddle",
+    "iyzico",
+    "subscriptions",
+    "billing",
+    "edge",
+    "pars"
+  ],
+  "author": "EMS Tech Solutions",
+  "license": "MIT",
+  "dependencies": {
+    "@parsrun/core": "workspace:*",
+    "@parsrun/types": "workspace:*"
+  },
+  "peerDependencies": {
+    "drizzle-orm": ">=0.30.0"
+  },
+  "peerDependenciesMeta": {
+    "drizzle-orm": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "drizzle-orm": "^0.38.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^2.0.0"
+  }
+}

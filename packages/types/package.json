@@ -1,0 +1,51 @@
+{
+  "name": "@parsrun/types",
+  "version": "0.1.0",
+  "description": "Core types and validation schemas for Pars framework",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist node_modules"
+  },
+  "dependencies": {
+    "arktype": "^2.0.0"
+  },
+  "devDependencies": {
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2"
+  },
+  "keywords": [
+    "pars",
+    "types",
+    "typescript",
+    "validation",
+    "arktype",
+    "schemas"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/parsrun/pars",
+    "directory": "packages/types"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "sideEffects": false
+}

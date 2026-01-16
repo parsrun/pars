@@ -1,0 +1,91 @@
+{
+  "name": "@parsrun/service",
+  "version": "0.1.0",
+  "description": "Unified service layer for extracted microservices - RPC + Events",
+  "keywords": [
+    "pars",
+    "service",
+    "microservices",
+    "rpc",
+    "events",
+    "edge",
+    "cloudflare"
+  ],
+  "homepage": "https://pars.run",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/parsrun/pars",
+    "directory": "packages/service"
+  },
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./define": {
+      "types": "./dist/define.d.ts",
+      "import": "./dist/define.js"
+    },
+    "./client": {
+      "types": "./dist/client.d.ts",
+      "import": "./dist/client.js"
+    },
+    "./rpc": {
+      "types": "./dist/rpc/index.d.ts",
+      "import": "./dist/rpc/index.js"
+    },
+    "./events": {
+      "types": "./dist/events/index.d.ts",
+      "import": "./dist/events/index.js"
+    },
+    "./resilience": {
+      "types": "./dist/resilience/index.d.ts",
+      "import": "./dist/resilience/index.js"
+    },
+    "./tracing": {
+      "types": "./dist/tracing/index.d.ts",
+      "import": "./dist/tracing/index.js"
+    },
+    "./serialization": {
+      "types": "./dist/serialization/index.d.ts",
+      "import": "./dist/serialization/index.js"
+    },
+    "./transports/cloudflare": {
+      "types": "./dist/transports/cloudflare/index.d.ts",
+      "import": "./dist/transports/cloudflare/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist node_modules"
+  },
+  "dependencies": {
+    "@parsrun/core": "workspace:*",
+    "@parsrun/types": "workspace:*"
+  },
+  "devDependencies": {
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8",
+    "arktype": "^2.0.0"
+  },
+  "peerDependencies": {
+    "arktype": ">=2.0.0"
+  },
+  "peerDependenciesMeta": {
+    "arktype": {
+      "optional": true
+    }
+  }
+}

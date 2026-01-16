@@ -1,0 +1,80 @@
+{
+  "name": "@parsrun/server",
+  "version": "0.1.0",
+  "description": "Server framework for Pars - Edge-compatible, multi-tenant, modular",
+  "keywords": ["pars", "server", "hono", "edge", "cloudflare", "deno", "bun"],
+  "homepage": "https://pars.run",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/parsrun/pars",
+    "directory": "packages/server"
+  },
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./app": {
+      "types": "./dist/app.d.ts",
+      "import": "./dist/app.js"
+    },
+    "./context": {
+      "types": "./dist/context.d.ts",
+      "import": "./dist/context.js"
+    },
+    "./module-loader": {
+      "types": "./dist/module-loader.d.ts",
+      "import": "./dist/module-loader.js"
+    },
+    "./rls": {
+      "types": "./dist/rls.d.ts",
+      "import": "./dist/rls.js"
+    },
+    "./rbac": {
+      "types": "./dist/rbac.d.ts",
+      "import": "./dist/rbac.js"
+    },
+    "./health": {
+      "types": "./dist/health.d.ts",
+      "import": "./dist/health.js"
+    },
+    "./middleware": {
+      "types": "./dist/middleware/index.d.ts",
+      "import": "./dist/middleware/index.js"
+    },
+    "./validation": {
+      "types": "./dist/validation/index.d.ts",
+      "import": "./dist/validation/index.js"
+    },
+    "./utils": {
+      "types": "./dist/utils/index.d.ts",
+      "import": "./dist/utils/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist node_modules"
+  },
+  "dependencies": {
+    "@parsrun/core": "workspace:*",
+    "@parsrun/types": "workspace:*",
+    "hono": "^4.6.0"
+  },
+  "devDependencies": {
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  },
+  "peerDependencies": {
+    "hono": ">=4.0.0"
+  }
+}

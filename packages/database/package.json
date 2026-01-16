@@ -1,0 +1,70 @@
+{
+  "name": "@parsrun/database",
+  "version": "0.1.0",
+  "description": "Database utilities for Pars - Drizzle ORM helpers, migrations, multi-runtime support",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./adapters/postgres": {
+      "types": "./dist/adapters/postgres.d.ts",
+      "import": "./dist/adapters/postgres.js"
+    },
+    "./adapters/neon": {
+      "types": "./dist/adapters/neon.d.ts",
+      "import": "./dist/adapters/neon.js"
+    },
+    "./adapters/d1": {
+      "types": "./dist/adapters/d1.d.ts",
+      "import": "./dist/adapters/d1.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "database",
+    "drizzle",
+    "postgres",
+    "neon",
+    "d1",
+    "cloudflare",
+    "edge",
+    "pars"
+  ],
+  "author": "EMS Tech Solutions",
+  "license": "MIT",
+  "dependencies": {
+    "@parsrun/core": "workspace:*",
+    "drizzle-orm": "^0.44.0"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^2.0.0"
+  },
+  "peerDependencies": {
+    "@neondatabase/serverless": "^0.10.0",
+    "postgres": "^3.4.0"
+  },
+  "peerDependenciesMeta": {
+    "@neondatabase/serverless": {
+      "optional": true
+    },
+    "postgres": {
+      "optional": true
+    }
+  }
+}

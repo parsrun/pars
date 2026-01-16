@@ -1,0 +1,100 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish-npm:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+
+      - name: Publish to npm (OIDC)
+        run: pnpm -r publish --access public --no-git-checks
+
+  publish-jsr:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+
+      - name: Publish @parsrun/core to JSR
+        working-directory: packages/core
+        run: deno publish --allow-slow-types
+
+      - name: Publish @parsrun/types to JSR
+        working-directory: packages/types
+        run: deno publish --allow-slow-types
+
+      - name: Publish @parsrun/service to JSR
+        working-directory: packages/service
+        run: deno publish --allow-slow-types
+
+      - name: Publish @parsrun/auth to JSR
+        working-directory: packages/auth
+        run: deno publish --allow-slow-types
+
+      - name: Publish @parsrun/server to JSR
+        working-directory: packages/server
+        run: deno publish --allow-slow-types
+
+      - name: Publish @parsrun/database to JSR
+        working-directory: packages/database
+        run: deno publish --allow-slow-types
+
+      - name: Publish @parsrun/cache to JSR
+        working-directory: packages/cache
+        run: deno publish --allow-slow-types
+
+      - name: Publish @parsrun/email to JSR
+        working-directory: packages/email
+        run: deno publish --allow-slow-types
+
+      - name: Publish @parsrun/payments to JSR
+        working-directory: packages/payments
+        run: deno publish --allow-slow-types
+
+      - name: Publish @parsrun/queue to JSR
+        working-directory: packages/queue
+        run: deno publish --allow-slow-types
+
+      - name: Publish @parsrun/realtime to JSR
+        working-directory: packages/realtime
+        run: deno publish --allow-slow-types
+
+      - name: Publish @parsrun/storage to JSR
+        working-directory: packages/storage
+        run: deno publish --allow-slow-types
+
+      - name: Publish @parsrun/service-adapters to JSR
+        working-directory: packages/service-adapters
+        run: deno publish --allow-slow-types
