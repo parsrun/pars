@@ -11,7 +11,26 @@ jobs:
     environment: npm
     permissions:
       contents: read
-      id-token: write # OIDC için bu izin ŞARTTIR
+      id-token: write
+
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        package:
+          - core
+          - types
+          - database
+          - cache
+          - queue
+          - storage
+          - email
+          - payments
+          - realtime
+          - server
+          - auth
+          - service
+          - service-adapters
 
     steps:
       - uses: actions/checkout@v4
@@ -33,23 +52,6 @@ jobs:
       - name: Update npm for OIDC support
         run: npm install -g npm@latest
 
-      - name: Verify npm version
-        run: npm --version
-
-      - name: Publish to npm
-        run: |
-          # Bir paket hata verirse işlemi durdur (güvenlik için)
-          set -e
-          
-          for pkg in core types database cache queue storage email payments realtime server auth service service-adapters; do
-            echo "---------------------------------------------------"
-            echo "Publishing @parsrun/$pkg..."
-            
-            cd packages/$pkg
-            
-            # --provenance: OIDC için ZORUNLU
-            # --access public: Scoped paketler (@parsrun/...) için ZORUNLU
-            npm publish --access public --provenance
-            
-            cd ../..
-          done
+      - name: Publish @parsrun/${{ matrix.package }}
+        working-directory: packages/${{ matrix.package }}
+        run: npm publish --access public --provenance

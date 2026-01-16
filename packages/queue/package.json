@@ -1,6 +1,6 @@
 {
   "name": "@parsrun/queue",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "description": "Edge-compatible message queues for Pars - Memory, Cloudflare Queues, Upstash QStash",
   "type": "module",
   "main": "./dist/index.js",

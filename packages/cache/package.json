@@ -1,6 +1,6 @@
 {
   "name": "@parsrun/cache",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "description": "Edge-compatible caching for Pars - Memory, Redis/Upstash, Cloudflare KV",
   "type": "module",
   "main": "./dist/index.js",
