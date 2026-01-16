@@ -1,15 +1,8 @@
 {
   "name": "@parsrun/email",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "exports": {
-    ".": "./src/index.ts",
-    "./types": "./src/types.ts",
-    "./providers": "./src/providers/index.ts",
-    "./providers/resend": "./src/providers/resend.ts",
-    "./providers/sendgrid": "./src/providers/sendgrid.ts",
-    "./providers/postmark": "./src/providers/postmark.ts",
-    "./providers/console": "./src/providers/console.ts",
-    "./templates": "./src/templates/index.ts"
+    ".": "./src/index.ts"
   },
   "publish": {
     "include": ["src/**/*.ts", "README.md", "LICENSE"],

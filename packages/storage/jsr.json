@@ -1,11 +1,8 @@
 {
   "name": "@parsrun/storage",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "exports": {
-    ".": "./src/index.ts",
-    "./adapters/s3": "./src/adapters/s3.ts",
-    "./adapters/r2": "./src/adapters/r2.ts",
-    "./adapters/memory": "./src/adapters/memory.ts"
+    ".": "./src/index.ts"
   },
   "publish": {
     "include": ["src/**/*.ts", "README.md", "LICENSE"],

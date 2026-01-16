@@ -1,17 +1,8 @@
 {
   "name": "@parsrun/payments",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "exports": {
-    ".": "./src/index.ts",
-    "./types": "./src/types.ts",
-    "./providers": "./src/providers/index.ts",
-    "./providers/stripe": "./src/providers/stripe.ts",
-    "./providers/paddle": "./src/providers/paddle.ts",
-    "./providers/iyzico": "./src/providers/iyzico.ts",
-    "./webhooks": "./src/webhooks/index.ts",
-    "./billing": "./src/billing/index.ts",
-    "./usage": "./src/usage/index.ts",
-    "./dunning": "./src/dunning/index.ts"
+    ".": "./src/index.ts"
   },
   "publish": {
     "include": ["src/**/*.ts", "README.md", "LICENSE"],

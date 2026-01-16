@@ -1,13 +1,8 @@
 {
   "name": "@parsrun/realtime",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "exports": {
-    ".": "./src/index.ts",
-    "./types": "./src/types.ts",
-    "./adapters": "./src/adapters/index.ts",
-    "./adapters/sse": "./src/adapters/sse.ts",
-    "./adapters/durable-objects": "./src/adapters/durable-objects.ts",
-    "./hono": "./src/hono.ts"
+    ".": "./src/index.ts"
   },
   "publish": {
     "include": ["src/**/*.ts", "README.md", "LICENSE"],

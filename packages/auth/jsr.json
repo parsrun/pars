@@ -1,15 +1,8 @@
 {
   "name": "@parsrun/auth",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "exports": {
-    ".": "./src/index.ts",
-    "./storage": "./src/storage/index.ts",
-    "./session": "./src/session/index.ts",
-    "./security": "./src/security/index.ts",
-    "./providers": "./src/providers/index.ts",
-    "./providers/otp": "./src/providers/otp/index.ts",
-    "./adapters": "./src/adapters/index.ts",
-    "./adapters/hono": "./src/adapters/hono.ts"
+    ".": "./src/index.ts"
   },
   "publish": {
     "include": ["src/**/*.ts", "README.md", "LICENSE"],

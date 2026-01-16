@@ -1,11 +1,8 @@
 {
   "name": "@parsrun/database",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "exports": {
-    ".": "./src/index.ts",
-    "./adapters/postgres": "./src/adapters/postgres.ts",
-    "./adapters/neon": "./src/adapters/neon.ts",
-    "./adapters/d1": "./src/adapters/d1.ts"
+    ".": "./src/index.ts"
   },
   "publish": {
     "include": ["src/**/*.ts", "README.md", "LICENSE"],

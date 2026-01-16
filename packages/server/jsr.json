@@ -1,17 +1,8 @@
 {
   "name": "@parsrun/server",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "exports": {
-    ".": "./src/index.ts",
-    "./app": "./src/app.ts",
-    "./context": "./src/context.ts",
-    "./module-loader": "./src/module-loader.ts",
-    "./rls": "./src/rls.ts",
-    "./rbac": "./src/rbac.ts",
-    "./health": "./src/health.ts",
-    "./middleware": "./src/middleware/index.ts",
-    "./validation": "./src/validation/index.ts",
-    "./utils": "./src/utils/index.ts"
+    ".": "./src/index.ts"
   },
   "publish": {
     "include": ["src/**/*.ts", "README.md", "LICENSE"],
