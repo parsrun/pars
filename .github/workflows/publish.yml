@@ -30,21 +30,10 @@ jobs:
       - name: Build
         run: pnpm build
 
-      - name: Publish to npm (OIDC)
+      - name: Publish to npm
         run: |
           for pkg in core types database cache queue storage email payments realtime server auth service service-adapters; do
             cd packages/$pkg
-            npm publish --access public --provenance
+            npm publish --access public
             cd ../..
           done
-
-  # JSR publish disabled - code needs Deno compatibility fixes (process global)
-  # publish-jsr:
-  #   runs-on: ubuntu-latest
-  #   permissions:
-  #     contents: read
-  #     id-token: write
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: denoland/setup-deno@v1
-  #     - run: deno publish --allow-slow-types
