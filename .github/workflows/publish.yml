@@ -65,6 +65,9 @@ jobs:
             echo "---------------------------------------------------"
             echo "Publishing @parsrun/$pkg to JSR..."
             cd packages/$pkg
+            # Create deno.json from jsr.json for proper import resolution
+            cp jsr.json deno.json
             deno publish --allow-slow-types --no-check --unstable-sloppy-imports
+            rm deno.json
             cd ../..
           done
