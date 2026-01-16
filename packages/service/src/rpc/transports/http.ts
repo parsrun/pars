@@ -11,6 +11,9 @@ import { TransportError, SerializationError } from "../errors.js";
 // HTTP TRANSPORT
 // ============================================================================
 
+/**
+ * Options for creating an HTTP transport.
+ */
 export interface HttpTransportOptions {
   /** Base URL of the service */
   baseUrl: string;
@@ -25,7 +28,8 @@ export interface HttpTransportOptions {
 }
 
 /**
- * HTTP transport for RPC calls
+ * HTTP transport for RPC calls over HTTP/HTTPS.
+ * Makes POST requests to /rpc endpoint with serialized request body.
  */
 export class HttpTransport implements RpcTransport {
   readonly name = "http";
@@ -128,7 +132,18 @@ export class HttpTransport implements RpcTransport {
 }
 
 /**
- * Create an HTTP transport
+ * Create an HTTP transport for RPC calls.
+ *
+ * @param options - Transport configuration options
+ * @returns A new HTTP transport instance
+ *
+ * @example
+ * ```typescript
+ * const transport = createHttpTransport({
+ *   baseUrl: 'https://api.example.com',
+ *   timeout: 5000,
+ * });
+ * ```
  */
 export function createHttpTransport(options: HttpTransportOptions): HttpTransport {
   return new HttpTransport(options);
@@ -149,7 +164,16 @@ function formatTraceparent(ctx: TraceContext): string {
 }
 
 /**
- * Parse W3C traceparent header
+ * Parse W3C traceparent header to extract trace context.
+ *
+ * @param header - The traceparent header value
+ * @returns Parsed trace context or null if invalid
+ *
+ * @example
+ * ```typescript
+ * const ctx = parseTraceparent('00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01');
+ * // { traceId: '0af7651916cd43dd8448eb211c80319c', spanId: 'b7ad6b7169203331', traceFlags: 1 }
+ * ```
  */
 export function parseTraceparent(header: string): TraceContext | null {
   const parts = header.split("-");
@@ -180,8 +204,18 @@ export function parseTraceparent(header: string): TraceContext | null {
 import type { RpcServer } from "../server.js";
 
 /**
- * Create HTTP request handler for RPC server
- * Can be used with Hono, Express, or any HTTP framework
+ * Create HTTP request handler for RPC server.
+ * Can be used with Hono, Express, or any HTTP framework.
+ *
+ * @param server - The RPC server to handle requests
+ * @returns Request handler function for HTTP frameworks
+ *
+ * @example
+ * ```typescript
+ * const handler = createHttpHandler(rpcServer);
+ * // With Hono
+ * app.post('/rpc', (c) => handler(c.req.raw));
+ * ```
  */
 export function createHttpHandler(server: RpcServer) {
   return async (request: Request): Promise<Response> => {

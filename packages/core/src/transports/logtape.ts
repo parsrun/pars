@@ -206,7 +206,19 @@ export class LogtapeTransport implements LogTransport {
 }
 
 /**
- * Create Logtape transport
+ * Create a Logtape transport instance.
+ *
+ * @param options - Logtape transport configuration
+ * @returns A new LogtapeTransport instance
+ *
+ * @example
+ * ```typescript
+ * import { getLogger } from '@logtape/logtape';
+ *
+ * const transport = createLogtapeTransport({
+ *   logger: getLogger('my-app')
+ * });
+ * ```
  */
 export function createLogtapeTransport(
   options?: LogtapeTransportOptions

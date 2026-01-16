@@ -10,6 +10,9 @@ import type { ParsEvent, CompactEvent, TraceContext } from "../types.js";
 // EVENT CREATION
 // ============================================================================
 
+/**
+ * Options for creating a CloudEvents-compatible event.
+ */
 export interface CreateEventOptions<T = unknown> {
   /** Event type (e.g., "subscription.created") */
   type: string;
@@ -32,7 +35,10 @@ export interface CreateEventOptions<T = unknown> {
 }
 
 /**
- * Create a CloudEvents-compatible event
+ * Create a CloudEvents-compatible event.
+ *
+ * @param options - Event creation options
+ * @returns A new ParsEvent conforming to CloudEvents spec
  */
 export function createEvent<T = unknown>(options: CreateEventOptions<T>): ParsEvent<T> {
   const event: ParsEvent<T> = {
@@ -59,14 +65,20 @@ export function createEvent<T = unknown>(options: CreateEventOptions<T>): ParsEv
 // ============================================================================
 
 /**
- * Convert to full CloudEvents format
+ * Convert to full CloudEvents format (creates a copy).
+ *
+ * @param event - The event to convert
+ * @returns A copy of the event in CloudEvents format
  */
 export function toCloudEvent<T>(event: ParsEvent<T>): ParsEvent<T> {
   return { ...event };
 }
 
 /**
- * Convert to compact internal format
+ * Convert to compact internal format for efficient transport.
+ *
+ * @param event - The CloudEvents event to convert
+ * @returns A compact representation of the event
  */
 export function toCompactEvent<T>(event: ParsEvent<T>): CompactEvent<T> {
   const compact: CompactEvent<T> = {
@@ -84,7 +96,11 @@ export function toCompactEvent<T>(event: ParsEvent<T>): CompactEvent<T> {
 }
 
 /**
- * Convert from compact format to CloudEvents
+ * Convert from compact format to CloudEvents format.
+ *
+ * @param compact - The compact event to convert
+ * @param source - Optional source override
+ * @returns A full CloudEvents event
  */
 export function fromCompactEvent<T>(compact: CompactEvent<T>, source?: string): ParsEvent<T> {
   const event: ParsEvent<T> = {
@@ -108,22 +124,33 @@ export function fromCompactEvent<T>(compact: CompactEvent<T>, source?: string): 
 // ============================================================================
 
 /**
- * Format full event type with source prefix
+ * Format full event type with source prefix.
+ *
+ * @param source - The source service name
+ * @param type - The event type
+ * @returns Fully qualified event type
  *
  * @example
+ * ```typescript
  * formatEventType('payments', 'subscription.created')
  * // Returns: 'com.pars.payments.subscription.created'
+ * ```
  */
 export function formatEventType(source: string, type: string): string {
   return `com.pars.${source}.${type}`;
 }
 
 /**
- * Parse event type to extract source and type
+ * Parse event type to extract source and type.
+ *
+ * @param fullType - The fully qualified event type
+ * @returns Parsed source and type, or null if invalid
  *
  * @example
+ * ```typescript
  * parseEventType('com.pars.payments.subscription.created')
  * // Returns: { source: 'payments', type: 'subscription.created' }
+ * ```
  */
 export function parseEventType(fullType: string): { source: string; type: string } | null {
   const prefix = "com.pars.";
@@ -150,13 +177,19 @@ export function parseEventType(fullType: string): { source: string; type: string
 }
 
 /**
- * Check if event type matches a pattern
- * Supports wildcards: * matches one segment, ** matches multiple segments
+ * Check if event type matches a pattern.
+ * Supports wildcards: * matches one segment, ** matches multiple segments.
+ *
+ * @param type - The event type to check
+ * @param pattern - The pattern to match against
+ * @returns True if the type matches the pattern
  *
  * @example
+ * ```typescript
  * matchEventType('subscription.created', 'subscription.*') // true
  * matchEventType('payment.invoice.paid', 'payment.**') // true
  * matchEventType('subscription.created', 'payment.*') // false
+ * ```
  */
 export function matchEventType(type: string, pattern: string): boolean {
   if (pattern === "*" || pattern === "**") {
@@ -219,7 +252,10 @@ function formatTraceContext(ctx: TraceContext): string {
 }
 
 /**
- * Parse W3C traceparent string to trace context
+ * Parse W3C traceparent string to trace context.
+ *
+ * @param traceparent - The traceparent header value
+ * @returns Parsed trace context, or null if invalid
  */
 export function parseTraceContext(traceparent: string): TraceContext | null {
   const parts = traceparent.split("-");
@@ -244,7 +280,10 @@ export function parseTraceContext(traceparent: string): TraceContext | null {
 // ============================================================================
 
 /**
- * Validate CloudEvents structure
+ * Validate that an object conforms to CloudEvents structure.
+ *
+ * @param event - The object to validate
+ * @returns True if the object is a valid ParsEvent
  */
 export function validateEvent(event: unknown): event is ParsEvent {
   if (!event || typeof event !== "object") {
@@ -264,7 +303,10 @@ export function validateEvent(event: unknown): event is ParsEvent {
 }
 
 /**
- * Validate compact event structure
+ * Validate that an object conforms to compact event structure.
+ *
+ * @param event - The object to validate
+ * @returns True if the object is a valid CompactEvent
  */
 export function validateCompactEvent(event: unknown): event is CompactEvent {
   if (!event || typeof event !== "object") {

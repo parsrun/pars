@@ -328,13 +328,39 @@ export interface Span {
   events: SpanEvent[];
 }
 
+/**
+ * Kind of span indicating the relationship between the span and its parent.
+ * - "internal": Default type, represents internal operations
+ * - "server": Indicates the span covers server-side handling of a request
+ * - "client": Indicates the span covers client-side sending of a request
+ * - "producer": Indicates the span covers sending a message to a broker
+ * - "consumer": Indicates the span covers receiving a message from a broker
+ */
 export type SpanKind = "internal" | "server" | "client" | "producer" | "consumer";
+
+/**
+ * Status of a span indicating whether the operation succeeded or failed.
+ * - "unset": Default status, operation has not been marked
+ * - "ok": Operation completed successfully
+ * - "error": Operation failed
+ */
 export type SpanStatus = "unset" | "ok" | "error";
+
+/**
+ * Valid types for span attribute values.
+ * Supports primitive types and arrays of primitives.
+ */
 export type SpanAttributeValue = string | number | boolean | string[] | number[] | boolean[];
 
+/**
+ * An event recorded during a span's lifetime.
+ */
 export interface SpanEvent {
+  /** Event name */
   name: string;
+  /** Event timestamp (unix ms) */
   time: number;
+  /** Optional event attributes */
   attributes?: Record<string, SpanAttributeValue>;
 }
 
@@ -404,6 +430,9 @@ export interface ServiceConfig {
   deadLetter?: DeadLetterConfig;
 }
 
+/**
+ * Event format configuration options.
+ */
 export interface EventFormatConfig {
   /** Use CloudEvents format (default: true) */
   format?: "cloudevents" | "compact";
@@ -411,11 +440,17 @@ export interface EventFormatConfig {
   internalCompact?: boolean;
 }
 
+/**
+ * Serialization format configuration.
+ */
 export interface SerializationConfig {
   /** Serialization format */
   format?: "json" | "msgpack";
 }
 
+/**
+ * Distributed tracing configuration.
+ */
 export interface TracingConfig {
   /** Enable tracing */
   enabled?: boolean;
@@ -429,6 +464,9 @@ export interface TracingConfig {
   serviceName?: string;
 }
 
+/**
+ * API versioning configuration.
+ */
 export interface VersioningConfig {
   /** Versioning strategy */
   strategy?: "header" | "url" | "none";
@@ -436,6 +474,9 @@ export interface VersioningConfig {
   defaultVersion?: string;
 }
 
+/**
+ * Resilience patterns configuration for fault tolerance.
+ */
 export interface ResilienceConfig {
   /** Circuit breaker config */
   circuitBreaker?: CircuitBreakerConfig;
@@ -447,6 +488,9 @@ export interface ResilienceConfig {
   retry?: RetryConfig;
 }
 
+/**
+ * Circuit breaker configuration to prevent cascading failures.
+ */
 export interface CircuitBreakerConfig {
   /** Enable circuit breaker */
   enabled?: boolean;
@@ -458,6 +502,9 @@ export interface CircuitBreakerConfig {
   successThreshold?: number;
 }
 
+/**
+ * Bulkhead configuration to limit concurrent requests.
+ */
 export interface BulkheadConfig {
   /** Maximum concurrent requests */
   maxConcurrent?: number;
@@ -465,6 +512,9 @@ export interface BulkheadConfig {
   maxQueue?: number;
 }
 
+/**
+ * Retry configuration for failed operations.
+ */
 export interface RetryConfig {
   /** Number of retry attempts */
   attempts?: number;
@@ -476,6 +526,9 @@ export interface RetryConfig {
   maxDelay?: number;
 }
 
+/**
+ * Dead letter queue configuration for failed event handling.
+ */
 export interface DeadLetterConfig {
   /** Enable DLQ */
   enabled?: boolean;

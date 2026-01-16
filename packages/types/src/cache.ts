@@ -112,12 +112,56 @@ export const cacheConfig = type({
 // Type Exports
 // ============================================================================
 
+/**
+ * Cache set options type.
+ * Contains optional TTL, tags for invalidation, and metadata.
+ */
 export type CacheSetOptions = typeof cacheSetOptions.infer;
+
+/**
+ * Cache get result type.
+ * Contains the cached value, remaining TTL, creation time, and tags.
+ */
 export type CacheGetResult = typeof cacheGetResult.infer;
+
+/**
+ * Cache stats type.
+ * Contains hit/miss counts, total keys, and optional memory usage.
+ */
 export type CacheStats = typeof cacheStats.infer;
+
+/**
+ * Memory cache configuration type.
+ * Contains max size, default TTL, cleanup interval, and stale serving options.
+ */
 export type MemoryCacheConfig = typeof memoryCacheConfig.infer;
+
+/**
+ * Redis cache configuration type.
+ * Contains Redis connection settings, key prefix, and default TTL.
+ */
 export type RedisCacheConfig = typeof redisCacheConfig.infer;
+
+/**
+ * Upstash cache configuration type.
+ * Contains Upstash URL, token, key prefix, and default TTL.
+ */
 export type UpstashCacheConfig = typeof upstashCacheConfig.infer;
+
+/**
+ * Cloudflare KV configuration type.
+ * Contains namespace ID, account credentials, and key prefix.
+ */
 export type CloudflareKvConfig = typeof cloudflareKvConfig.infer;
+
+/**
+ * Multi-tier cache configuration type.
+ * Contains array of cache tiers with priorities and write-through/read-through settings.
+ */
 export type MultiTierCacheConfig = typeof multiTierCacheConfig.infer;
+
+/**
+ * Cache configuration type.
+ * Contains provider selection and provider-specific configuration.
+ */
 export type CacheConfig = typeof cacheConfig.infer;

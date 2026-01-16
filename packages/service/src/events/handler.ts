@@ -30,6 +30,9 @@ export interface ResolvedHandlerOptions {
   deadLetter?: string;
 }
 
+/**
+ * Registration entry for an event handler.
+ */
 export interface HandlerRegistration {
   /** Event type pattern (supports wildcards) */
   pattern: string;
@@ -39,6 +42,9 @@ export interface HandlerRegistration {
   options: ResolvedHandlerOptions;
 }
 
+/**
+ * Options for creating an event handler registry.
+ */
 export interface EventHandlerRegistryOptions {
   /** Logger */
   logger?: Logger;
@@ -303,7 +309,21 @@ export class EventHandlerRegistry {
 }
 
 /**
- * Create an event handler registry
+ * Create an event handler registry for managing event subscriptions.
+ *
+ * @param options - Registry configuration options
+ * @returns A new event handler registry instance
+ *
+ * @example
+ * ```typescript
+ * const registry = createEventHandlerRegistry({
+ *   deadLetterQueue: dlq,
+ *   defaultOptions: { retries: 3 },
+ * });
+ * registry.register('subscription.*', async (event, ctx) => {
+ *   console.log('Received event:', event.type);
+ * });
+ * ```
  */
 export function createEventHandlerRegistry(
   options?: EventHandlerRegistryOptions

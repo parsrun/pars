@@ -9,6 +9,9 @@ import { BulkheadRejectedError } from "../rpc/errors.js";
 // BULKHEAD
 // ============================================================================
 
+/**
+ * Options for configuring a bulkhead.
+ */
 export interface BulkheadOptions {
   /** Maximum concurrent requests */
   maxConcurrent: number;

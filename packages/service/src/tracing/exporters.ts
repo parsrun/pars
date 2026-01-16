@@ -12,15 +12,22 @@ import { spanToLogObject, getSpanDuration } from "./spans.js";
 // EXPORTER INTERFACE
 // ============================================================================
 
+/**
+ * Interface for span exporters.
+ * Exporters receive completed spans and send them to a backend.
+ */
 export interface SpanExporter {
   /** Exporter name */
   readonly name: string;
-  /** Export spans */
+  /** Export spans to the backend */
   export(spans: Span[]): Promise<void>;
-  /** Shutdown exporter */
+  /** Shutdown exporter and flush pending spans */
   shutdown(): Promise<void>;
 }
 
+/**
+ * Base options for span exporters.
+ */
 export interface ExporterOptions {
   /** Logger */
   logger?: Logger;
@@ -30,6 +37,9 @@ export interface ExporterOptions {
 // CONSOLE EXPORTER
 // ============================================================================
 
+/**
+ * Options for the console exporter.
+ */
 export interface ConsoleExporterOptions extends ExporterOptions {
   /** Pretty print (default: true in dev) */
   pretty?: boolean;
@@ -40,7 +50,8 @@ export interface ConsoleExporterOptions extends ExporterOptions {
 }
 
 /**
- * Console exporter for development/debugging
+ * Console exporter for development and debugging.
+ * Outputs spans to the console with optional pretty formatting.
  */
 export class ConsoleExporter implements SpanExporter {
   readonly name = "console";
@@ -96,7 +107,10 @@ export class ConsoleExporter implements SpanExporter {
 }
 
 /**
- * Create a console exporter
+ * Create a console exporter for local development.
+ *
+ * @param options - Exporter configuration options
+ * @returns A new console exporter instance
  */
 export function createConsoleExporter(options?: ConsoleExporterOptions): ConsoleExporter {
   return new ConsoleExporter(options);
@@ -106,6 +120,9 @@ export function createConsoleExporter(options?: ConsoleExporterOptions): Console
 // OTLP EXPORTER
 // ============================================================================
 
+/**
+ * Options for the OTLP exporter.
+ */
 export interface OtlpExporterOptions extends ExporterOptions {
   /** OTLP endpoint URL */
   endpoint: string;
@@ -124,7 +141,8 @@ export interface OtlpExporterOptions extends ExporterOptions {
 }
 
 /**
- * OTLP exporter for production tracing
+ * OTLP exporter for production tracing.
+ * Sends spans to an OpenTelemetry-compatible backend via HTTP.
  */
 export class OtlpExporter implements SpanExporter {
   readonly name = "otlp";
@@ -307,7 +325,18 @@ export class OtlpExporter implements SpanExporter {
 }
 
 /**
- * Create an OTLP exporter
+ * Create an OTLP exporter for production tracing.
+ *
+ * @param options - Exporter configuration options
+ * @returns A new OTLP exporter instance
+ *
+ * @example
+ * ```typescript
+ * const exporter = createOtlpExporter({
+ *   endpoint: 'https://otel-collector.example.com:4318',
+ *   serviceName: 'payments',
+ * });
+ * ```
  */
 export function createOtlpExporter(options: OtlpExporterOptions): OtlpExporter {
   return new OtlpExporter(options);

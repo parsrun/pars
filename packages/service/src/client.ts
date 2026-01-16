@@ -277,7 +277,22 @@ export function useService<TDef extends ServiceDefinition = ServiceDefinition>(
 }
 
 /**
- * Create a typed service client from a definition
+ * Create a typed service client from a service definition.
+ * Provides full type safety for queries, mutations, and events.
+ *
+ * @param definition - The service definition
+ * @param options - Client configuration options
+ * @returns A typed service client
+ *
+ * @example
+ * ```typescript
+ * const payments = useTypedService(paymentsServiceDefinition, {
+ *   mode: 'http',
+ *   baseUrl: 'https://payments.example.com',
+ * });
+ * // Full type safety for all operations
+ * const sub = await payments.query('getSubscription', { subscriptionId: '123' });
+ * ```
  */
 export function useTypedService<TDef extends ServiceDefinition>(
   definition: TDef,
@@ -367,7 +382,19 @@ export class ServiceRegistry {
 }
 
 /**
- * Create a service registry
+ * Create a service registry for managing multiple service clients.
+ *
+ * @param config - Optional shared configuration for all clients
+ * @returns A new service registry instance
+ *
+ * @example
+ * ```typescript
+ * const registry = createServiceRegistry({ tracing: { enabled: true } });
+ * const payments = registry.get('payments');
+ * const users = registry.get('users');
+ * // Later, clean up all connections
+ * await registry.closeAll();
+ * ```
  */
 export function createServiceRegistry(config?: ServiceConfig): ServiceRegistry {
   return new ServiceRegistry(config);

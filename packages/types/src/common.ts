@@ -94,7 +94,12 @@ export const cursorPaginationMeta = type({
 // Response Schemas
 // ============================================================================
 
-/** Success response wrapper */
+/**
+ * Creates a success response schema wrapper for any data type.
+ * @template T - The data schema type
+ * @param dataSchema - The ArkType schema for the response data
+ * @returns An ArkType schema for a success response containing the data
+ */
 export const successResponse = <T>(dataSchema: T) =>
   type({
     success: "'true'",
@@ -113,7 +118,12 @@ export const errorResponse = type({
   "message?": "string",
 });
 
-/** Paginated response wrapper */
+/**
+ * Creates a paginated response schema wrapper for offset-based pagination.
+ * @template T - The data schema type (typically an array schema)
+ * @param dataSchema - The ArkType schema for the paginated data array
+ * @returns An ArkType schema for a paginated response with pagination metadata
+ */
 export const paginatedResponse = <T>(dataSchema: T) =>
   type({
     success: "boolean",
@@ -122,7 +132,12 @@ export const paginatedResponse = <T>(dataSchema: T) =>
     "message?": "string",
   });
 
-/** Cursor paginated response wrapper */
+/**
+ * Creates a cursor-paginated response schema wrapper for cursor-based pagination.
+ * @template T - The data schema type (typically an array schema)
+ * @param dataSchema - The ArkType schema for the paginated data array
+ * @returns An ArkType schema for a cursor-paginated response with cursor metadata
+ */
 export const cursorPaginatedResponse = <T>(dataSchema: T) =>
   type({
     success: "boolean",
@@ -155,40 +170,100 @@ export const validationErrorDetail = type({
 // Type Exports
 // ============================================================================
 
-/** UUID v4 string type */
+/**
+ * UUID v4 string type.
+ * Represents a universally unique identifier in the standard UUID v4 format.
+ */
 export type UUID = typeof uuid.infer;
-/** ISO 8601 timestamp string type */
+
+/**
+ * ISO 8601 timestamp string type.
+ * Represents a date-time value in ISO 8601 format (e.g., "2024-01-15T10:30:00Z").
+ */
 export type Timestamp = typeof timestamp.infer;
-/** Valid email address string type */
+
+/**
+ * Valid email address string type.
+ * Represents a properly formatted email address.
+ */
 export type Email = typeof email.infer;
-/** Valid URL string type */
+
+/**
+ * Valid URL string type.
+ * Represents a properly formatted URL.
+ */
 export type Url = typeof url.infer;
-/** Non-empty string type (length >= 1) */
+
+/**
+ * Non-empty string type (length >= 1).
+ * Ensures the string contains at least one character.
+ */
 export type NonEmptyString = typeof nonEmptyString.infer;
-/** Positive integer type (> 0) */
+
+/**
+ * Positive integer type (> 0).
+ * Represents whole numbers greater than zero.
+ */
 export type PositiveInt = typeof positiveInt.infer;
-/** Non-negative integer type (>= 0) */
+
+/**
+ * Non-negative integer type (>= 0).
+ * Represents whole numbers that are zero or greater.
+ */
 export type NonNegativeInt = typeof nonNegativeInt.infer;
 
-/** Entity status: 'active' | 'inactive' | 'suspended' | 'deleted' */
+/**
+ * Entity status type.
+ * Common lifecycle states for entities: 'active' | 'inactive' | 'suspended' | 'deleted'.
+ */
 export type Status = typeof status.infer;
-/** Session status: 'active' | 'expired' | 'revoked' */
+
+/**
+ * Session status type.
+ * Represents the current state of a user session: 'active' | 'expired' | 'revoked'.
+ */
 export type SessionStatus = typeof sessionStatus.infer;
 
-/** Pagination request parameters */
+/**
+ * Pagination request parameters type.
+ * Contains page number, limit, and optional ordering for offset-based pagination.
+ */
 export type Pagination = typeof pagination.infer;
-/** Pagination metadata in responses */
+
+/**
+ * Pagination metadata type for responses.
+ * Contains page info, totals, and navigation flags for offset-based pagination.
+ */
 export type PaginationMeta = typeof paginationMeta.infer;
-/** Cursor-based pagination request */
+
+/**
+ * Cursor-based pagination request type.
+ * Contains cursor, limit, and direction for cursor-based pagination.
+ */
 export type CursorPagination = typeof cursorPagination.infer;
-/** Cursor-based pagination metadata */
+
+/**
+ * Cursor-based pagination metadata type.
+ * Contains current/next/prev cursors and hasMore flag for cursor-based pagination.
+ */
 export type CursorPaginationMeta = typeof cursorPaginationMeta.infer;
 
-/** Standard error response structure */
+/**
+ * Standard error response structure type.
+ * Contains success flag, error object with code/message/details, and optional message.
+ */
 export type ErrorResponse = typeof errorResponse.infer;
-/** Pars framework error structure */
+
+/**
+ * Pars framework error structure type.
+ * Contains message, HTTP status code, optional error code, and optional details.
+ */
 export type ParsError = typeof parsError.infer;
-/** Validation error detail with path and message */
+
+/**
+ * Validation error detail type.
+ * Contains the field path, error message, and optional expected/received values.
+ */
 export type ValidationErrorDetail = typeof validationErrorDetail.infer;
 
 // ============================================================================

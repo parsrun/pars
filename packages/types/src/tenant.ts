@@ -92,9 +92,38 @@ export const switchTenantRequest = type({
 // Type Exports
 // ============================================================================
 
+/**
+ * Tenant entity type.
+ * Represents an organization/workspace with branding, settings, and localization.
+ */
 export type Tenant = typeof tenant.infer;
+
+/**
+ * Create tenant request type.
+ * Contains required name and optional branding/localization settings.
+ */
 export type CreateTenantRequest = typeof createTenantRequest.infer;
+
+/**
+ * Update tenant request type.
+ * Contains optional fields for updating tenant properties.
+ */
 export type UpdateTenantRequest = typeof updateTenantRequest.infer;
+
+/**
+ * Invite tenant member request type.
+ * Contains email, role, access level, and optional expiry for invitations.
+ */
 export type InviteTenantMemberRequest = typeof inviteTenantMemberRequest.infer;
+
+/**
+ * Tenant member list query type.
+ * Contains pagination, filtering, and search options for listing members.
+ */
 export type TenantMemberListQuery = typeof tenantMemberListQuery.infer;
+
+/**
+ * Switch tenant request type.
+ * Contains the target tenant ID for switching the user's active tenant.
+ */
 export type SwitchTenantRequest = typeof switchTenantRequest.infer;

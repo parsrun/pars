@@ -17,15 +17,27 @@ import type {
 // DEFAULT CONFIGURATIONS
 // ============================================================================
 
+/**
+ * Default event format configuration.
+ * Uses CloudEvents format with compact internal communication.
+ */
 export const DEFAULT_EVENT_CONFIG: Required<EventFormatConfig> = {
   format: "cloudevents",
   internalCompact: true,
 };
 
+/**
+ * Default serialization configuration.
+ * Uses JSON format for data encoding.
+ */
 export const DEFAULT_SERIALIZATION_CONFIG: Required<SerializationConfig> = {
   format: "json",
 };
 
+/**
+ * Default tracing configuration.
+ * Enables tracing with 10% sampling ratio and console exporter.
+ */
 export const DEFAULT_TRACING_CONFIG: Required<TracingConfig> = {
   enabled: true,
   sampler: { ratio: 0.1 },
@@ -34,11 +46,19 @@ export const DEFAULT_TRACING_CONFIG: Required<TracingConfig> = {
   serviceName: "pars-service",
 };
 
+/**
+ * Default versioning configuration.
+ * Uses header-based versioning with "1.x" as the default version.
+ */
 export const DEFAULT_VERSIONING_CONFIG: Required<VersioningConfig> = {
   strategy: "header",
   defaultVersion: "1.x",
 };
 
+/**
+ * Default resilience configuration.
+ * Configures circuit breaker, bulkhead, timeout, and retry settings.
+ */
 export const DEFAULT_RESILIENCE_CONFIG: Required<ResilienceConfig> = {
   circuitBreaker: {
     enabled: true,
@@ -59,6 +79,10 @@ export const DEFAULT_RESILIENCE_CONFIG: Required<ResilienceConfig> = {
   },
 };
 
+/**
+ * Default dead letter queue configuration.
+ * Enables DLQ with 30-day retention and alerting at 10 messages.
+ */
 export const DEFAULT_DEAD_LETTER_CONFIG: Required<DeadLetterConfig> = {
   enabled: true,
   retention: "30d",
@@ -66,6 +90,10 @@ export const DEFAULT_DEAD_LETTER_CONFIG: Required<DeadLetterConfig> = {
   alertThreshold: 10,
 };
 
+/**
+ * Default complete service configuration.
+ * Combines all default sub-configurations.
+ */
 export const DEFAULT_SERVICE_CONFIG: Required<ServiceConfig> = {
   events: DEFAULT_EVENT_CONFIG,
   serialization: DEFAULT_SERIALIZATION_CONFIG,
@@ -80,7 +108,11 @@ export const DEFAULT_SERVICE_CONFIG: Required<ServiceConfig> = {
 // ============================================================================
 
 /**
- * Merge user config with defaults
+ * Merge user config with defaults.
+ * Deep merges the user configuration with default values.
+ *
+ * @param userConfig - Optional partial service configuration
+ * @returns Complete service configuration with all required fields
  */
 export function mergeConfig(userConfig?: Partial<ServiceConfig>): Required<ServiceConfig> {
   if (!userConfig) {
@@ -128,7 +160,11 @@ export function mergeConfig(userConfig?: Partial<ServiceConfig>): Required<Servi
 }
 
 /**
- * Create config for development
+ * Create configuration optimized for development.
+ * Enables full tracing, disables circuit breaker, and uses longer timeouts.
+ *
+ * @param overrides - Optional configuration overrides
+ * @returns Complete service configuration for development
  */
 export function createDevConfig(overrides?: Partial<ServiceConfig>): Required<ServiceConfig> {
   return mergeConfig({
@@ -146,7 +182,11 @@ export function createDevConfig(overrides?: Partial<ServiceConfig>): Required<Se
 }
 
 /**
- * Create config for production
+ * Create configuration optimized for production.
+ * Uses 10% sampling ratio, OTLP exporter, and enables circuit breaker.
+ *
+ * @param overrides - Optional configuration overrides
+ * @returns Complete service configuration for production
  */
 export function createProdConfig(overrides?: Partial<ServiceConfig>): Required<ServiceConfig> {
   return mergeConfig({
@@ -164,7 +204,11 @@ export function createProdConfig(overrides?: Partial<ServiceConfig>): Required<S
 }
 
 /**
- * Validate config
+ * Validate service configuration.
+ * Checks for valid ranges and values in the configuration.
+ *
+ * @param config - Service configuration to validate
+ * @returns Object containing validation result and any error messages
  */
 export function validateConfig(config: ServiceConfig): { valid: boolean; errors: string[] } {
   const errors: string[] = [];

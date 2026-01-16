@@ -21,33 +21,47 @@ import { EventHandlerRegistry } from "../../events/handler.js";
 // ============================================================================
 
 /**
- * Cloudflare Queue interface
+ * Cloudflare Queue binding interface.
+ * Represents a Cloudflare Queue for sending messages.
  */
 export interface CloudflareQueue {
+  /** Send a single message to the queue */
   send(message: unknown, options?: { contentType?: string }): Promise<void>;
+  /** Send multiple messages to the queue in a batch */
   sendBatch(
     messages: Array<{ body: unknown; contentType?: string }>
   ): Promise<void>;
 }
 
 /**
- * Queue message from Cloudflare
+ * Queue message received from Cloudflare.
+ * Contains the message body and methods to acknowledge or retry.
  */
 export interface QueueMessage<T = unknown> {
+  /** Unique message identifier */
   id: string;
+  /** Message timestamp */
   timestamp: Date;
+  /** Message body */
   body: T;
+  /** Acknowledge successful processing */
   ack(): void;
+  /** Retry processing the message */
   retry(): void;
 }
 
 /**
- * Queue batch from Cloudflare
+ * Batch of queue messages from Cloudflare.
+ * Received by queue consumers for batch processing.
  */
 export interface QueueBatch<T = unknown> {
+  /** Queue name */
   queue: string;
+  /** Messages in the batch */
   messages: QueueMessage<T>[];
+  /** Acknowledge all messages in the batch */
   ackAll(): void;
+  /** Retry all messages in the batch */
   retryAll(): void;
 }
 
@@ -55,6 +69,9 @@ export interface QueueBatch<T = unknown> {
 // CLOUDFLARE QUEUE TRANSPORT
 // ============================================================================
 
+/**
+ * Options for creating a Cloudflare Queue transport.
+ */
 export interface CloudflareQueueTransportOptions {
   /** Cloudflare Queue binding */
   queue: CloudflareQueue;
@@ -211,7 +228,19 @@ export class CloudflareQueueTransport implements EventTransport {
 }
 
 /**
- * Create a Cloudflare Queue transport
+ * Create a Cloudflare Queue transport for event distribution.
+ *
+ * @param options - Transport configuration options
+ * @returns A new Cloudflare Queue transport instance
+ *
+ * @example
+ * ```typescript
+ * const transport = createCloudflareQueueTransport({
+ *   queue: env.EVENTS_QUEUE,
+ *   queueName: 'events',
+ *   batchSize: 100,
+ * });
+ * ```
  */
 export function createCloudflareQueueTransport(
   options: CloudflareQueueTransportOptions
@@ -224,7 +253,12 @@ export function createCloudflareQueueTransport(
 // ============================================================================
 
 /**
- * Create a queue consumer handler
+ * Create a queue consumer handler for processing queue messages.
+ * Use this to handle incoming events from a Cloudflare Queue.
+ *
+ * @param registry - Event handler registry for processing events
+ * @param options - Consumer configuration options
+ * @returns Queue batch handler function
  *
  * @example
  * ```typescript

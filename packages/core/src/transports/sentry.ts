@@ -561,7 +561,18 @@ export class SentryTransport implements LogTransport, ErrorTransport {
 }
 
 /**
- * Create Sentry transport
+ * Create a Sentry transport instance.
+ *
+ * @param options - Sentry transport configuration
+ * @returns A new SentryTransport instance
+ *
+ * @example
+ * ```typescript
+ * const sentry = createSentryTransport({
+ *   dsn: 'https://xxx@sentry.io/123',
+ *   environment: 'production'
+ * });
+ * ```
  */
 export function createSentryTransport(options: SentryTransportOptions): SentryTransport {
   return new SentryTransport(options);

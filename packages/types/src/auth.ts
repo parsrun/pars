@@ -327,6 +327,7 @@ export const checkVerificationStatusRequest = type({
   email: "string.email",
 });
 
+/** Check verification status response */
 export const checkVerificationStatusResponse = type({
   success: "boolean",
   verified: "boolean",
@@ -531,68 +532,303 @@ export const parsAuthConfig = type({
 // ============================================================================
 
 // Entity types
+
+/**
+ * User entity type.
+ * Represents a user account with display name, 2FA settings, and status.
+ */
 export type User = typeof user.infer;
+
+/**
+ * Authentication method type.
+ * Represents how a user authenticates (email, phone, OAuth providers).
+ */
 export type AuthMethod = typeof authMethod.infer;
+
+/**
+ * Session entity type.
+ * Represents an active user session with tokens, device info, and expiry.
+ */
 export type Session = typeof session.infer;
+
+/**
+ * Tenant membership type.
+ * Represents a user's membership and role within a specific tenant.
+ */
 export type TenantMembership = typeof tenantMembership.infer;
 
 // OTP types
+
+/**
+ * Request OTP request type.
+ * Contains email or phone number for OTP delivery.
+ */
 export type RequestOTPRequest = typeof requestOTPRequest.infer;
+
+/**
+ * Request OTP response type.
+ * Contains success status, expiry, and optional tenant selection info.
+ */
 export type RequestOTPResponse = typeof requestOTPResponse.infer;
+
+/**
+ * Verify OTP request type.
+ * Contains email/phone, OTP code, and optional tenant ID.
+ */
 export type VerifyOTPRequest = typeof verifyOTPRequest.infer;
+
+/**
+ * Resend OTP request type.
+ * Contains email or phone number to resend OTP to.
+ */
 export type ResendOTPRequest = typeof resendOTPRequest.infer;
 
 // Login types
+
+/**
+ * Login response data type.
+ * Contains user, session tokens, auth method, and membership info.
+ */
 export type LoginResponseData = typeof loginResponseData.infer;
+
+/**
+ * Login response type.
+ * Wrapper containing success status and login response data.
+ */
 export type LoginResponse = typeof loginResponse.infer;
 
 // Current user types
+
+/**
+ * Current user response data type.
+ * Contains user details, auth method, memberships, roles, and permissions.
+ */
 export type CurrentUserResponseData = typeof currentUserResponseData.infer;
+
+/**
+ * Current user response type.
+ * Wrapper containing success status and current user data.
+ */
 export type CurrentUserResponse = typeof currentUserResponse.infer;
 
 // Token types
+
+/**
+ * Refresh token request type.
+ * Contains the refresh token for obtaining new access tokens.
+ */
 export type RefreshTokenRequest = typeof refreshTokenRequest.infer;
+
+/**
+ * Token info type for client storage.
+ * Contains access token, optional refresh token, expiry, and CSRF token.
+ */
 export type TokenInfo = typeof tokenInfo.infer;
+
+/**
+ * JWT payload type.
+ * Contains subject (user ID), tenant ID, session ID, roles, permissions, and timing claims.
+ */
 export type JwtPayload = typeof jwtPayload.infer;
 
 // RBAC types
+
+/**
+ * Permission entity type.
+ * Defines an action that can be performed on a resource within a scope.
+ */
 export type Permission = typeof permission.infer;
+
+/**
+ * Role entity type.
+ * Groups permissions together for assignment to users within a tenant.
+ */
 export type Role = typeof role.infer;
+
+/**
+ * Permission check request type.
+ * Used to verify if a user has permission for a specific resource/action.
+ */
 export type PermissionCheck = typeof permissionCheck.infer;
 
 // Session management types
+
+/**
+ * Logout request type.
+ * Contains refresh token and flag for logging out all devices.
+ */
 export type LogoutRequest = typeof logoutRequest.infer;
+
+/**
+ * Revoke session request type.
+ * Contains optional reason for session revocation.
+ */
 export type RevokeSessionRequest = typeof revokeSessionRequest.infer;
+
+/**
+ * Revoke all sessions request type.
+ * Contains reason and option to exclude the current session.
+ */
 export type RevokeAllSessionsRequest = typeof revokeAllSessionsRequest.infer;
+
+/**
+ * Revoke all sessions response type.
+ * Contains success status, message, and count of revoked sessions.
+ */
 export type RevokeAllSessionsResponse = typeof revokeAllSessionsResponse.infer;
 
 // Email verification types
+
+/**
+ * Send verification email request type.
+ * Contains the email address to send verification to.
+ */
 export type SendVerificationEmailRequest = typeof sendVerificationEmailRequest.infer;
+
+/**
+ * Verify email request type.
+ * Contains the verification token from the email link.
+ */
 export type VerifyEmailRequest = typeof verifyEmailRequest.infer;
+
+/**
+ * Check verification status request type.
+ * Contains email address to check verification status for.
+ */
 export type CheckVerificationStatusRequest = typeof checkVerificationStatusRequest.infer;
+
+/**
+ * Check verification status response type.
+ * Contains verification status and optional timing information.
+ */
 export type CheckVerificationStatusResponse = typeof checkVerificationStatusResponse.infer;
 
 // CSRF types
+
+/**
+ * CSRF token request type.
+ * Contains the CSRF token for validation.
+ */
 export type CSRFTokenRequest = typeof csrfTokenRequest.infer;
 
 // Config types
+
+/**
+ * Session configuration type.
+ * Controls token expiry, sliding window, max sessions, and invalidation rules.
+ */
 export type SessionConfig = typeof sessionConfig.infer;
+
+/**
+ * JWT configuration type.
+ * Controls algorithm, issuer, and audience for JWT tokens.
+ */
 export type JwtConfig = typeof jwtConfig.infer;
+
+/**
+ * Cookie configuration type.
+ * Controls cookie naming, domain, path, and security settings.
+ */
 export type CookieConfig = typeof cookieConfig.infer;
+
+/**
+ * CSRF configuration type.
+ * Controls CSRF protection settings including header and cookie names.
+ */
 export type CsrfConfig = typeof csrfConfig.infer;
+
+/**
+ * Rate limit configuration type.
+ * Controls login attempt limits and window size.
+ */
 export type RateLimitConfig = typeof rateLimitConfig.infer;
+
+/**
+ * Lockout configuration type.
+ * Controls account lockout after failed attempts.
+ */
 export type LockoutConfig = typeof lockoutConfig.infer;
+
+/**
+ * Security configuration type.
+ * Groups rate limit, lockout, and CSRF settings.
+ */
 export type SecurityConfig = typeof securityConfig.infer;
+
+/**
+ * Tenant configuration type.
+ * Controls multi-tenancy strategy and resolution method.
+ */
 export type TenantConfig = typeof tenantConfig.infer;
+
+/**
+ * OAuth provider configuration type.
+ * Contains client credentials and callback URL for an OAuth provider.
+ */
 export type OAuthProviderConfig = typeof oauthProviderConfig.infer;
+
+/**
+ * OTP email configuration type.
+ * Controls email OTP settings including expiry, length, and rate limits.
+ */
 export type OtpEmailConfig = typeof otpEmailConfig.infer;
+
+/**
+ * OTP SMS configuration type.
+ * Controls SMS OTP settings including expiry, length, and rate limits.
+ */
 export type OtpSmsConfig = typeof otpSmsConfig.infer;
+
+/**
+ * OTP configuration type.
+ * Groups email and SMS OTP settings.
+ */
 export type OtpConfig = typeof otpConfig.infer;
+
+/**
+ * Magic link configuration type.
+ * Controls magic link expiry and send function.
+ */
 export type MagicLinkConfig = typeof magicLinkConfig.infer;
+
+/**
+ * TOTP configuration type.
+ * Controls time-based OTP settings for 2FA including issuer and backup codes.
+ */
 export type TotpConfig = typeof totpConfig.infer;
+
+/**
+ * WebAuthn configuration type.
+ * Controls WebAuthn/FIDO2 settings including relying party info.
+ */
 export type WebAuthnConfig = typeof webauthnConfig.infer;
+
+/**
+ * Password configuration type.
+ * Controls password requirements including length and character requirements.
+ */
 export type PasswordConfig = typeof passwordConfig.infer;
+
+/**
+ * OAuth providers configuration type.
+ * Maps OAuth provider names to their configurations.
+ */
 export type OAuthProvidersConfig = typeof oauthProvidersConfig.infer;
+
+/**
+ * Auth providers configuration type.
+ * Groups all authentication provider settings.
+ */
 export type ProvidersConfig = typeof providersConfig.infer;
+
+/**
+ * Auth storage configuration type.
+ * Controls session/token storage backend selection.
+ */
 export type StorageConfig = typeof storageConfig.infer;
+
+/**
+ * Main Pars auth configuration type.
+ * Complete configuration object for the Pars authentication system.
+ */
 export type ParsAuthConfig = typeof parsAuthConfig.infer;

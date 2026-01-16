@@ -16,6 +16,9 @@ import { createEvent, type CreateEventOptions } from "./format.js";
 // EVENT EMITTER
 // ============================================================================
 
+/**
+ * Options for creating an event emitter.
+ */
 export interface EventEmitterOptions {
   /** Service name (source) */
   service: string;
@@ -189,7 +192,19 @@ export class ScopedEmitter {
 }
 
 /**
- * Create an event emitter
+ * Create an event emitter for publishing service events.
+ *
+ * @param options - Emitter configuration options
+ * @returns A new event emitter instance
+ *
+ * @example
+ * ```typescript
+ * const emitter = createEventEmitter({
+ *   service: 'payments',
+ *   transport: memoryTransport,
+ * });
+ * await emitter.emit('subscription.created', { customerId: '123' });
+ * ```
  */
 export function createEventEmitter(options: EventEmitterOptions): EventEmitter {
   return new EventEmitter(options);

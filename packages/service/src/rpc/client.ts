@@ -24,6 +24,9 @@ import {
 // RPC CLIENT
 // ============================================================================
 
+/**
+ * Options for creating an RPC client.
+ */
 export interface RpcClientOptions {
   /** Service name */
   service: string;
@@ -220,7 +223,8 @@ export class RpcClient {
 }
 
 /**
- * Call options
+ * Options for individual RPC calls.
+ * Allows overriding default client settings per-call.
  */
 export interface CallOptions {
   /** Timeout in ms */
@@ -241,7 +245,20 @@ export interface CallOptions {
 }
 
 /**
- * Create an RPC client
+ * Create an RPC client for making service calls.
+ *
+ * @param options - Client configuration options
+ * @returns A new RPC client instance
+ *
+ * @example
+ * ```typescript
+ * const client = createRpcClient({
+ *   service: 'payments',
+ *   transport: httpTransport,
+ *   config: { resilience: { timeout: 5000 } },
+ * });
+ * const result = await client.query('getSubscription', { id: '123' });
+ * ```
  */
 export function createRpcClient(options: RpcClientOptions): RpcClient {
   return new RpcClient(options);

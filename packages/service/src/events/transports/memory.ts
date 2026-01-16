@@ -18,6 +18,9 @@ import { EventHandlerRegistry, type EventHandlerRegistryOptions } from "../handl
 // MEMORY EVENT TRANSPORT
 // ============================================================================
 
+/**
+ * Options for creating a memory event transport.
+ */
 export interface MemoryEventTransportOptions {
   /** Logger */
   logger?: Logger;
@@ -142,7 +145,20 @@ export class MemoryEventTransport implements EventTransport {
 }
 
 /**
- * Create a memory event transport
+ * Create a memory event transport for in-process event handling.
+ * Suitable for testing and embedded mode.
+ *
+ * @param options - Transport configuration options
+ * @returns A new memory event transport instance
+ *
+ * @example
+ * ```typescript
+ * const transport = createMemoryEventTransport({ sync: true });
+ * transport.subscribe('user.created', async (event) => {
+ *   console.log('User created:', event.data);
+ * });
+ * await transport.emit({ type: 'user.created', data: { id: '123' } });
+ * ```
  */
 export function createMemoryEventTransport(
   options?: MemoryEventTransportOptions
@@ -248,7 +264,17 @@ export class GlobalEventBus {
 }
 
 /**
- * Get the global event bus
+ * Get the global event bus singleton.
+ * Provides a shared event bus for communication between embedded services.
+ *
+ * @returns The global event bus instance
+ *
+ * @example
+ * ```typescript
+ * const bus = getGlobalEventBus();
+ * bus.register('payments', paymentsTransport);
+ * await bus.broadcast(event, 'payments'); // Exclude payments
+ * ```
  */
 export function getGlobalEventBus(): GlobalEventBus {
   return GlobalEventBus.getInstance();

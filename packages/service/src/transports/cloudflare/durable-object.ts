@@ -51,6 +51,9 @@ export interface DurableObjectStub {
 // DURABLE OBJECT TRANSPORT
 // ============================================================================
 
+/**
+ * Options for creating a Durable Object transport.
+ */
 export interface DurableObjectTransportOptions {
   /** Durable Object namespace */
   namespace: DurableObjectNamespace;
@@ -120,7 +123,18 @@ export class DurableObjectTransport implements RpcTransport {
 }
 
 /**
- * Create a Durable Object transport
+ * Create a Durable Object transport for stateful RPC.
+ *
+ * @param options - Transport configuration options
+ * @returns A new Durable Object transport instance
+ *
+ * @example
+ * ```typescript
+ * const transport = createDurableObjectTransport({
+ *   namespace: env.PAYMENTS_DO,
+ *   objectId: (req) => req.metadata?.tenantId ?? 'default',
+ * });
+ * ```
  */
 export function createDurableObjectTransport(
   options: DurableObjectTransportOptions
@@ -132,6 +146,9 @@ export function createDurableObjectTransport(
 // DURABLE OBJECT EVENT TRANSPORT
 // ============================================================================
 
+/**
+ * Options for creating a Durable Object event transport.
+ */
 export interface DurableObjectEventTransportOptions {
   /** Durable Object namespace */
   namespace: DurableObjectNamespace;

@@ -266,26 +266,140 @@ export const paymentsConfig = type({
 // Type Exports
 // ============================================================================
 
+/**
+ * ISO 4217 currency code type.
+ * Represents a 3-letter currency code (e.g., "USD", "EUR", "GBP").
+ */
 export type CurrencyCode = typeof currencyCode.infer;
+
+/**
+ * Money type with amount and currency.
+ * Represents a monetary value with its currency code.
+ */
 export type Money = typeof money.infer;
+
+/**
+ * Payment customer type.
+ * Represents a customer in the payment system with email, name, and metadata.
+ */
 export type PaymentCustomer = typeof paymentCustomer.infer;
+
+/**
+ * Create customer request type.
+ * Contains email, optional name, phone, and metadata for creating customers.
+ */
 export type CreateCustomerRequest = typeof createCustomerRequest.infer;
+
+/**
+ * Card details type.
+ * Contains card brand, last 4 digits, expiration, and optional fingerprint.
+ */
 export type CardDetails = typeof cardDetails.infer;
+
+/**
+ * Payment method type.
+ * Represents a stored payment method (card, bank account, etc.) for a customer.
+ */
 export type PaymentMethod = typeof paymentMethod.infer;
+
+/**
+ * Payment intent status type.
+ * Represents payment lifecycle: 'created' | 'processing' | 'requires_action' | 'succeeded' | 'failed' | 'canceled'.
+ */
 export type PaymentIntentStatus = typeof paymentIntentStatus.infer;
+
+/**
+ * Payment intent type.
+ * Represents a payment attempt with amount, currency, status, and customer info.
+ */
 export type PaymentIntent = typeof paymentIntent.infer;
+
+/**
+ * Create payment intent request type.
+ * Contains customer ID, amount, currency, and optional payment method.
+ */
 export type CreatePaymentIntentRequest = typeof createPaymentIntentRequest.infer;
+
+/**
+ * Subscription status type.
+ * Represents subscription states: 'active' | 'past_due' | 'canceled' | 'incomplete' | 'trialing' | 'paused'.
+ */
 export type SubscriptionStatus = typeof subscriptionStatus.infer;
+
+/**
+ * Price interval type.
+ * Represents billing frequency: 'day' | 'week' | 'month' | 'year'.
+ */
 export type PriceInterval = typeof priceInterval.infer;
+
+/**
+ * Price type.
+ * Represents a recurring price with amount, currency, interval, and trial settings.
+ */
 export type Price = typeof price.infer;
+
+/**
+ * Subscription type.
+ * Represents a recurring subscription with status, billing period, and trial info.
+ */
 export type Subscription = typeof subscription.infer;
+
+/**
+ * Create subscription request type.
+ * Contains customer ID, price ID, optional payment method, and trial days.
+ */
 export type CreateSubscriptionRequest = typeof createSubscriptionRequest.infer;
+
+/**
+ * Refund status type.
+ * Represents refund states: 'pending' | 'succeeded' | 'failed' | 'canceled'.
+ */
 export type RefundStatus = typeof refundStatus.infer;
+
+/**
+ * Refund type.
+ * Represents a refund for a payment with amount, status, and reason.
+ */
 export type Refund = typeof refund.infer;
+
+/**
+ * Create refund request type.
+ * Contains payment intent ID, optional amount for partial refunds, and reason.
+ */
 export type CreateRefundRequest = typeof createRefundRequest.infer;
+
+/**
+ * Webhook event type.
+ * Represents payment webhook event types like payment.succeeded, subscription.created, etc.
+ */
 export type WebhookEventType = typeof webhookEventType.infer;
+
+/**
+ * Webhook event type.
+ * Represents a payment provider webhook event with type, data, and timestamp.
+ */
 export type WebhookEvent = typeof webhookEvent.infer;
+
+/**
+ * Stripe configuration type.
+ * Contains Stripe API keys and webhook secret.
+ */
 export type StripeConfig = typeof stripeConfig.infer;
+
+/**
+ * Paddle configuration type.
+ * Contains Paddle vendor credentials and webhook settings.
+ */
 export type PaddleConfig = typeof paddleConfig.infer;
+
+/**
+ * iyzico configuration type.
+ * Contains iyzico API credentials and base URL.
+ */
 export type IyzicoConfig = typeof iyzicoConfig.infer;
+
+/**
+ * Payments configuration type.
+ * Contains provider selection and provider-specific configuration.
+ */
 export type PaymentsConfig = typeof paymentsConfig.infer;

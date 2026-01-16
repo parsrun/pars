@@ -153,16 +153,80 @@ export const requestContext = type({
 // Type Exports
 // ============================================================================
 
+/**
+ * UUID path parameter type.
+ * Contains an 'id' field for extracting UUID parameters from URL paths.
+ */
 export type UuidParam = typeof uuidParam.infer;
+
+/**
+ * Pagination query type for URL query parameters.
+ * Contains page, limit, orderBy, and orderDirection as strings for parsing.
+ */
 export type PaginationQuery = typeof paginationQuery.infer;
+
+/**
+ * Cursor pagination query type for URL query parameters.
+ * Contains cursor, limit, and direction as strings for parsing.
+ */
 export type CursorPaginationQuery = typeof cursorPaginationQuery.infer;
+
+/**
+ * Search query type for URL query parameters.
+ * Contains q, search, and filter fields for search endpoints.
+ */
 export type SearchQuery = typeof searchQuery.infer;
+
+/**
+ * Date range query type for URL query parameters.
+ * Contains startDate and endDate as ISO 8601 strings.
+ */
 export type DateRangeQuery = typeof dateRangeQuery.infer;
+
+/**
+ * Health check response type.
+ * Contains overall status, timestamp, version, uptime, and individual check results.
+ */
 export type HealthResponse = typeof healthResponse.infer;
+
+/**
+ * API info response type.
+ * Contains API name, version, description, environment, and documentation URL.
+ */
 export type ApiInfoResponse = typeof apiInfoResponse.infer;
+
+/**
+ * CORS configuration type.
+ * Contains origin, methods, headers, credentials, and max age settings.
+ */
 export type CorsConfig = typeof corsConfig.infer;
+
+/**
+ * Server rate limit configuration type.
+ * Contains window size, max requests, key generator, and skip function.
+ */
 export type ServerRateLimitConfig = typeof serverRateLimitConfig.infer;
+
+/**
+ * Logger configuration type.
+ * Contains log level, format, fields to redact, and timestamp settings.
+ */
 export type LoggerConfig = typeof loggerConfig.infer;
+
+/**
+ * Server configuration type.
+ * Contains port, host, base path, CORS, rate limiting, and logging settings.
+ */
 export type ServerConfig = typeof serverConfig.infer;
+
+/**
+ * Auth context type (available after auth middleware).
+ * Contains user ID, tenant ID, session ID, roles, and permissions.
+ */
 export type AuthContext = typeof authContext.infer;
+
+/**
+ * Request context type.
+ * Contains request ID, start time, client IP, user agent, and auth context.
+ */
 export type RequestContext = typeof requestContext.infer;

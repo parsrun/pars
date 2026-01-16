@@ -1,7 +1,24 @@
 /**
  * @parsrun/core - Axiom Transport
- * Log ingestion transport for Axiom (axiom.co)
- * Uses native fetch - works on all runtimes (Node, Deno, Bun, Workers)
+ *
+ * Log ingestion transport for Axiom (axiom.co).
+ * Uses native fetch - works on all runtimes (Node, Deno, Bun, Workers).
+ *
+ * @example
+ * ```typescript
+ * import { createLogger, AxiomTransport } from '@parsrun/core';
+ *
+ * const axiom = new AxiomTransport({
+ *   token: process.env.AXIOM_TOKEN!,
+ *   dataset: 'my-app-logs',
+ *   batchSize: 100,      // Send every 100 logs
+ *   flushInterval: 5000, // Or every 5 seconds
+ * });
+ *
+ * const logger = createLogger({
+ *   transports: [axiom]
+ * });
+ * ```
  */
 
 import type { LogEntry } from "../logger.js";
@@ -151,7 +168,18 @@ export class AxiomTransport implements LogTransport {
 }
 
 /**
- * Create Axiom transport
+ * Create an Axiom transport instance.
+ *
+ * @param options - Axiom transport configuration
+ * @returns A new AxiomTransport instance
+ *
+ * @example
+ * ```typescript
+ * const axiom = createAxiomTransport({
+ *   token: 'xaat-xxx',
+ *   dataset: 'logs'
+ * });
+ * ```
  */
 export function createAxiomTransport(
   options: AxiomTransportOptions

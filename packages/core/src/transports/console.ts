@@ -1,6 +1,18 @@
 /**
  * @parsrun/core - Console Transport
- * Default transport that outputs to console
+ *
+ * Default log transport that outputs to the console.
+ * Supports pretty printing with colors for development and JSON output for production.
+ *
+ * @example
+ * ```typescript
+ * import { ConsoleTransport } from '@parsrun/core';
+ *
+ * const transport = new ConsoleTransport({
+ *   pretty: true,  // Enable colored, human-readable output
+ *   colors: true   // Enable ANSI colors
+ * });
+ * ```
  */
 
 import { runtime } from "../runtime.js";

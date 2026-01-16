@@ -58,6 +58,9 @@ export type RpcHandlers = {
 // RPC SERVER
 // ============================================================================
 
+/**
+ * Options for creating an RPC server.
+ */
 export interface RpcServerOptions {
   /** Service definition */
   definition: ServiceDefinition;
@@ -72,7 +75,13 @@ export interface RpcServerOptions {
 }
 
 /**
- * RPC middleware function
+ * RPC middleware function for request processing.
+ * Middleware can intercept, modify, or handle requests before/after handlers.
+ *
+ * @param request - The incoming RPC request
+ * @param context - Handler context with logger and metadata
+ * @param next - Function to call the next middleware or handler
+ * @returns Promise resolving to the handler result
  */
 export type RpcMiddleware = (
   request: RpcRequest,
@@ -260,7 +269,25 @@ export class RpcServer {
 }
 
 /**
- * Create an RPC server
+ * Create an RPC server for handling incoming requests.
+ *
+ * @param options - Server configuration options
+ * @returns A new RPC server instance
+ *
+ * @example
+ * ```typescript
+ * const server = createRpcServer({
+ *   definition: paymentsService,
+ *   handlers: {
+ *     queries: {
+ *       getSubscription: async (input, ctx) => {
+ *         return { status: 'active', plan: 'pro' };
+ *       },
+ *     },
+ *   },
+ *   middleware: [loggingMiddleware()],
+ * });
+ * ```
  */
 export function createRpcServer(options: RpcServerOptions): RpcServer {
   return new RpcServer(options);
@@ -271,7 +298,10 @@ export function createRpcServer(options: RpcServerOptions): RpcServer {
 // ============================================================================
 
 /**
- * Logging middleware
+ * Create logging middleware for RPC requests.
+ * Logs request start and completion with input keys.
+ *
+ * @returns RPC middleware that logs requests
  */
 export function loggingMiddleware(): RpcMiddleware {
   return async (request, context, next) => {
@@ -288,7 +318,18 @@ export function loggingMiddleware(): RpcMiddleware {
 }
 
 /**
- * Validation middleware (placeholder - integrate with ArkType)
+ * Create validation middleware for RPC request inputs.
+ * Applies validators to request inputs by method name.
+ *
+ * @param validators - Map of method names to validation functions
+ * @returns RPC middleware that validates inputs
+ *
+ * @example
+ * ```typescript
+ * const middleware = validationMiddleware({
+ *   createUser: (input) => validateUserInput(input),
+ * });
+ * ```
  */
 export function validationMiddleware(
   validators: Record<string, (input: unknown) => unknown>
@@ -303,7 +344,10 @@ export function validationMiddleware(
 }
 
 /**
- * Tenant context middleware
+ * Create tenant context middleware.
+ * Extracts tenant ID from request metadata and adds it to the logger context.
+ *
+ * @returns RPC middleware that enriches logger with tenant context
  */
 export function tenantMiddleware(): RpcMiddleware {
   return async (_request, context, next) => {

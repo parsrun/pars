@@ -143,15 +143,74 @@ export const emailConfig = type({
 // Type Exports
 // ============================================================================
 
+/**
+ * Email address type with optional display name.
+ * Contains email and optional name for formatted addresses like "John Doe <john@example.com>".
+ */
 export type EmailAddress = typeof emailAddress.infer;
+
+/**
+ * Email recipient type.
+ * Accepts either a simple email string or an EmailAddress object.
+ */
 export type EmailRecipient = typeof emailRecipient.infer;
+
+/**
+ * Email attachment type.
+ * Contains filename, content, encoding, and disposition for email attachments.
+ */
 export type EmailAttachment = typeof emailAttachment.infer;
+
+/**
+ * Send email options type.
+ * Contains recipients, subject, body content (text/html), attachments, and metadata.
+ */
 export type SendEmailOptions = typeof sendEmailOptions.infer;
+
+/**
+ * Send template email options type.
+ * Contains recipients, template name, template data, and attachments.
+ */
 export type SendTemplateEmailOptions = typeof sendTemplateEmailOptions.infer;
+
+/**
+ * Email send result type.
+ * Contains success status, message ID, and lists of accepted/rejected/pending recipients.
+ */
 export type EmailSendResult = typeof emailSendResult.infer;
+
+/**
+ * SMTP configuration type.
+ * Contains host, port, authentication, and TLS settings for SMTP servers.
+ */
 export type SmtpConfig = typeof smtpConfig.infer;
+
+/**
+ * Resend configuration type.
+ * Contains API key and optional domain for the Resend email service.
+ */
 export type ResendConfig = typeof resendConfig.infer;
+
+/**
+ * SendGrid configuration type.
+ * Contains API key for the SendGrid email service.
+ */
 export type SendgridConfig = typeof sendgridConfig.infer;
+
+/**
+ * AWS SES configuration type.
+ * Contains region and optional credentials for Amazon Simple Email Service.
+ */
 export type SesConfig = typeof sesConfig.infer;
+
+/**
+ * Postmark configuration type.
+ * Contains server token for the Postmark email service.
+ */
 export type PostmarkConfig = typeof postmarkConfig.infer;
+
+/**
+ * Email configuration type.
+ * Contains provider selection and provider-specific configuration.
+ */
 export type EmailConfig = typeof emailConfig.infer;

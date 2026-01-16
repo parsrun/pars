@@ -17,6 +17,9 @@ import { generateSpanId, createTraceContext } from "./context.js";
 // SPAN CREATION
 // ============================================================================
 
+/**
+ * Options for creating a span.
+ */
 export interface SpanOptions {
   /** Span name */
   name: string;
@@ -31,7 +34,10 @@ export interface SpanOptions {
 }
 
 /**
- * Create a new span
+ * Create a new span for tracing an operation.
+ *
+ * @param options - Span configuration options
+ * @returns A new span instance
  */
 export function createSpan(options: SpanOptions): Span {
   let traceContext: TraceContext;
@@ -180,7 +186,10 @@ export class SpanManager {
 // ============================================================================
 
 /**
- * Calculate span duration in milliseconds
+ * Calculate span duration in milliseconds.
+ *
+ * @param span - The span to measure
+ * @returns Duration in milliseconds, or undefined if not ended
  */
 export function getSpanDuration(span: Span): number | undefined {
   if (!span.endTime) return undefined;
@@ -188,14 +197,20 @@ export function getSpanDuration(span: Span): number | undefined {
 }
 
 /**
- * Check if span is completed
+ * Check if a span is completed (has an end time).
+ *
+ * @param span - The span to check
+ * @returns True if the span has been ended
  */
 export function isSpanCompleted(span: Span): boolean {
   return span.endTime !== undefined;
 }
 
 /**
- * Get span as simplified object (for logging)
+ * Convert a span to a simplified object for logging.
+ *
+ * @param span - The span to convert
+ * @returns A plain object representation of the span
  */
 export function spanToLogObject(span: Span): Record<string, unknown> {
   return {

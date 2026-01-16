@@ -211,7 +211,17 @@ export async function sha256(input: string): Promise<string> {
 }
 
 /**
- * Hash a string using SHA-256 and return as ArrayBuffer
+ * Hash a string using SHA-256 and return as ArrayBuffer.
+ * Useful when you need the raw bytes for further cryptographic operations.
+ *
+ * @param input - The string to hash
+ * @returns Promise resolving to the raw hash bytes
+ *
+ * @example
+ * ```typescript
+ * const hashBytes = await sha256Bytes('data');
+ * const key = await crypto.subtle.importKey('raw', hashBytes, 'AES-GCM', false, ['encrypt']);
+ * ```
  */
 export async function sha256Bytes(input: string): Promise<ArrayBuffer> {
   const encoder = new TextEncoder();
@@ -328,7 +338,17 @@ export async function retry<T>(
 }
 
 /**
- * Omit keys from an object
+ * Create a new object with specified keys omitted.
+ *
+ * @param obj - The source object
+ * @param keys - Array of keys to omit
+ * @returns A new object without the specified keys
+ *
+ * @example
+ * ```typescript
+ * const user = { id: 1, name: 'John', password: 'secret' };
+ * const safe = omit(user, ['password']); // { id: 1, name: 'John' }
+ * ```
  */
 export function omit<T extends object, K extends keyof T>(
   obj: T,
@@ -342,7 +362,17 @@ export function omit<T extends object, K extends keyof T>(
 }
 
 /**
- * Pick keys from an object
+ * Create a new object with only the specified keys.
+ *
+ * @param obj - The source object
+ * @param keys - Array of keys to include
+ * @returns A new object with only the specified keys
+ *
+ * @example
+ * ```typescript
+ * const user = { id: 1, name: 'John', email: 'john@example.com' };
+ * const subset = pick(user, ['id', 'name']); // { id: 1, name: 'John' }
+ * ```
  */
 export function pick<T extends object, K extends keyof T>(
   obj: T,
@@ -398,7 +428,18 @@ export function deepMerge<T extends object>(target: T, source: Partial<T>): T {
 }
 
 /**
- * Deep clone an object
+ * Create a deep clone of an object.
+ * Handles nested objects, arrays, and Date instances.
+ *
+ * @param obj - The object to clone
+ * @returns A deep copy of the object
+ *
+ * @example
+ * ```typescript
+ * const original = { nested: { value: 1 }, date: new Date() };
+ * const cloned = deepClone(original);
+ * cloned.nested.value = 2; // original.nested.value is still 1
+ * ```
  */
 export function deepClone<T>(obj: T): T {
   if (obj === null || typeof obj !== "object") {
@@ -418,7 +459,20 @@ export function deepClone<T>(obj: T): T {
 }
 
 /**
- * Check if a value is a plain object
+ * Check if a value is a plain object (not an array, Date, etc.).
+ * Useful for type guards and deep merge operations.
+ *
+ * @param value - The value to check
+ * @returns True if the value is a plain object
+ *
+ * @example
+ * ```typescript
+ * isPlainObject({});           // true
+ * isPlainObject({ a: 1 });     // true
+ * isPlainObject([]);           // false
+ * isPlainObject(new Date());   // false
+ * isPlainObject(null);         // false
+ * ```
  */
 export function isPlainObject(value: unknown): value is Record<string, unknown> {
   return (
@@ -429,14 +483,41 @@ export function isPlainObject(value: unknown): value is Record<string, unknown> 
 }
 
 /**
- * Check if value is null or undefined
+ * Check if a value is null or undefined.
+ * Provides a type guard for narrowing types.
+ *
+ * @param value - The value to check
+ * @returns True if the value is null or undefined
+ *
+ * @example
+ * ```typescript
+ * if (!isNil(user)) {
+ *   console.log(user.name); // TypeScript knows user is not null/undefined
+ * }
+ * ```
  */
 export function isNil(value: unknown): value is null | undefined {
   return value === null || value === undefined;
 }
 
 /**
- * Check if value is empty (null, undefined, empty string, empty array, empty object)
+ * Check if a value is empty.
+ * Considers null, undefined, empty strings (including whitespace-only),
+ * empty arrays, and empty objects as empty.
+ *
+ * @param value - The value to check
+ * @returns True if the value is considered empty
+ *
+ * @example
+ * ```typescript
+ * isEmpty(null);       // true
+ * isEmpty('');         // true
+ * isEmpty('  ');       // true
+ * isEmpty([]);         // true
+ * isEmpty({});         // true
+ * isEmpty('hello');    // false
+ * isEmpty([1]);        // false
+ * ```
  */
 export function isEmpty(value: unknown): boolean {
   if (isNil(value)) return true;
@@ -447,14 +528,35 @@ export function isEmpty(value: unknown): boolean {
 }
 
 /**
- * Normalize email address
+ * Normalize an email address by converting to lowercase and trimming whitespace.
+ * Use this before storing or comparing email addresses.
+ *
+ * @param email - The email address to normalize
+ * @returns The normalized email address
+ *
+ * @example
+ * ```typescript
+ * normalizeEmail('  John.Doe@Example.COM  '); // 'john.doe@example.com'
+ * ```
  */
 export function normalizeEmail(email: string): string {
   return email.toLowerCase().trim();
 }
 
 /**
- * Validate email format
+ * Validate that a string is a valid email format.
+ * Uses a simple regex that covers most common email formats.
+ *
+ * @param email - The string to validate
+ * @returns True if the string is a valid email format
+ *
+ * @example
+ * ```typescript
+ * isValidEmail('user@example.com');     // true
+ * isValidEmail('user@sub.example.com'); // true
+ * isValidEmail('invalid');              // false
+ * isValidEmail('user@');                // false
+ * ```
  */
 export function isValidEmail(email: string): boolean {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -462,7 +564,19 @@ export function isValidEmail(email: string): boolean {
 }
 
 /**
- * Generate a URL-friendly slug from a string
+ * Generate a URL-friendly slug from a string.
+ * Converts to lowercase, replaces non-alphanumeric characters with hyphens,
+ * and removes leading/trailing hyphens.
+ *
+ * @param str - The string to convert
+ * @returns A URL-friendly slug
+ *
+ * @example
+ * ```typescript
+ * slugify('Hello World!');           // 'hello-world'
+ * slugify('My Blog Post Title');     // 'my-blog-post-title'
+ * slugify('  Multiple   Spaces  ');  // 'multiple-spaces'
+ * ```
  */
 export function slugify(str: string): string {
   return str
@@ -473,7 +587,19 @@ export function slugify(str: string): string {
 }
 
 /**
- * Truncate string to a maximum length
+ * Truncate a string to a maximum length, adding a suffix if truncated.
+ *
+ * @param str - The string to truncate
+ * @param maxLength - Maximum length including the suffix
+ * @param suffix - String to append when truncated (default: "...")
+ * @returns The truncated string or original if within maxLength
+ *
+ * @example
+ * ```typescript
+ * truncate('Hello World', 8);           // 'Hello...'
+ * truncate('Hello', 10);                // 'Hello'
+ * truncate('Long text here', 10, '>>'); // 'Long tex>>'
+ * ```
  */
 export function truncate(str: string, maxLength: number, suffix: string = "..."): string {
   if (str.length <= maxLength) return str;
@@ -481,7 +607,22 @@ export function truncate(str: string, maxLength: number, suffix: string = "...")
 }
 
 /**
- * Debounce a function
+ * Create a debounced version of a function.
+ * The function will only be called after it stops being called for the specified wait period.
+ *
+ * @param fn - The function to debounce
+ * @param wait - Milliseconds to wait before calling the function
+ * @returns A debounced version of the function
+ *
+ * @example
+ * ```typescript
+ * const debouncedSearch = debounce((query: string) => {
+ *   // API call
+ * }, 300);
+ *
+ * // Rapid calls will only trigger one API call after 300ms of inactivity
+ * input.addEventListener('input', (e) => debouncedSearch(e.target.value));
+ * ```
  */
 export function debounce<T extends (...args: unknown[]) => unknown>(
   fn: T,
@@ -501,7 +642,22 @@ export function debounce<T extends (...args: unknown[]) => unknown>(
 }
 
 /**
- * Throttle a function
+ * Create a throttled version of a function.
+ * The function will be called at most once per wait period.
+ *
+ * @param fn - The function to throttle
+ * @param wait - Minimum milliseconds between function calls
+ * @returns A throttled version of the function
+ *
+ * @example
+ * ```typescript
+ * const throttledScroll = throttle(() => {
+ *   // Handle scroll event
+ * }, 100);
+ *
+ * // Called at most every 100ms during scrolling
+ * window.addEventListener('scroll', throttledScroll);
+ * ```
  */
 export function throttle<T extends (...args: unknown[]) => unknown>(
   fn: T,
@@ -519,7 +675,20 @@ export function throttle<T extends (...args: unknown[]) => unknown>(
 }
 
 /**
- * Create a deferred promise
+ * Create a deferred promise with externally accessible resolve/reject functions.
+ * Useful when you need to resolve a promise from outside its executor.
+ *
+ * @returns An object containing the promise and its resolve/reject functions
+ *
+ * @example
+ * ```typescript
+ * const { promise, resolve, reject } = createDeferred<string>();
+ *
+ * // Later, resolve from elsewhere
+ * setTimeout(() => resolve('done!'), 1000);
+ *
+ * const result = await promise; // 'done!'
+ * ```
  */
 export function createDeferred<T>(): {
   promise: Promise<T>;

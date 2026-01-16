@@ -33,7 +33,8 @@ export { ConsoleTransport, type ConsoleTransportOptions } from "./transports/con
 export type { LogTransport } from "./transports/types.js";
 
 /**
- * Log levels
+ * Log level constants mapping level names to numeric values.
+ * Lower values are more verbose; higher values are more severe.
  */
 export const LogLevel = {
   TRACE: 10,
@@ -45,33 +46,47 @@ export const LogLevel = {
   SILENT: 100,
 } as const;
 
+/** Log level name string literal type (TRACE, DEBUG, INFO, WARN, ERROR, FATAL, SILENT) */
 export type LogLevelName = keyof typeof LogLevel;
+
+/** Numeric log level value type */
 export type LogLevelValue = (typeof LogLevel)[LogLevelName];
 
 /**
- * Error info structure
+ * Structured error information included in log entries.
+ * Extracted from Error objects for serialization.
  */
 export interface ErrorInfo {
+  /** Error class name (e.g., "TypeError", "ValidationError") */
   name: string;
+  /** Error message */
   message: string;
+  /** Stack trace if available */
   stack: string | undefined;
 }
 
 /**
- * Log entry structure
+ * Structured log entry passed to transports.
+ * Contains all information about a single log event.
  */
 export interface LogEntry {
+  /** Log level name */
   level: LogLevelName;
+  /** Numeric log level value */
   levelValue: LogLevelValue;
+  /** Log message */
   message: string;
+  /** ISO 8601 timestamp */
   timestamp: string;
+  /** Additional context data */
   context: Record<string, unknown> | undefined;
+  /** Error information if an error was logged */
   error: ErrorInfo | undefined;
 }
 
 
 /**
- * Logger configuration
+ * Configuration options for creating a Logger instance.
  */
 export interface LoggerConfig {
   /** Minimum log level */
@@ -148,7 +163,15 @@ const DEFAULT_REDACT_FIELDS = [
 ];
 
 /**
- * Logger class
+ * Structured logger with support for multiple transports and redaction.
+ * Thread-safe and edge-compatible.
+ *
+ * @example
+ * ```typescript
+ * const logger = new Logger({ name: 'api', level: 'DEBUG' });
+ * logger.info('Request received', { path: '/users' });
+ * logger.error('Request failed', new Error('Not found'), { userId: '123' });
+ * ```
  */
 export class Logger {
   private level: LogLevelValue;
@@ -239,28 +262,60 @@ export class Logger {
     }
   }
 
+  /**
+   * Log a trace message (most verbose level).
+   * @param message - Log message
+   * @param context - Optional context data
+   */
   trace(message: string, context?: Record<string, unknown>): void {
     this.log("TRACE", message, context);
   }
 
+  /**
+   * Log a debug message.
+   * @param message - Log message
+   * @param context - Optional context data
+   */
   debug(message: string, context?: Record<string, unknown>): void {
     this.log("DEBUG", message, context);
   }
 
+  /**
+   * Log an informational message.
+   * @param message - Log message
+   * @param context - Optional context data
+   */
   info(message: string, context?: Record<string, unknown>): void {
     this.log("INFO", message, context);
   }
 
+  /**
+   * Log a warning message.
+   * @param message - Log message
+   * @param context - Optional context data
+   */
   warn(message: string, context?: Record<string, unknown>): void {
     this.log("WARN", message, context);
   }
 
+  /**
+   * Log an error message with optional Error object.
+   * @param message - Log message
+   * @param error - Optional Error object or context
+   * @param context - Optional additional context
+   */
   error(message: string, error?: Error | unknown, context?: Record<string, unknown>): void {
     const err = error instanceof Error ? error : undefined;
     const ctx = error instanceof Error ? context : (error as Record<string, unknown> | undefined);
     this.log("ERROR", message, ctx, err);
   }
 
+  /**
+   * Log a fatal error message (most severe level).
+   * @param message - Log message
+   * @param error - Optional Error object or context
+   * @param context - Optional additional context
+   */
   fatal(message: string, error?: Error | unknown, context?: Record<string, unknown>): void {
     const err = error instanceof Error ? error : undefined;
     const ctx = error instanceof Error ? context : (error as Record<string, unknown> | undefined);
@@ -269,19 +324,47 @@ export class Logger {
 }
 
 /**
- * Create a logger instance
+ * Create a new Logger instance with the specified configuration.
+ *
+ * @param config - Logger configuration options
+ * @returns A new Logger instance
+ *
+ * @example
+ * ```typescript
+ * const log = createLogger({
+ *   name: 'my-service',
+ *   level: 'DEBUG',
+ *   pretty: true
+ * });
+ * ```
  */
 export function createLogger(config?: Partial<LoggerConfig>): Logger {
   return new Logger(config);
 }
 
 /**
- * Default logger instance
+ * Default logger instance using default configuration.
+ * Level can be controlled via LOG_LEVEL environment variable.
  */
 export const logger = createLogger();
 
 /**
- * Utility: Log error with proper formatting
+ * Utility function to log an error with proper formatting.
+ * Handles both Error objects and unknown error types.
+ *
+ * @param log - The logger instance to use
+ * @param error - The error to log
+ * @param message - Human-readable error message
+ * @param context - Optional additional context
+ *
+ * @example
+ * ```typescript
+ * try {
+ *   await doSomething();
+ * } catch (error) {
+ *   logError(logger, error, 'Operation failed', { userId });
+ * }
+ * ```
  */
 export function logError(
   log: Logger,
@@ -297,7 +380,21 @@ export function logError(
 }
 
 /**
- * Utility: Measure execution time
+ * Measure and log the execution time of an async operation.
+ * Logs completion time on success, or error details on failure.
+ *
+ * @param log - The logger instance to use
+ * @param operation - Name of the operation being measured
+ * @param fn - Async function to execute and measure
+ * @returns The result of the function
+ *
+ * @example
+ * ```typescript
+ * const users = await measureTime(logger, 'fetchUsers', async () => {
+ *   return await db.users.findMany();
+ * });
+ * // Logs: "fetchUsers completed" { operation: 'fetchUsers', durationMs: 45 }
+ * ```
  */
 export async function measureTime<T>(
   log: Logger,
@@ -318,7 +415,24 @@ export async function measureTime<T>(
 }
 
 /**
- * Utility: Create request logger middleware context
+ * Create a child logger with request context for HTTP request logging.
+ * Automatically extracts the pathname from the URL.
+ *
+ * @param baseLogger - The parent logger instance
+ * @param request - Request information to include in all logs
+ * @returns A child Logger with request context
+ *
+ * @example
+ * ```typescript
+ * const requestLog = createRequestLogger(logger, {
+ *   requestId: 'abc-123',
+ *   method: 'GET',
+ *   url: 'https://api.example.com/users',
+ *   userId: 'user-456'
+ * });
+ * requestLog.info('Processing request');
+ * // Includes: requestId, method, path, userId in all logs
+ * ```
  */
 export function createRequestLogger(
   baseLogger: Logger,

@@ -33,7 +33,17 @@ export class EmbeddedTransport implements RpcTransport {
 }
 
 /**
- * Create an embedded transport
+ * Create an embedded transport for direct function calls.
+ * Used when the service is in the same process.
+ *
+ * @param server - The RPC server to call directly
+ * @returns A new embedded transport instance
+ *
+ * @example
+ * ```typescript
+ * const transport = createEmbeddedTransport(rpcServer);
+ * const client = createRpcClient({ service: 'payments', transport });
+ * ```
  */
 export function createEmbeddedTransport(server: RpcServer): EmbeddedTransport {
   return new EmbeddedTransport(server);
@@ -125,7 +135,17 @@ export class EmbeddedRegistry {
 }
 
 /**
- * Get the global embedded registry
+ * Get the global embedded registry singleton.
+ * Provides access to the shared registry for service discovery.
+ *
+ * @returns The global embedded registry instance
+ *
+ * @example
+ * ```typescript
+ * const registry = getEmbeddedRegistry();
+ * registry.register('payments', paymentsServer);
+ * const transport = registry.createTransport('payments');
+ * ```
  */
 export function getEmbeddedRegistry(): EmbeddedRegistry {
   return EmbeddedRegistry.getInstance();

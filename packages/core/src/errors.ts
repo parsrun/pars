@@ -86,6 +86,10 @@ export class ForbiddenError extends AuthError {
   }
 }
 
+/**
+ * Credentials (username/password, API key, etc.) are invalid (HTTP 401).
+ * Thrown during authentication when credentials don't match.
+ */
 export class InvalidCredentialsError extends AuthError {
   constructor(message: string = "Invalid credentials", details?: Record<string, unknown>) {
     super(message, "INVALID_CREDENTIALS", 401, details);
@@ -93,6 +97,10 @@ export class InvalidCredentialsError extends AuthError {
   }
 }
 
+/**
+ * User session has expired (HTTP 401).
+ * User needs to re-authenticate to continue.
+ */
 export class SessionExpiredError extends AuthError {
   constructor(message: string = "Session expired", details?: Record<string, unknown>) {
     super(message, "SESSION_EXPIRED", 401, details);
@@ -100,9 +108,14 @@ export class SessionExpiredError extends AuthError {
   }
 }
 
+/**
+ * Two-factor authentication is required to complete login (HTTP 403).
+ * Contains a challengeId that should be used to submit the 2FA code.
+ */
 export class TwoFactorRequiredError extends AuthError {
   constructor(
     message: string = "Two-factor authentication required",
+    /** Unique identifier for the 2FA challenge */
     public readonly challengeId: string,
     details?: Record<string, unknown>
   ) {
@@ -111,9 +124,14 @@ export class TwoFactorRequiredError extends AuthError {
   }
 }
 
+/**
+ * Account has been locked due to too many failed attempts or admin action (HTTP 423).
+ * May include a lockedUntil timestamp indicating when the account will be unlocked.
+ */
 export class AccountLockedError extends AuthError {
   constructor(
     message: string = "Account locked",
+    /** When the account will be automatically unlocked (if applicable) */
     public readonly lockedUntil?: Date,
     details?: Record<string, unknown>
   ) {
@@ -126,6 +144,7 @@ export class AccountLockedError extends AuthError {
 // TENANT ERRORS
 // ============================================
 
+/** Base class for tenant-related errors */
 export class TenantError extends ParsError {
   constructor(
     message: string,
@@ -138,6 +157,7 @@ export class TenantError extends ParsError {
   }
 }
 
+/** Tenant does not exist or user does not have access to it (HTTP 404) */
 export class TenantNotFoundError extends TenantError {
   constructor(message: string = "Tenant not found", details?: Record<string, unknown>) {
     super(message, "TENANT_NOT_FOUND", 404, details);
@@ -145,6 +165,7 @@ export class TenantNotFoundError extends TenantError {
   }
 }
 
+/** Tenant has been suspended and access is denied (HTTP 403) */
 export class TenantSuspendedError extends TenantError {
   constructor(message: string = "Tenant suspended", details?: Record<string, unknown>) {
     super(message, "TENANT_SUSPENDED", 403, details);
@@ -152,6 +173,7 @@ export class TenantSuspendedError extends TenantError {
   }
 }
 
+/** Base class for membership-related errors */
 export class MembershipError extends TenantError {
   constructor(
     message: string = "Membership error",
@@ -164,6 +186,7 @@ export class MembershipError extends TenantError {
   }
 }
 
+/** User is not a member of the specified tenant (HTTP 404) */
 export class MembershipNotFoundError extends MembershipError {
   constructor(message: string = "Membership not found", details?: Record<string, unknown>) {
     super(message, "MEMBERSHIP_NOT_FOUND", 404, details);
@@ -171,6 +194,7 @@ export class MembershipNotFoundError extends MembershipError {
   }
 }
 
+/** User's membership in the tenant has expired (HTTP 403) */
 export class MembershipExpiredError extends MembershipError {
   constructor(message: string = "Membership expired", details?: Record<string, unknown>) {
     super(message, "MEMBERSHIP_EXPIRED", 403, details);
@@ -248,9 +272,15 @@ export class ConflictError extends ParsError {
   }
 }
 
+/**
+ * A duplicate resource already exists (HTTP 409).
+ * Used when attempting to create a resource that violates a uniqueness constraint.
+ */
 export class DuplicateError extends ConflictError {
   constructor(
+    /** The type of resource that already exists */
     resource: string = "Resource",
+    /** The field that caused the conflict (e.g., 'email', 'slug') */
     field?: string,
     details?: Record<string, unknown>
   ) {

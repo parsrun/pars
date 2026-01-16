@@ -20,6 +20,9 @@ import { ConsoleExporter } from "./exporters.js";
 // TRACER
 // ============================================================================
 
+/**
+ * Options for creating a tracer.
+ */
 export interface TracerOptions {
   /** Service name */
   serviceName: string;
@@ -230,7 +233,21 @@ export class Tracer {
 }
 
 /**
- * Create a tracer
+ * Create a tracer for distributed tracing.
+ *
+ * @param options - Tracer configuration options
+ * @returns A new tracer instance
+ *
+ * @example
+ * ```typescript
+ * const tracer = createTracer({
+ *   serviceName: 'payments',
+ *   config: { sampler: { ratio: 0.1 } },
+ * });
+ * await tracer.trace('processPayment', async (span) => {
+ *   // Processing logic
+ * });
+ * ```
  */
 export function createTracer(options: TracerOptions): Tracer {
   return new Tracer(options);
@@ -268,7 +285,11 @@ export function resetGlobalTracer(): void {
 // ============================================================================
 
 /**
- * Create HTTP server tracing middleware
+ * Create HTTP server tracing middleware.
+ * Automatically creates spans for incoming HTTP requests.
+ *
+ * @param tracer - The tracer instance to use
+ * @returns Middleware function for HTTP frameworks
  */
 export function createTracingMiddleware(tracer: Tracer) {
   return async (
@@ -315,7 +336,11 @@ export function createTracingMiddleware(tracer: Tracer) {
 }
 
 /**
- * Create RPC tracing helpers
+ * Create RPC tracing helpers for instrumenting RPC calls.
+ * Provides methods to trace outgoing calls and incoming handlers.
+ *
+ * @param tracer - The tracer instance to use
+ * @returns Object with traceCall and traceHandler methods
  */
 export function createRpcTracing(tracer: Tracer) {
   return {

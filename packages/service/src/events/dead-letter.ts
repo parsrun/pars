@@ -11,6 +11,10 @@ import type { ParsEvent } from "../types.js";
 // DEAD LETTER QUEUE
 // ============================================================================
 
+/**
+ * Entry stored in the dead letter queue.
+ * Contains the failed event and metadata about the failure.
+ */
 export interface DeadLetterEntry {
   /** Unique ID */
   id: string;
@@ -28,6 +32,9 @@ export interface DeadLetterEntry {
   metadata?: Record<string, unknown>;
 }
 
+/**
+ * Options for creating a dead letter queue.
+ */
 export interface DeadLetterQueueOptions {
   /** Maximum entries to keep */
   maxSize?: number;
@@ -43,6 +50,9 @@ export interface DeadLetterQueueOptions {
   logger?: Logger;
 }
 
+/**
+ * Options for adding an entry to the dead letter queue.
+ */
 export interface AddEntryOptions {
   /** Original event */
   event: ParsEvent;
@@ -287,7 +297,19 @@ export class DeadLetterQueue {
 }
 
 /**
- * Create a dead letter queue
+ * Create a dead letter queue for storing failed events.
+ *
+ * @param options - DLQ configuration options
+ * @returns A new dead letter queue instance
+ *
+ * @example
+ * ```typescript
+ * const dlq = createDeadLetterQueue({
+ *   maxSize: 1000,
+ *   alertThreshold: 50,
+ *   onThreshold: (count) => alert(`DLQ has ${count} entries`),
+ * });
+ * ```
  */
 export function createDeadLetterQueue(
   options?: DeadLetterQueueOptions

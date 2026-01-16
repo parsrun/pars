@@ -148,7 +148,10 @@ function validateServiceDefinition(definition: ServiceDefinition): void {
 // ============================================================================
 
 /**
- * Get all method names from a service definition
+ * Get all method names from a service definition.
+ *
+ * @param definition - The service definition
+ * @returns Object containing arrays of query and mutation names
  */
 export function getServiceMethods(definition: ServiceDefinition): {
   queries: string[];
@@ -161,7 +164,10 @@ export function getServiceMethods(definition: ServiceDefinition): {
 }
 
 /**
- * Get all event types from a service definition
+ * Get all event types from a service definition.
+ *
+ * @param definition - The service definition
+ * @returns Object containing arrays of emitted and handled event types
  */
 export function getServiceEvents(definition: ServiceDefinition): {
   emits: string[];
@@ -174,7 +180,12 @@ export function getServiceEvents(definition: ServiceDefinition): {
 }
 
 /**
- * Check if a service version satisfies a version requirement
+ * Check if a service version satisfies a version requirement.
+ * Supports wildcards (x or *) in version requirements.
+ *
+ * @param version - The actual version to check
+ * @param requirement - The version requirement with optional wildcards
+ * @returns True if the version satisfies the requirement
  *
  * @example
  * ```typescript
@@ -205,7 +216,12 @@ export function satisfiesVersion(version: string, requirement: string): boolean 
 }
 
 /**
- * Check if a method is deprecated in the service definition
+ * Check if a method is deprecated in the service definition.
+ *
+ * @param definition - The service definition
+ * @param methodName - Name of the method to check
+ * @param type - Type of method ("query" or "mutation")
+ * @returns Object with deprecation status and optional metadata
  */
 export function isMethodDeprecated(
   definition: ServiceDefinition,
@@ -232,7 +248,14 @@ export function isMethodDeprecated(
 }
 
 /**
- * Get method timeout (use method-specific or fall back to default)
+ * Get method timeout from the service definition.
+ * Uses method-specific timeout if defined, otherwise falls back to default.
+ *
+ * @param definition - The service definition
+ * @param methodName - Name of the method
+ * @param type - Type of method ("query" or "mutation")
+ * @param defaultTimeout - Default timeout to use if not specified
+ * @returns Timeout value in milliseconds
  */
 export function getMethodTimeout(
   definition: ServiceDefinition,

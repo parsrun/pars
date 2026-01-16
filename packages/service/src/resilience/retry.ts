@@ -7,6 +7,9 @@
 // RETRY
 // ============================================================================
 
+/**
+ * Options for configuring retry behavior.
+ */
 export interface RetryOptions {
   /** Number of retry attempts (not including initial attempt) */
   attempts: number;
@@ -71,7 +74,21 @@ function sleep(ms: number): Promise<void> {
 }
 
 /**
- * Wrap a function with retry logic
+ * Wrap a function with retry logic.
+ * Returns a new function that will retry on failure.
+ *
+ * @param fn - The function to wrap
+ * @param options - Retry configuration
+ * @returns A wrapped function with retry behavior
+ *
+ * @example
+ * ```typescript
+ * const fetchWithRetry = withRetry(
+ *   () => fetch('/api/data'),
+ *   { attempts: 3, backoff: 'exponential', initialDelay: 100, maxDelay: 5000 }
+ * );
+ * const response = await fetchWithRetry();
+ * ```
  */
 export function withRetry<T>(
   fn: () => Promise<T>,
@@ -109,7 +126,11 @@ export function withRetry<T>(
 }
 
 /**
- * Execute a function with retry
+ * Execute a function with retry logic immediately.
+ *
+ * @param fn - The function to execute
+ * @param options - Retry configuration
+ * @returns Promise resolving to the function result
  */
 export async function executeWithRetry<T>(
   fn: () => Promise<T>,
@@ -119,7 +140,16 @@ export async function executeWithRetry<T>(
 }
 
 /**
- * Create a retry wrapper with preset options
+ * Create a reusable retry wrapper with preset default options.
+ *
+ * @param defaultOptions - Default retry configuration
+ * @returns A function that executes with retry using the defaults
+ *
+ * @example
+ * ```typescript
+ * const retry = createRetryWrapper({ attempts: 3, backoff: 'exponential' });
+ * const result = await retry(() => fetchData());
+ * ```
  */
 export function createRetryWrapper(
   defaultOptions: Partial<RetryOptions>

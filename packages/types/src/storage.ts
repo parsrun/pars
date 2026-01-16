@@ -131,13 +131,62 @@ export const storageProviderConfig = type({
 // Type Exports
 // ============================================================================
 
+/**
+ * File metadata type.
+ * Contains file information including name, MIME type, size, path, and upload details.
+ */
 export type FileMetadata = typeof fileMetadata.infer;
+
+/**
+ * Upload options type.
+ * Contains optional path, filename, content type, ACL, and caching settings for uploads.
+ */
 export type UploadOptions = typeof uploadOptions.infer;
+
+/**
+ * Signed URL options type.
+ * Contains expiry, HTTP method, and content type settings for generating signed URLs.
+ */
 export type SignedUrlOptions = typeof signedUrlOptions.infer;
+
+/**
+ * List files options type.
+ * Contains prefix filter, pagination limit, cursor, and delimiter for file listing.
+ */
 export type ListFilesOptions = typeof listFilesOptions.infer;
+
+/**
+ * List files result type.
+ * Contains array of file metadata, pagination cursor, and hasMore flag.
+ */
 export type ListFilesResult = typeof listFilesResult.infer;
+
+/**
+ * Local storage configuration type.
+ * Contains base path, optional base URL, and file permissions for local file storage.
+ */
 export type LocalStorageConfig = typeof localStorageConfig.infer;
+
+/**
+ * S3 storage configuration type.
+ * Contains bucket, region, endpoint, credentials, and ACL settings for Amazon S3.
+ */
 export type S3StorageConfig = typeof s3StorageConfig.infer;
+
+/**
+ * Cloudflare R2 storage configuration type.
+ * Contains account ID, bucket, credentials, and optional public URL for R2.
+ */
 export type R2StorageConfig = typeof r2StorageConfig.infer;
+
+/**
+ * Google Cloud Storage configuration type.
+ * Contains bucket, project ID, and credentials for GCS.
+ */
 export type GcsStorageConfig = typeof gcsStorageConfig.infer;
+
+/**
+ * Storage provider configuration type.
+ * Contains provider selection and provider-specific configuration.
+ */
 export type StorageProviderConfig = typeof storageProviderConfig.infer;

@@ -18,6 +18,9 @@ import { TransportError, SerializationError } from "../../rpc/errors.js";
 // SERVICE BINDING TRANSPORT
 // ============================================================================
 
+/**
+ * Options for creating a service binding transport.
+ */
 export interface ServiceBindingTransportOptions {
   /** Service name */
   serviceName: string;
@@ -152,7 +155,18 @@ export class ServiceBindingTransport implements RpcTransport {
 }
 
 /**
- * Create a service binding transport
+ * Create a service binding transport for Cloudflare Workers.
+ *
+ * @param options - Transport configuration options
+ * @returns A new service binding transport instance
+ *
+ * @example
+ * ```typescript
+ * const transport = createServiceBindingTransport({
+ *   serviceName: 'payments',
+ *   binding: env.PAYMENTS_SERVICE,
+ * });
+ * ```
  */
 export function createServiceBindingTransport(
   options: ServiceBindingTransportOptions

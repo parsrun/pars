@@ -1,17 +1,42 @@
 /**
  * @parsrun/core - Decimal Utilities
- * Precise decimal calculations for financial and quantity operations
- * Edge-compatible - no external dependencies
+ * Precise decimal calculations for financial and quantity operations.
+ * Edge-compatible - no external dependencies.
+ *
+ * @example
+ * ```typescript
+ * import { Decimal, decimal } from '@parsrun/core';
+ *
+ * // Create decimals
+ * const price = new Decimal('19.99');
+ * const quantity = decimal(3);
+ *
+ * // Arithmetic operations (chainable)
+ * const total = price.mul(quantity).round(2);
+ * console.log(total.toString()); // '59.97'
+ *
+ * // Static helpers
+ * const sum = Decimal.sum(['10.50', '20.25', '15.75']);
+ * const avg = Decimal.avg([100, 200, 300]);
+ * ```
  */
 
 /**
- * Internal precision for calculations
+ * Internal precision for calculations (number of decimal places)
  */
 const PRECISION = 20;
 
 /**
- * Decimal class for precise arithmetic
- * Uses string-based arithmetic to avoid floating point issues
+ * Decimal class for precise arithmetic operations.
+ * Uses string-based representation internally to avoid floating point issues.
+ *
+ * @example
+ * ```typescript
+ * const a = new Decimal('0.1');
+ * const b = new Decimal('0.2');
+ * const c = a.add(b);
+ * console.log(c.toString()); // '0.3' (not 0.30000000000000004)
+ * ```
  */
 export class Decimal {
   private value: string;
@@ -42,7 +67,9 @@ export class Decimal {
   }
 
   /**
-   * Add two decimals
+   * Add another value to this decimal.
+   * @param other - Value to add
+   * @returns A new Decimal with the result
    */
   add(other: number | string | Decimal): Decimal {
     const a = parseFloat(this.value);
@@ -51,7 +78,9 @@ export class Decimal {
   }
 
   /**
-   * Subtract
+   * Subtract a value from this decimal.
+   * @param other - Value to subtract
+   * @returns A new Decimal with the result
    */
   sub(other: number | string | Decimal): Decimal {
     const a = parseFloat(this.value);
@@ -60,7 +89,9 @@ export class Decimal {
   }
 
   /**
-   * Multiply
+   * Multiply this decimal by another value.
+   * @param other - Value to multiply by
+   * @returns A new Decimal with the result
    */
   mul(other: number | string | Decimal): Decimal {
     const a = parseFloat(this.value);
@@ -69,7 +100,10 @@ export class Decimal {
   }
 
   /**
-   * Divide
+   * Divide this decimal by another value.
+   * @param other - Value to divide by
+   * @returns A new Decimal with the result
+   * @throws Error if dividing by zero
    */
   div(other: number | string | Decimal): Decimal {
     const a = parseFloat(this.value);
@@ -81,7 +115,9 @@ export class Decimal {
   }
 
   /**
-   * Modulo
+   * Get the modulo (remainder) of dividing this decimal by another value.
+   * @param other - Value to divide by
+   * @returns A new Decimal with the remainder
    */
   mod(other: number | string | Decimal): Decimal {
     const a = parseFloat(this.value);
@@ -90,7 +126,9 @@ export class Decimal {
   }
 
   /**
-   * Power
+   * Raise this decimal to a power.
+   * @param exp - The exponent
+   * @returns A new Decimal with the result
    */
   pow(exp: number): Decimal {
     const a = parseFloat(this.value);
@@ -98,7 +136,9 @@ export class Decimal {
   }
 
   /**
-   * Square root
+   * Calculate the square root of this decimal.
+   * @returns A new Decimal with the square root
+   * @throws Error if the value is negative
    */
   sqrt(): Decimal {
     const a = parseFloat(this.value);
@@ -109,7 +149,8 @@ export class Decimal {
   }
 
   /**
-   * Absolute value
+   * Get the absolute value of this decimal.
+   * @returns A new Decimal with the absolute value
    */
   abs(): Decimal {
     const a = parseFloat(this.value);
@@ -117,7 +158,8 @@ export class Decimal {
   }
 
   /**
-   * Negate
+   * Negate this decimal (multiply by -1).
+   * @returns A new Decimal with the negated value
    */
   neg(): Decimal {
     const a = parseFloat(this.value);
@@ -125,7 +167,9 @@ export class Decimal {
   }
 
   /**
-   * Round to decimal places
+   * Round to the specified number of decimal places using standard rounding.
+   * @param decimals - Number of decimal places (default: 0)
+   * @returns A new Decimal with the rounded value
    */
   round(decimals: number = 0): Decimal {
     const a = parseFloat(this.value);
@@ -134,7 +178,9 @@ export class Decimal {
   }
 
   /**
-   * Floor to decimal places
+   * Round down to the specified number of decimal places.
+   * @param decimals - Number of decimal places (default: 0)
+   * @returns A new Decimal with the floored value
    */
   floor(decimals: number = 0): Decimal {
     const a = parseFloat(this.value);
@@ -143,7 +189,9 @@ export class Decimal {
   }
 
   /**
-   * Ceiling to decimal places
+   * Round up to the specified number of decimal places.
+   * @param decimals - Number of decimal places (default: 0)
+   * @returns A new Decimal with the ceiled value
    */
   ceil(decimals: number = 0): Decimal {
     const a = parseFloat(this.value);
@@ -152,7 +200,9 @@ export class Decimal {
   }
 
   /**
-   * Compare: returns -1, 0, or 1
+   * Compare this decimal to another value.
+   * @param other - Value to compare against
+   * @returns -1 if less, 0 if equal, 1 if greater
    */
   cmp(other: number | string | Decimal): -1 | 0 | 1 {
     const a = parseFloat(this.value);
@@ -163,98 +213,120 @@ export class Decimal {
   }
 
   /**
-   * Equality check
+   * Check if this decimal equals another value.
+   * @param other - Value to compare against
+   * @returns True if values are equal
    */
   eq(other: number | string | Decimal): boolean {
     return this.cmp(other) === 0;
   }
 
   /**
-   * Greater than
+   * Check if this decimal is greater than another value.
+   * @param other - Value to compare against
+   * @returns True if this is greater
    */
   gt(other: number | string | Decimal): boolean {
     return this.cmp(other) === 1;
   }
 
   /**
-   * Greater than or equal
+   * Check if this decimal is greater than or equal to another value.
+   * @param other - Value to compare against
+   * @returns True if this is greater or equal
    */
   gte(other: number | string | Decimal): boolean {
     return this.cmp(other) >= 0;
   }
 
   /**
-   * Less than
+   * Check if this decimal is less than another value.
+   * @param other - Value to compare against
+   * @returns True if this is less
    */
   lt(other: number | string | Decimal): boolean {
     return this.cmp(other) === -1;
   }
 
   /**
-   * Less than or equal
+   * Check if this decimal is less than or equal to another value.
+   * @param other - Value to compare against
+   * @returns True if this is less or equal
    */
   lte(other: number | string | Decimal): boolean {
     return this.cmp(other) <= 0;
   }
 
   /**
-   * Check if zero
+   * Check if this decimal is exactly zero.
+   * @returns True if value is zero
    */
   isZero(): boolean {
     return parseFloat(this.value) === 0;
   }
 
   /**
-   * Check if positive
+   * Check if this decimal is positive (greater than zero).
+   * @returns True if value is positive
    */
   isPositive(): boolean {
     return parseFloat(this.value) > 0;
   }
 
   /**
-   * Check if negative
+   * Check if this decimal is negative (less than zero).
+   * @returns True if value is negative
    */
   isNegative(): boolean {
     return parseFloat(this.value) < 0;
   }
 
   /**
-   * Convert to number
+   * Convert this decimal to a JavaScript number.
+   * @returns The numeric value
    */
   toNumber(): number {
     return parseFloat(this.value);
   }
 
   /**
-   * Convert to string
+   * Convert this decimal to its string representation.
+   * @returns The string value
    */
   toString(): string {
     return this.value;
   }
 
   /**
-   * Format with fixed decimal places
+   * Format this decimal with a fixed number of decimal places.
+   * @param decimals - Number of decimal places (default: 2)
+   * @returns Formatted string
    */
   toFixed(decimals: number = 2): string {
     return parseFloat(this.value).toFixed(decimals);
   }
 
   /**
-   * Convert to JSON (string representation)
+   * Convert to JSON (returns string representation for serialization).
+   * @returns The string value for JSON serialization
    */
   toJSON(): string {
     return this.value;
   }
 
   /**
-   * Static: Create from value
+   * Create a Decimal from a value (alias for constructor).
+   * @param value - The value to convert
+   * @returns A new Decimal instance
    */
   static from(value: number | string | Decimal): Decimal {
     return new Decimal(value);
   }
 
   /**
-   * Static: Sum array of values
+   * Calculate the sum of an array of values.
+   * @param values - Array of values to sum
+   * @returns A new Decimal with the sum
    */
   static sum(values: (number | string | Decimal)[]): Decimal {
     return values.reduce<Decimal>(
@@ -264,7 +336,9 @@ export class Decimal {
   }
 
   /**
-   * Static: Average of array
+   * Calculate the average of an array of values.
+   * @param values - Array of values to average
+   * @returns A new Decimal with the average (0 if empty array)
    */
   static avg(values: (number | string | Decimal)[]): Decimal {
     if (values.length === 0) return new Decimal(0);
@@ -272,7 +346,10 @@ export class Decimal {
   }
 
   /**
-   * Static: Min of array
+   * Find the minimum value from the provided values.
+   * @param values - Values to compare
+   * @returns A new Decimal with the minimum value
+   * @throws Error if no values provided
    */
   static min(...values: (number | string | Decimal)[]): Decimal {
     if (values.length === 0) throw new Error("No values provided");
@@ -283,7 +360,10 @@ export class Decimal {
   }
 
   /**
-   * Static: Max of array
+   * Find the maximum value from the provided values.
+   * @param values - Values to compare
+   * @returns A new Decimal with the maximum value
+   * @throws Error if no values provided
    */
   static max(...values: (number | string | Decimal)[]): Decimal {
     if (values.length === 0) throw new Error("No values provided");
@@ -295,11 +375,26 @@ export class Decimal {
 }
 
 /**
- * Decimal utilities for database operations
+ * Utility functions for working with decimals in database operations.
+ * Provides helpers for converting between JavaScript numbers and database decimal strings.
+ *
+ * @example
+ * ```typescript
+ * // Convert numeric fields before database insert
+ * const data = DecimalUtils.prepareForDatabase(
+ *   { price: 19.99, quantity: 5 },
+ *   ['price']
+ * );
+ *
+ * // Format for display
+ * DecimalUtils.formatCurrency('19.99', { currency: 'USD' }); // '$19.99'
+ * ```
  */
 export const DecimalUtils = {
   /**
-   * Convert number to database decimal string
+   * Convert a number to a database-safe decimal string.
+   * @param value - The value to convert
+   * @returns The decimal string or null if value is null/undefined
    */
   toDecimalString(value: number | string | null | undefined): string | null {
     if (value === null || value === undefined) return null;
@@ -307,7 +402,9 @@ export const DecimalUtils = {
   },
 
   /**
-   * Convert database decimal string to number
+   * Convert a database decimal string to a JavaScript number.
+   * @param value - The decimal string from database
+   * @returns The numeric value (0 if null/undefined/empty)
    */
   fromDecimalString(value: string | null | undefined): number {
     if (!value) return 0;
@@ -315,42 +412,60 @@ export const DecimalUtils = {
   },
 
   /**
-   * Perform precise decimal multiplication
+   * Multiply two values with precise decimal arithmetic.
+   * @param a - First value
+   * @param b - Second value
+   * @returns The product as a string
    */
   multiply(a: number | string, b: number | string): string {
     return new Decimal(a).mul(b).toString();
   },
 
   /**
-   * Perform precise decimal addition
+   * Add two values with precise decimal arithmetic.
+   * @param a - First value
+   * @param b - Second value
+   * @returns The sum as a string
    */
   add(a: number | string, b: number | string): string {
     return new Decimal(a).add(b).toString();
   },
 
   /**
-   * Perform precise decimal subtraction
+   * Subtract two values with precise decimal arithmetic.
+   * @param a - Value to subtract from
+   * @param b - Value to subtract
+   * @returns The difference as a string
    */
   subtract(a: number | string, b: number | string): string {
     return new Decimal(a).sub(b).toString();
   },
 
   /**
-   * Perform precise decimal division
+   * Divide two values with precise decimal arithmetic.
+   * @param a - Dividend
+   * @param b - Divisor
+   * @returns The quotient as a string
    */
   divide(a: number | string, b: number | string): string {
     return new Decimal(a).div(b).toString();
   },
 
   /**
-   * Format decimal for display
+   * Format a decimal value for display with fixed decimal places.
+   * @param value - The value to format
+   * @param decimalPlaces - Number of decimal places (default: 2)
+   * @returns Formatted string
    */
   format(value: string | number, decimalPlaces: number = 2): string {
     return new Decimal(value).toFixed(decimalPlaces);
   },
 
   /**
-   * Format as currency
+   * Format a value as currency using Intl.NumberFormat.
+   * @param value - The value to format
+   * @param options - Currency formatting options
+   * @returns Formatted currency string
    */
   formatCurrency(
     value: string | number,
@@ -371,7 +486,10 @@ export const DecimalUtils = {
   },
 
   /**
-   * Convert object with decimal fields for database insert/update
+   * Prepare an object for database insert/update by converting numeric fields to decimal strings.
+   * @param data - The object to prepare
+   * @param decimalFields - Array of field names that should be converted to decimal strings
+   * @returns A new object with specified fields converted to decimal strings
    */
   prepareForDatabase<T extends Record<string, unknown>>(
     data: T,
@@ -390,7 +508,10 @@ export const DecimalUtils = {
   },
 
   /**
-   * Convert object with decimal fields from database
+   * Parse an object from database by converting decimal string fields to JavaScript numbers.
+   * @param data - The object from database
+   * @param decimalFields - Array of field names that should be converted from decimal strings
+   * @returns A new object with specified fields converted to numbers
    */
   parseFromDatabase<T extends Record<string, unknown>>(
     data: T,
@@ -410,7 +531,16 @@ export const DecimalUtils = {
 };
 
 /**
- * Shorthand for creating Decimal
+ * Shorthand function for creating a Decimal instance.
+ *
+ * @param value - The value to convert to a Decimal
+ * @returns A new Decimal instance
+ *
+ * @example
+ * ```typescript
+ * const price = decimal('19.99');
+ * const total = decimal(100).mul(price);
+ * ```
  */
 export function decimal(value: number | string): Decimal {
   return new Decimal(value);

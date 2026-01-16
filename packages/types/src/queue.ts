@@ -146,13 +146,62 @@ export const queueConfig = type({
 // Type Exports
 // ============================================================================
 
+/**
+ * Job status type.
+ * Represents job lifecycle states: 'pending' | 'active' | 'completed' | 'failed' | 'delayed' | 'paused'.
+ */
 export type JobStatus = typeof jobStatus.infer;
+
+/**
+ * Job entity type.
+ * Represents a background job with data, status, attempts, priority, and timing information.
+ */
 export type Job = typeof job.infer;
+
+/**
+ * Job options type.
+ * Contains priority, delay, retry attempts, backoff strategy, timeout, and repeat settings.
+ */
 export type JobOptions = typeof jobOptions.infer;
+
+/**
+ * Add job request type.
+ * Contains job name, data payload, and optional job options.
+ */
 export type AddJobRequest = typeof addJobRequest.infer;
+
+/**
+ * Job progress update type.
+ * Contains progress percentage, optional message, and additional data.
+ */
 export type JobProgressUpdate = typeof jobProgressUpdate.infer;
+
+/**
+ * Queue stats type.
+ * Contains counts of jobs in each state and pause status for a queue.
+ */
 export type QueueStats = typeof queueStats.infer;
+
+/**
+ * Queue list options type.
+ * Contains status filter, pagination range, and sort order for listing jobs.
+ */
 export type QueueListOptions = typeof queueListOptions.infer;
+
+/**
+ * Redis queue configuration type.
+ * Contains Redis connection settings including host, port, password, and TLS.
+ */
 export type RedisQueueConfig = typeof redisQueueConfig.infer;
+
+/**
+ * Worker options type.
+ * Contains concurrency, rate limiting, lock settings, and stalled job handling.
+ */
 export type WorkerOptions = typeof workerOptions.infer;
+
+/**
+ * Queue configuration type.
+ * Contains provider selection, default job options, and provider-specific settings.
+ */
 export type QueueConfig = typeof queueConfig.infer;

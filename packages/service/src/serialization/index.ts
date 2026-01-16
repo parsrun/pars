@@ -444,7 +444,17 @@ export const msgpackSerializer: Serializer = {
 // ============================================================================
 
 /**
- * Get serializer by format name
+ * Get a serializer by format name.
+ *
+ * @param format - The serialization format ("json" or "msgpack")
+ * @returns The corresponding serializer instance
+ *
+ * @example
+ * ```typescript
+ * const serializer = getSerializer('json');
+ * const encoded = serializer.encode({ foo: 'bar' });
+ * const decoded = serializer.decode(encoded);
+ * ```
  */
 export function getSerializer(format: "json" | "msgpack"): Serializer {
   switch (format) {
@@ -458,7 +468,22 @@ export function getSerializer(format: "json" | "msgpack"): Serializer {
 }
 
 /**
- * Create a custom serializer
+ * Create a custom serializer with provided encode/decode functions.
+ *
+ * @param options - Serializer configuration
+ * @param options.encode - Function to encode data to string or ArrayBuffer
+ * @param options.decode - Function to decode string or ArrayBuffer to data
+ * @param options.contentType - HTTP content type for the serialization format
+ * @returns A custom serializer instance
+ *
+ * @example
+ * ```typescript
+ * const customSerializer = createSerializer({
+ *   encode: (data) => btoa(JSON.stringify(data)),
+ *   decode: (raw) => JSON.parse(atob(raw as string)),
+ *   contentType: 'application/x-custom',
+ * });
+ * ```
  */
 export function createSerializer(options: {
   encode: (data: unknown) => string | ArrayBuffer;

@@ -9,6 +9,9 @@ import { CircuitOpenError } from "../rpc/errors.js";
 // CIRCUIT BREAKER
 // ============================================================================
 
+/**
+ * Options for configuring a circuit breaker.
+ */
 export interface CircuitBreakerOptions {
   /** Number of failures before opening circuit */
   failureThreshold: number;
@@ -20,6 +23,12 @@ export interface CircuitBreakerOptions {
   onStateChange?: (from: CircuitState, to: CircuitState) => void;
 }
 
+/**
+ * Circuit breaker state.
+ * - "closed": Normal operation, requests pass through
+ * - "open": Failing fast, requests are rejected immediately
+ * - "half-open": Testing if service recovered, limited requests allowed
+ */
 export type CircuitState = "closed" | "open" | "half-open";
 
 /**

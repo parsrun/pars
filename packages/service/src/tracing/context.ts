@@ -263,10 +263,20 @@ export class TraceContextManager {
 // SAMPLING
 // ============================================================================
 
+/**
+ * Sampling configuration for tracing.
+ * - "always": Sample all traces
+ * - "never": Never sample traces
+ * - { ratio: number }: Sample a percentage of traces (0-1)
+ */
 export type Sampler = "always" | "never" | { ratio: number };
 
 /**
- * Determine if a trace should be sampled
+ * Determine if a trace should be sampled based on the sampler configuration.
+ *
+ * @param sampler - Sampling configuration
+ * @param traceId - Optional trace ID for deterministic sampling
+ * @returns Whether the trace should be sampled
  */
 export function shouldSample(sampler: Sampler, traceId?: string): boolean {
   if (sampler === "always") {
