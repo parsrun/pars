@@ -68,6 +68,9 @@ jobs:
         with:
           deno-version: v2.x
 
+      - name: Remove workspace symlinks for JSR
+        run: rm -rf node_modules/@parsrun
+
       - name: Publish to JSR
         run: |
           set -e
