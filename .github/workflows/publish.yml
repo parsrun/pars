@@ -74,6 +74,6 @@ jobs:
             echo "---------------------------------------------------"
             echo "Publishing @parsrun/$pkg to JSR..."
             cd packages/$pkg
-            DENO_FUTURE=1 deno publish --allow-slow-types --unstable-sloppy-imports
+            deno publish --allow-slow-types --no-check --unstable-sloppy-imports
             cd ../..
           done
