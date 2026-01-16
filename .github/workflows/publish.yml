@@ -30,6 +30,12 @@ jobs:
       - name: Build
         run: pnpm build
 
+      - name: Update npm for OIDC support
+        run: npm install -g npm@latest
+
+      - name: Verify npm version
+        run: npm --version
+
       - name: Publish to npm
         run: |
           # Bir paket hata verirse işlemi durdur (güvenlik için)
