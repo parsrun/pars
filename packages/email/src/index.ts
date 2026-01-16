@@ -57,12 +57,35 @@ import { ConsoleProvider } from "./providers/console.js";
 
 /**
  * Email Service
- * High-level email service with provider abstraction
+ *
+ * High-level email service that provides a unified interface for sending emails
+ * through various providers (Resend, SendGrid, Postmark, or Console for development).
+ *
+ * @example
+ * ```typescript
+ * const service = new EmailService({
+ *   provider: 'resend',
+ *   apiKey: 'your-api-key',
+ *   fromEmail: 'hello@example.com',
+ *   fromName: 'My App',
+ * });
+ *
+ * await service.send({
+ *   to: 'user@example.com',
+ *   subject: 'Hello',
+ *   html: '<p>Welcome!</p>',
+ * });
+ * ```
  */
 export class EmailService {
   private provider: EmailProvider;
   private debug: boolean;
 
+  /**
+   * Creates a new EmailService instance.
+   *
+   * @param config - The email service configuration including provider type, API key, and default sender info
+   */
   constructor(config: EmailServiceConfig) {
     this.debug = config.debug ?? false;
     this.provider = this.createProvider(config);
@@ -94,14 +117,20 @@ export class EmailService {
   }
 
   /**
-   * Get the provider type
+   * Gets the type of email provider being used.
+   *
+   * @returns The provider type identifier (e.g., 'resend', 'sendgrid', 'postmark', 'console')
    */
   get providerType(): EmailProviderType {
     return this.provider.type;
   }
 
   /**
-   * Send a single email
+   * Sends a single email through the configured provider.
+   *
+   * @param options - The email options including recipient, subject, and content
+   * @returns A promise that resolves to the result of the send operation
+   * @throws {EmailError} If the email send fails due to provider error
    */
   async send(options: EmailOptions): Promise<EmailResult> {
     if (this.debug) {
@@ -122,7 +151,13 @@ export class EmailService {
   }
 
   /**
-   * Send multiple emails
+   * Sends multiple emails in a batch.
+   *
+   * If the provider supports native batch sending, it will be used. Otherwise,
+   * emails are sent sequentially.
+   *
+   * @param options - The batch email options including array of emails and error handling config
+   * @returns A promise that resolves to the batch result with success/failure counts
    */
   async sendBatch(options: BatchEmailOptions): Promise<BatchEmailResult> {
     if (this.debug) {
@@ -183,7 +218,9 @@ export class EmailService {
   }
 
   /**
-   * Verify provider configuration
+   * Verifies the provider configuration by testing the API connection.
+   *
+   * @returns A promise that resolves to true if the configuration is valid, false otherwise
    */
   async verify(): Promise<boolean> {
     if (this.provider.verify) {
@@ -225,7 +262,28 @@ export function createEmailService(config: EmailServiceConfig): EmailService {
 }
 
 /**
- * Create an email provider directly
+ * Creates an email provider instance directly.
+ *
+ * Use this when you need direct access to a provider without the EmailService wrapper.
+ *
+ * @param type - The type of email provider to create
+ * @param config - The provider configuration including API key and sender info
+ * @returns A new email provider instance
+ * @throws {EmailError} If an unknown provider type is specified
+ *
+ * @example
+ * ```typescript
+ * const provider = createEmailProvider('resend', {
+ *   apiKey: 'your-api-key',
+ *   fromEmail: 'hello@example.com',
+ * });
+ *
+ * await provider.send({
+ *   to: 'user@example.com',
+ *   subject: 'Hello',
+ *   html: '<p>Hi!</p>',
+ * });
+ * ```
  */
 export function createEmailProvider(
   type: EmailProviderType,

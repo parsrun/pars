@@ -1,6 +1,6 @@
 {
   "name": "@parsrun/server",
-  "version": "0.1.30",
+  "version": "0.1.31",
   "description": "Server framework for Pars - Edge-compatible, multi-tenant, modular",
   "keywords": ["pars", "server", "hono", "edge", "cloudflare", "deno", "bun"],
   "homepage": "https://pars.run",

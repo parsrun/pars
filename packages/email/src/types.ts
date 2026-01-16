@@ -202,9 +202,29 @@ export interface EmailTemplate {
 }
 
 /**
- * Email error
+ * Custom error class for email-related errors.
+ *
+ * Provides structured error information with error codes for programmatic handling.
+ *
+ * @example
+ * ```typescript
+ * try {
+ *   await provider.send(options);
+ * } catch (err) {
+ *   if (err instanceof EmailError) {
+ *     console.log(`Error code: ${err.code}`);
+ *   }
+ * }
+ * ```
  */
 export class EmailError extends Error {
+  /**
+   * Creates a new EmailError instance.
+   *
+   * @param message - Human-readable error description
+   * @param code - Error code from EmailErrorCodes for programmatic handling
+   * @param cause - The underlying error that caused this error, if any
+   */
   constructor(
     message: string,
     public readonly code: string,

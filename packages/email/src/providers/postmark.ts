@@ -34,6 +34,7 @@ import { EmailError, EmailErrorCodes } from "../types.js";
  * ```
  */
 export class PostmarkProvider implements EmailProvider {
+  /** Provider type identifier */
   readonly type = "postmark" as const;
 
   private apiKey: string;
@@ -41,6 +42,11 @@ export class PostmarkProvider implements EmailProvider {
   private fromName: string | undefined;
   private baseUrl = "https://api.postmarkapp.com";
 
+  /**
+   * Creates a new PostmarkProvider instance.
+   *
+   * @param config - The provider configuration including API key (server token) and sender info
+   */
   constructor(config: EmailProviderConfig) {
     this.apiKey = config.apiKey;
     this.fromEmail = config.fromEmail;
@@ -66,6 +72,13 @@ export class PostmarkProvider implements EmailProvider {
     return this.formatAddress(addresses);
   }
 
+  /**
+   * Sends an email via the Postmark API.
+   *
+   * @param options - The email options including recipient, subject, and content
+   * @returns A promise that resolves to the send result with message ID if successful
+   * @throws {EmailError} If the Postmark API request fails
+   */
   async send(options: EmailOptions): Promise<EmailResult> {
     const from = options.from
       ? this.formatAddress(options.from)
@@ -148,6 +161,15 @@ export class PostmarkProvider implements EmailProvider {
     }
   }
 
+  /**
+   * Sends multiple emails via Postmark's batch API.
+   *
+   * Postmark supports native batch sending of up to 500 emails in a single request.
+   *
+   * @param options - The batch email options containing emails and error handling config
+   * @returns A promise that resolves to the batch result with success/failure counts
+   * @throws {EmailError} If the Postmark batch API request fails
+   */
   async sendBatch(options: BatchEmailOptions): Promise<BatchEmailResult> {
     // Postmark supports batch sending up to 500 emails
     const batchPayload = options.emails.map((email) => {
@@ -214,6 +236,11 @@ export class PostmarkProvider implements EmailProvider {
     }
   }
 
+  /**
+   * Verifies the Postmark server token by checking server info.
+   *
+   * @returns A promise that resolves to true if the server token is valid, false otherwise
+   */
   async verify(): Promise<boolean> {
     try {
       const response = await fetch(`${this.baseUrl}/server`, {
@@ -229,6 +256,12 @@ export class PostmarkProvider implements EmailProvider {
     }
   }
 
+  /**
+   * Converts a Uint8Array to a base64-encoded string.
+   *
+   * @param data - The binary data to encode
+   * @returns The base64-encoded string
+   */
   private uint8ArrayToBase64(data: Uint8Array): string {
     let binary = "";
     for (let i = 0; i < data.length; i++) {
@@ -242,7 +275,10 @@ export class PostmarkProvider implements EmailProvider {
 }
 
 /**
- * Create a Postmark provider
+ * Creates a Postmark provider instance.
+ *
+ * @param config - The provider configuration including server token and sender info
+ * @returns A new PostmarkProvider instance
  */
 export function createPostmarkProvider(config: EmailProviderConfig): PostmarkProvider {
   return new PostmarkProvider(config);

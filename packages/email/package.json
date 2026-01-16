@@ -1,6 +1,6 @@
 {
   "name": "@parsrun/email",
-  "version": "0.1.30",
+  "version": "0.1.31",
   "description": "Edge-compatible email sending for Pars - Resend, SendGrid, Postmark, AWS SES",
   "type": "module",
   "main": "./dist/index.js",

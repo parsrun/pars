@@ -35,12 +35,18 @@ import type {
  * ```
  */
 export class ConsoleProvider implements EmailProvider {
+  /** Provider type identifier */
   readonly type = "console" as const;
 
   private fromEmail: string;
   private fromName: string | undefined;
   private messageCounter = 0;
 
+  /**
+   * Creates a new ConsoleProvider instance.
+   *
+   * @param config - The provider configuration (apiKey is not required for console provider)
+   */
   constructor(config: EmailProviderConfig) {
     this.fromEmail = config.fromEmail;
     this.fromName = config.fromName;
@@ -65,6 +71,12 @@ export class ConsoleProvider implements EmailProvider {
     return this.formatAddress(addresses);
   }
 
+  /**
+   * Logs an email to the console instead of sending it.
+   *
+   * @param options - The email options to log
+   * @returns A promise that resolves to a successful result with a generated message ID
+   */
   async send(options: EmailOptions): Promise<EmailResult> {
     this.messageCounter++;
     const messageId = `console-${Date.now()}-${this.messageCounter}`;
@@ -130,6 +142,12 @@ export class ConsoleProvider implements EmailProvider {
     };
   }
 
+  /**
+   * Logs multiple emails to the console.
+   *
+   * @param options - The batch email options containing emails to log
+   * @returns A promise that resolves to the batch result with success/failure counts
+   */
   async sendBatch(options: BatchEmailOptions): Promise<BatchEmailResult> {
     const results: EmailResult[] = [];
     let successful = 0;
@@ -169,6 +187,13 @@ export class ConsoleProvider implements EmailProvider {
     };
   }
 
+  /**
+   * Verifies the provider configuration.
+   *
+   * For the console provider, this always returns true and logs a message.
+   *
+   * @returns A promise that always resolves to true
+   */
   async verify(): Promise<boolean> {
     console.log("📧 Console email provider verified (always returns true)");
     return true;
@@ -176,7 +201,10 @@ export class ConsoleProvider implements EmailProvider {
 }
 
 /**
- * Create a Console provider
+ * Creates a Console provider instance.
+ *
+ * @param config - The provider configuration
+ * @returns A new ConsoleProvider instance
  */
 export function createConsoleProvider(config: EmailProviderConfig): ConsoleProvider {
   return new ConsoleProvider(config);

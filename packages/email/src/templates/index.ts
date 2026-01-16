@@ -6,7 +6,20 @@
 import type { EmailTemplate, TemplateData } from "../types.js";
 
 /**
- * Simple template engine - replaces {{key}} with values
+ * Renders a template string by replacing placeholders with data values.
+ *
+ * Uses a simple mustache-like syntax where `{{key}}` is replaced with the value
+ * of `data.key`. Supports nested keys like `{{user.name}}`.
+ *
+ * @param template - The template string containing placeholders
+ * @param data - The data object containing values to substitute
+ * @returns The rendered string with placeholders replaced by values
+ *
+ * @example
+ * ```typescript
+ * const result = renderTemplate("Hello {{name}}!", { name: "World" });
+ * // result: "Hello World!"
+ * ```
  */
 export function renderTemplate(template: string, data: TemplateData): string {
   return template.replace(/\{\{(\w+(?:\.\w+)*)\}\}/g, (_, path: string) => {
@@ -26,7 +39,25 @@ export function renderTemplate(template: string, data: TemplateData): string {
 }
 
 /**
- * Base email wrapper with consistent styling
+ * Wraps email content in a responsive HTML template with consistent styling.
+ *
+ * Provides a professional email layout with header branding, content area,
+ * and footer. Styles are inlined for maximum email client compatibility.
+ *
+ * @param content - The HTML content to wrap
+ * @param options - Optional branding configuration
+ * @param options.brandName - The brand name to display in header (defaults to "Pars")
+ * @param options.brandColor - The primary brand color for styling (defaults to "#0070f3")
+ * @param options.footerText - Custom footer text (defaults to copyright notice)
+ * @returns Complete HTML email document
+ *
+ * @example
+ * ```typescript
+ * const html = wrapEmailHtml("<h1>Hello!</h1>", {
+ *   brandName: "My App",
+ *   brandColor: "#ff0000",
+ * });
+ * ```
  */
 export function wrapEmailHtml(content: string, options?: {
   brandName?: string | undefined;
@@ -151,13 +182,25 @@ export function wrapEmailHtml(content: string, options?: {
 // OTP Templates
 // ============================================================================
 
+/**
+ * Data required for rendering OTP (One-Time Password) email templates.
+ */
 export interface OTPTemplateData extends TemplateData {
+  /** The verification code to display */
   code: string;
+  /** Expiration time in minutes (defaults to 10) */
   expiresInMinutes?: number;
+  /** Brand name for email header */
   brandName?: string;
+  /** Brand color for styling */
   brandColor?: string;
 }
 
+/**
+ * Pre-built email template for OTP verification codes.
+ *
+ * Displays a large, easily copyable verification code with expiration notice.
+ */
 export const otpTemplate: EmailTemplate = {
   name: "otp",
   subject: "Your verification code: {{code}}",
@@ -177,6 +220,25 @@ This code expires in {{expiresInMinutes}} minutes.
 If you didn't request this code, you can safely ignore this email.`,
 };
 
+/**
+ * Renders an OTP verification email with the provided data.
+ *
+ * @param data - The template data including verification code and branding options
+ * @returns Rendered email with subject, HTML body, and plain text body
+ *
+ * @example
+ * ```typescript
+ * const email = renderOTPEmail({
+ *   code: "123456",
+ *   expiresInMinutes: 15,
+ *   brandName: "My App",
+ * });
+ * await emailService.send({
+ *   to: "user@example.com",
+ *   ...email,
+ * });
+ * ```
+ */
 export function renderOTPEmail(data: OTPTemplateData): { subject: string; html: string; text: string } {
   const templateData = {
     ...data,
@@ -197,13 +259,25 @@ export function renderOTPEmail(data: OTPTemplateData): { subject: string; html: 
 // Magic Link Templates
 // ============================================================================
 
+/**
+ * Data required for rendering magic link email templates.
+ */
 export interface MagicLinkTemplateData extends TemplateData {
+  /** The magic link URL for sign-in */
   url: string;
+  /** Expiration time in minutes (defaults to 15) */
   expiresInMinutes?: number;
+  /** Brand name for email header and subject */
   brandName?: string;
+  /** Brand color for styling */
   brandColor?: string;
 }
 
+/**
+ * Pre-built email template for passwordless magic link sign-in.
+ *
+ * Provides a prominent sign-in button with fallback URL text.
+ */
 export const magicLinkTemplate: EmailTemplate = {
   name: "magic-link",
   subject: "Sign in to {{brandName}}",
@@ -230,6 +304,20 @@ This link expires in {{expiresInMinutes}} minutes.
 If you didn't request this link, you can safely ignore this email.`,
 };
 
+/**
+ * Renders a magic link sign-in email with the provided data.
+ *
+ * @param data - The template data including magic link URL and branding options
+ * @returns Rendered email with subject, HTML body, and plain text body
+ *
+ * @example
+ * ```typescript
+ * const email = renderMagicLinkEmail({
+ *   url: "https://example.com/auth/verify?token=abc123",
+ *   brandName: "My App",
+ * });
+ * ```
+ */
 export function renderMagicLinkEmail(data: MagicLinkTemplateData): { subject: string; html: string; text: string } {
   const templateData = {
     ...data,
@@ -251,14 +339,27 @@ export function renderMagicLinkEmail(data: MagicLinkTemplateData): { subject: st
 // Email Verification Templates
 // ============================================================================
 
+/**
+ * Data required for rendering email verification templates.
+ */
 export interface VerificationTemplateData extends TemplateData {
+  /** The verification URL */
   url: string;
+  /** User's name for personalized greeting (optional) */
   name?: string;
+  /** Expiration time in hours (defaults to 24) */
   expiresInHours?: number;
+  /** Brand name for email header */
   brandName?: string;
+  /** Brand color for styling */
   brandColor?: string;
 }
 
+/**
+ * Pre-built email template for email address verification.
+ *
+ * Used when users need to confirm their email address after registration.
+ */
 export const verificationTemplate: EmailTemplate = {
   name: "verification",
   subject: "Verify your email address",
@@ -285,6 +386,20 @@ Please verify your email address by clicking this link:
 This link expires in {{expiresInHours}} hours.`,
 };
 
+/**
+ * Renders an email verification email with the provided data.
+ *
+ * @param data - The template data including verification URL and optional user name
+ * @returns Rendered email with subject, HTML body, and plain text body
+ *
+ * @example
+ * ```typescript
+ * const email = renderVerificationEmail({
+ *   url: "https://example.com/verify?token=abc123",
+ *   name: "John",
+ * });
+ * ```
+ */
 export function renderVerificationEmail(data: VerificationTemplateData): { subject: string; html: string; text: string } {
   const templateData = {
     ...data,
@@ -314,13 +429,25 @@ export function renderVerificationEmail(data: VerificationTemplateData): { subje
 // Welcome Templates
 // ============================================================================
 
+/**
+ * Data required for rendering welcome email templates.
+ */
 export interface WelcomeTemplateData extends TemplateData {
+  /** User's name for personalized greeting (optional) */
   name?: string;
+  /** URL to the user's dashboard or login page (optional) */
   loginUrl?: string;
+  /** Brand name for email header */
   brandName?: string;
+  /** Brand color for styling */
   brandColor?: string;
 }
 
+/**
+ * Pre-built email template for welcoming new users.
+ *
+ * Sent after successful registration to greet users and provide next steps.
+ */
 export const welcomeTemplate: EmailTemplate = {
   name: "welcome",
   subject: "Welcome to {{brandName}}!",
@@ -353,6 +480,21 @@ Best regards,
 The {{brandName}} Team`,
 };
 
+/**
+ * Renders a welcome email with the provided data.
+ *
+ * @param data - The template data including optional user name and dashboard URL
+ * @returns Rendered email with subject, HTML body, and plain text body
+ *
+ * @example
+ * ```typescript
+ * const email = renderWelcomeEmail({
+ *   name: "John",
+ *   loginUrl: "https://example.com/dashboard",
+ *   brandName: "My App",
+ * });
+ * ```
+ */
 export function renderWelcomeEmail(data: WelcomeTemplateData): { subject: string; html: string; text: string } {
   const brandName = data.brandName ?? "Pars";
   const templateData = { ...data, brandName };
@@ -383,13 +525,25 @@ export function renderWelcomeEmail(data: WelcomeTemplateData): { subject: string
 // Password Reset Templates
 // ============================================================================
 
+/**
+ * Data required for rendering password reset email templates.
+ */
 export interface PasswordResetTemplateData extends TemplateData {
+  /** The password reset URL */
   url: string;
+  /** Expiration time in minutes (defaults to 60) */
   expiresInMinutes?: number;
+  /** Brand name for email header */
   brandName?: string;
+  /** Brand color for styling */
   brandColor?: string;
 }
 
+/**
+ * Pre-built email template for password reset requests.
+ *
+ * Includes security notice that the link can be ignored if not requested.
+ */
 export const passwordResetTemplate: EmailTemplate = {
   name: "password-reset",
   subject: "Reset your password",
@@ -416,6 +570,20 @@ This link expires in {{expiresInMinutes}} minutes.
 If you didn't request a password reset, you can safely ignore this email. Your password will remain unchanged.`,
 };
 
+/**
+ * Renders a password reset email with the provided data.
+ *
+ * @param data - The template data including reset URL and branding options
+ * @returns Rendered email with subject, HTML body, and plain text body
+ *
+ * @example
+ * ```typescript
+ * const email = renderPasswordResetEmail({
+ *   url: "https://example.com/reset?token=abc123",
+ *   expiresInMinutes: 30,
+ * });
+ * ```
+ */
 export function renderPasswordResetEmail(data: PasswordResetTemplateData): { subject: string; html: string; text: string } {
   const templateData = {
     ...data,
@@ -436,16 +604,31 @@ export function renderPasswordResetEmail(data: PasswordResetTemplateData): { sub
 // Invitation Templates
 // ============================================================================
 
+/**
+ * Data required for rendering invitation email templates.
+ */
 export interface InvitationTemplateData extends TemplateData {
+  /** The invitation acceptance URL */
   url: string;
+  /** Name of the person who sent the invitation (optional) */
   inviterName?: string;
+  /** Name of the organization being invited to (defaults to "the team") */
   organizationName?: string;
+  /** Role the user is being invited to (optional) */
   role?: string;
+  /** Expiration time in days (defaults to 7) */
   expiresInDays?: number;
+  /** Brand name for email header */
   brandName?: string;
+  /** Brand color for styling */
   brandColor?: string;
 }
 
+/**
+ * Pre-built email template for team/organization invitations.
+ *
+ * Supports inviter name, organization name, and role customization.
+ */
 export const invitationTemplate: EmailTemplate = {
   name: "invitation",
   subject: "{{#inviterName}}{{inviterName}} invited you to join {{/inviterName}}{{organizationName}}",
@@ -477,6 +660,22 @@ Accept the invitation:
 This invitation expires in {{expiresInDays}} days.`,
 };
 
+/**
+ * Renders an invitation email with the provided data.
+ *
+ * @param data - The template data including invitation URL and organization details
+ * @returns Rendered email with subject, HTML body, and plain text body
+ *
+ * @example
+ * ```typescript
+ * const email = renderInvitationEmail({
+ *   url: "https://example.com/invite?token=abc123",
+ *   inviterName: "Jane",
+ *   organizationName: "Acme Corp",
+ *   role: "developer",
+ * });
+ * ```
+ */
 export function renderInvitationEmail(data: InvitationTemplateData): { subject: string; html: string; text: string } {
   const templateData = {
     ...data,
@@ -516,6 +715,12 @@ export function renderInvitationEmail(data: InvitationTemplateData): { subject: 
 // Export all templates
 // ============================================================================
 
+/**
+ * Collection of all pre-built email templates.
+ *
+ * Use these templates with the corresponding render functions to generate
+ * complete email content with proper styling.
+ */
 export const templates = {
   otp: otpTemplate,
   magicLink: magicLinkTemplate,
@@ -525,6 +730,18 @@ export const templates = {
   invitation: invitationTemplate,
 } as const;
 
+/**
+ * Collection of render functions for each email template.
+ *
+ * These functions take template data and return complete rendered emails
+ * with subject, HTML body, and plain text body.
+ *
+ * @example
+ * ```typescript
+ * const email = renderFunctions.otp({ code: "123456" });
+ * await emailService.send({ to: "user@example.com", ...email });
+ * ```
+ */
 export const renderFunctions = {
   otp: renderOTPEmail,
   magicLink: renderMagicLinkEmail,

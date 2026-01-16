@@ -34,6 +34,7 @@ import { EmailError, EmailErrorCodes } from "../types.js";
  * ```
  */
 export class SendGridProvider implements EmailProvider {
+  /** Provider type identifier */
   readonly type = "sendgrid" as const;
 
   private apiKey: string;
@@ -41,6 +42,11 @@ export class SendGridProvider implements EmailProvider {
   private fromName: string | undefined;
   private baseUrl = "https://api.sendgrid.com/v3";
 
+  /**
+   * Creates a new SendGridProvider instance.
+   *
+   * @param config - The provider configuration including API key and sender info
+   */
   constructor(config: EmailProviderConfig) {
     this.apiKey = config.apiKey;
     this.fromEmail = config.fromEmail;
@@ -63,6 +69,13 @@ export class SendGridProvider implements EmailProvider {
     return [this.formatAddress(addresses)];
   }
 
+  /**
+   * Sends an email via the SendGrid API.
+   *
+   * @param options - The email options including recipient, subject, and content
+   * @returns A promise that resolves to the send result with message ID if successful
+   * @throws {EmailError} If the SendGrid API request fails
+   */
   async send(options: EmailOptions): Promise<EmailResult> {
     const from = options.from
       ? this.formatAddress(options.from)
@@ -161,6 +174,15 @@ export class SendGridProvider implements EmailProvider {
     }
   }
 
+  /**
+   * Sends multiple emails via the SendGrid API sequentially.
+   *
+   * Note: SendGrid does not support true batch sending via the standard API,
+   * so emails are sent one at a time.
+   *
+   * @param options - The batch email options containing emails and error handling config
+   * @returns A promise that resolves to the batch result with success/failure counts
+   */
   async sendBatch(options: BatchEmailOptions): Promise<BatchEmailResult> {
     const results: EmailResult[] = [];
     let successful = 0;
@@ -196,6 +218,11 @@ export class SendGridProvider implements EmailProvider {
     };
   }
 
+  /**
+   * Verifies the SendGrid API key by checking API scopes.
+   *
+   * @returns A promise that resolves to true if the API key is valid, false otherwise
+   */
   async verify(): Promise<boolean> {
     try {
       const response = await fetch(`${this.baseUrl}/scopes`, {
@@ -210,6 +237,12 @@ export class SendGridProvider implements EmailProvider {
     }
   }
 
+  /**
+   * Converts a Uint8Array to a base64-encoded string.
+   *
+   * @param data - The binary data to encode
+   * @returns The base64-encoded string
+   */
   private uint8ArrayToBase64(data: Uint8Array): string {
     let binary = "";
     for (let i = 0; i < data.length; i++) {
@@ -223,7 +256,10 @@ export class SendGridProvider implements EmailProvider {
 }
 
 /**
- * Create a SendGrid provider
+ * Creates a SendGrid provider instance.
+ *
+ * @param config - The provider configuration including API key and sender info
+ * @returns A new SendGridProvider instance
  */
 export function createSendGridProvider(config: EmailProviderConfig): SendGridProvider {
   return new SendGridProvider(config);

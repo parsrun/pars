@@ -34,6 +34,7 @@ import { EmailError, EmailErrorCodes } from "../types.js";
  * ```
  */
 export class ResendProvider implements EmailProvider {
+  /** Provider type identifier */
   readonly type = "resend" as const;
 
   private apiKey: string;
@@ -41,6 +42,11 @@ export class ResendProvider implements EmailProvider {
   private fromName: string | undefined;
   private baseUrl = "https://api.resend.com";
 
+  /**
+   * Creates a new ResendProvider instance.
+   *
+   * @param config - The provider configuration including API key and sender info
+   */
   constructor(config: EmailProviderConfig) {
     this.apiKey = config.apiKey;
     this.fromEmail = config.fromEmail;
@@ -66,6 +72,13 @@ export class ResendProvider implements EmailProvider {
     return [this.formatAddress(addresses)];
   }
 
+  /**
+   * Sends an email via the Resend API.
+   *
+   * @param options - The email options including recipient, subject, and content
+   * @returns A promise that resolves to the send result with message ID if successful
+   * @throws {EmailError} If the Resend API request fails
+   */
   async send(options: EmailOptions): Promise<EmailResult> {
     const from = options.from
       ? this.formatAddress(options.from)
@@ -132,6 +145,12 @@ export class ResendProvider implements EmailProvider {
     }
   }
 
+  /**
+   * Sends multiple emails via the Resend API sequentially.
+   *
+   * @param options - The batch email options containing emails and error handling config
+   * @returns A promise that resolves to the batch result with success/failure counts
+   */
   async sendBatch(options: BatchEmailOptions): Promise<BatchEmailResult> {
     const results: EmailResult[] = [];
     let successful = 0;
@@ -167,6 +186,11 @@ export class ResendProvider implements EmailProvider {
     };
   }
 
+  /**
+   * Verifies the Resend API key by checking configured domains.
+   *
+   * @returns A promise that resolves to true if the API key is valid, false otherwise
+   */
   async verify(): Promise<boolean> {
     try {
       const response = await fetch(`${this.baseUrl}/domains`, {
@@ -181,8 +205,15 @@ export class ResendProvider implements EmailProvider {
     }
   }
 
+  /**
+   * Converts a Uint8Array to a base64-encoded string.
+   *
+   * Edge-compatible base64 encoding that works in all JavaScript runtimes.
+   *
+   * @param data - The binary data to encode
+   * @returns The base64-encoded string
+   */
   private uint8ArrayToBase64(data: Uint8Array): string {
-    // Edge-compatible base64 encoding
     let binary = "";
     for (let i = 0; i < data.length; i++) {
       const byte = data[i];
@@ -195,7 +226,10 @@ export class ResendProvider implements EmailProvider {
 }
 
 /**
- * Create a Resend provider
+ * Creates a Resend provider instance.
+ *
+ * @param config - The provider configuration including API key and sender info
+ * @returns A new ResendProvider instance
  */
 export function createResendProvider(config: EmailProviderConfig): ResendProvider {
   return new ResendProvider(config);
