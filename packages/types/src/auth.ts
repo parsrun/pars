@@ -1,6 +1,18 @@
 /**
- * @parsrun/types - Auth Schemas
- * Authentication and authorization validation schemas
+ * @module
+ * Authentication and authorization validation schemas.
+ * Includes user, session, JWT, RBAC, and OAuth configuration types.
+ *
+ * @example
+ * ```typescript
+ * import { user, session, jwtPayload, type User } from '@parsrun/types';
+ *
+ * // Validate user data
+ * const userData = user(input);
+ *
+ * // Type-safe user object
+ * const currentUser: User = { id: '...', status: 'active', ... };
+ * ```
  */
 
 import { type } from "arktype";

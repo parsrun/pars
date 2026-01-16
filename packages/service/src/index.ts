@@ -1,6 +1,6 @@
 /**
- * @parsrun/service
- * Unified service layer for extracted microservices
+ * @module
+ * Unified service layer for extracted microservices.
  *
  * Provides:
  * - RPC (synchronous request-response)

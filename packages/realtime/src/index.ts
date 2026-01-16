@@ -1,6 +1,6 @@
 /**
- * @parsrun/realtime
- * Edge-compatible realtime for Pars
+ * @module
+ * Edge-compatible realtime for Pars.
  *
  * Supports multiple adapters:
  * - SSE (Server-Sent Events) - Works on all runtimes

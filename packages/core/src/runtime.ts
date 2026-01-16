@@ -1,6 +1,22 @@
 /**
- * @parsrun/core - Runtime Detection
- * Edge-compatible runtime detection for Node.js, Deno, Bun, and Cloudflare Workers
+ * @module
+ * Runtime detection for Node.js, Deno, Bun, and Cloudflare Workers.
+ * Detects the current JavaScript runtime and provides helper functions.
+ *
+ * @example
+ * ```typescript
+ * import { runtime, isNode, isDeno, isBun, isCloudflare, getRuntimeVersion } from '@parsrun/core';
+ *
+ * console.log(`Running on ${runtime}`); // "node", "deno", "bun", "cloudflare", etc.
+ *
+ * if (isNode()) {
+ *   // Node.js specific code
+ * } else if (isCloudflare()) {
+ *   // Cloudflare Workers specific code
+ * }
+ *
+ * console.log(getRuntimeVersion()); // "Node.js 20.0.0"
+ * ```
  */
 
 export type Runtime = "node" | "deno" | "bun" | "cloudflare" | "edge" | "browser" | "unknown";

@@ -1,6 +1,6 @@
 /**
- * @parsrun/email
- * Edge-compatible email sending for Pars
+ * @module
+ * Edge-compatible email sending for Pars.
  *
  * Supports multiple providers:
  * - Resend (recommended)

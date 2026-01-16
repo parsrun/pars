@@ -1,6 +1,18 @@
 /**
- * @parsrun/types - Queue Schemas
- * Job queue validation schemas
+ * @module
+ * Job queue validation schemas for background processing.
+ * Supports BullMQ, SQS, RabbitMQ, and in-memory queues.
+ *
+ * @example
+ * ```typescript
+ * import { job, jobOptions, type Job, type JobOptions } from '@parsrun/types';
+ *
+ * const options: JobOptions = {
+ *   priority: 1,
+ *   attempts: 3,
+ *   backoff: { type: 'exponential', delay: 1000 }
+ * };
+ * ```
  */
 
 import { type } from "arktype";

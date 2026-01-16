@@ -1,6 +1,21 @@
 /**
- * @parsrun/types - Payments Schemas
- * Payment provider validation schemas
+ * @module
+ * Payment provider validation schemas for subscriptions and transactions.
+ * Supports Stripe, Paddle, and iyzico providers.
+ *
+ * @example
+ * ```typescript
+ * import { subscription, paymentIntent, type Subscription } from '@parsrun/types';
+ *
+ * const sub: Subscription = {
+ *   id: '...',
+ *   customerId: '...',
+ *   priceId: '...',
+ *   status: 'active',
+ *   currentPeriodStart: '2024-01-01T00:00:00Z',
+ *   currentPeriodEnd: '2024-02-01T00:00:00Z'
+ * };
+ * ```
  */
 
 import { type } from "arktype";

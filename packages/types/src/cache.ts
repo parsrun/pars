@@ -1,6 +1,18 @@
 /**
- * @parsrun/types - Cache Schemas
- * Caching validation schemas
+ * @module
+ * Caching validation schemas for key-value storage.
+ * Supports memory, Redis, Upstash, and Cloudflare KV.
+ *
+ * @example
+ * ```typescript
+ * import { cacheSetOptions, cacheConfig, type CacheConfig } from '@parsrun/types';
+ *
+ * const config: CacheConfig = {
+ *   provider: 'redis',
+ *   ttl: 3600,
+ *   redis: { host: 'localhost', port: 6379 }
+ * };
+ * ```
  */
 
 import { type } from "arktype";

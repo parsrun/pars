@@ -74,6 +74,6 @@ jobs:
             echo "---------------------------------------------------"
             echo "Publishing @parsrun/$pkg to JSR..."
             cd packages/$pkg
-            deno publish --allow-slow-types --no-check --unstable-sloppy-imports
+            deno publish --allow-slow-types --unstable-sloppy-imports --import-map=../../import_map.json
             cd ../..
           done

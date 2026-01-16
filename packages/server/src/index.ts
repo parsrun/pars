@@ -1,6 +1,24 @@
 /**
- * @parsrun/server
- * Server framework for Pars - Edge-compatible, multi-tenant, modular
+ * @module
+ * Server framework for Pars - Edge-compatible, multi-tenant, modular.
+ *
+ * @example
+ * ```typescript
+ * import { createServer, createRouter, requireAuth, success } from '@parsrun/server';
+ *
+ * const app = createServer({
+ *   name: 'my-api',
+ *   cors: { origin: '*' }
+ * });
+ *
+ * const api = createRouter();
+ * api.get('/users', requireAuth(), async (c) => {
+ *   const users = await getUsers();
+ *   return success(c, users);
+ * });
+ *
+ * app.route('/api/v1', api);
+ * ```
  */
 
 // ============================================================================

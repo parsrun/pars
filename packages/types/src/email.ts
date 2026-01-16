@@ -1,6 +1,18 @@
 /**
- * @parsrun/types - Email Schemas
- * Email service validation schemas
+ * @module
+ * Email service validation schemas for sending emails.
+ * Includes address, attachment, and provider configuration types.
+ *
+ * @example
+ * ```typescript
+ * import { sendEmailOptions, emailConfig, type SendEmailOptions } from '@parsrun/types';
+ *
+ * const options: SendEmailOptions = {
+ *   to: 'user@example.com',
+ *   subject: 'Welcome!',
+ *   html: '<h1>Hello</h1>'
+ * };
+ * ```
  */
 
 import { type } from "arktype";

@@ -1,6 +1,18 @@
 /**
- * @parsrun/types - Common Schemas
- * Shared validation schemas used across all Pars packages
+ * @module
+ * Common validation schemas shared across all Pars packages.
+ * Includes primitive validators, pagination, and response wrappers.
+ *
+ * @example
+ * ```typescript
+ * import { uuid, email, pagination, successResponse } from '@parsrun/types';
+ *
+ * // Validate a UUID
+ * const id = uuid('550e8400-e29b-41d4-a716-446655440000');
+ *
+ * // Create paginated response schema
+ * const usersResponse = paginatedResponse(user.array());
+ * ```
  */
 
 import { type } from "arktype";
@@ -143,36 +155,54 @@ export const validationErrorDetail = type({
 // Type Exports
 // ============================================================================
 
+/** UUID v4 string type */
 export type UUID = typeof uuid.infer;
+/** ISO 8601 timestamp string type */
 export type Timestamp = typeof timestamp.infer;
+/** Valid email address string type */
 export type Email = typeof email.infer;
+/** Valid URL string type */
 export type Url = typeof url.infer;
+/** Non-empty string type (length >= 1) */
 export type NonEmptyString = typeof nonEmptyString.infer;
+/** Positive integer type (> 0) */
 export type PositiveInt = typeof positiveInt.infer;
+/** Non-negative integer type (>= 0) */
 export type NonNegativeInt = typeof nonNegativeInt.infer;
 
+/** Entity status: 'active' | 'inactive' | 'suspended' | 'deleted' */
 export type Status = typeof status.infer;
+/** Session status: 'active' | 'expired' | 'revoked' */
 export type SessionStatus = typeof sessionStatus.infer;
 
+/** Pagination request parameters */
 export type Pagination = typeof pagination.infer;
+/** Pagination metadata in responses */
 export type PaginationMeta = typeof paginationMeta.infer;
+/** Cursor-based pagination request */
 export type CursorPagination = typeof cursorPagination.infer;
+/** Cursor-based pagination metadata */
 export type CursorPaginationMeta = typeof cursorPaginationMeta.infer;
 
+/** Standard error response structure */
 export type ErrorResponse = typeof errorResponse.infer;
+/** Pars framework error structure */
 export type ParsError = typeof parsError.infer;
+/** Validation error detail with path and message */
 export type ValidationErrorDetail = typeof validationErrorDetail.infer;
 
 // ============================================================================
 // API Response Interfaces (for TypeScript convenience)
 // ============================================================================
 
+/** Generic API response wrapper */
 export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
   message?: string;
 }
 
+/** API error response structure */
 export interface ApiErrorResponse {
   success: false;
   error: {
@@ -183,6 +213,7 @@ export interface ApiErrorResponse {
   message?: string;
 }
 
+/** Paginated API response with offset-based pagination */
 export interface ApiPaginatedResponse<T = unknown> {
   success: boolean;
   data: T[];
@@ -190,6 +221,7 @@ export interface ApiPaginatedResponse<T = unknown> {
   message?: string;
 }
 
+/** Paginated API response with cursor-based pagination */
 export interface ApiCursorPaginatedResponse<T = unknown> {
   success: boolean;
   data: T[];

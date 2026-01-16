@@ -1,6 +1,15 @@
 /**
- * @parsrun/types - Tenant Schemas
- * Multi-tenant related validation schemas
+ * @module
+ * Multi-tenant validation schemas for SaaS applications.
+ * Includes tenant entity, membership, and invitation types.
+ *
+ * @example
+ * ```typescript
+ * import { tenant, createTenantRequest, type Tenant } from '@parsrun/types';
+ *
+ * // Validate tenant creation
+ * const result = createTenantRequest({ name: 'Acme Corp' });
+ * ```
  */
 
 import { type } from "arktype";

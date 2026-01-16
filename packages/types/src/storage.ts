@@ -1,6 +1,20 @@
 /**
- * @parsrun/types - Storage Schemas
- * File storage validation schemas
+ * @module
+ * File storage validation schemas for upload and retrieval.
+ * Supports local, S3, R2, and GCS providers.
+ *
+ * @example
+ * ```typescript
+ * import { uploadOptions, fileMetadata, type FileMetadata } from '@parsrun/types';
+ *
+ * const file: FileMetadata = {
+ *   id: '...',
+ *   filename: 'document.pdf',
+ *   mimeType: 'application/pdf',
+ *   size: 1024,
+ *   bucket: 'uploads'
+ * };
+ * ```
  */
 
 import { type } from "arktype";

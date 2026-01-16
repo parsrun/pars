@@ -1,6 +1,6 @@
 /**
- * @parsrun/auth - Passwordless-First Authentication
- *
+ * @module
+ * Passwordless-first authentication for Pars.
  * A provider-based, multi-runtime authentication library.
  *
  * @example

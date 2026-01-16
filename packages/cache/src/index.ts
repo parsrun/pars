@@ -1,6 +1,6 @@
 /**
- * @parsrun/cache
- * Edge-compatible caching for Pars
+ * @module
+ * Edge-compatible caching for Pars.
  *
  * Supports multiple adapters:
  * - Memory (development)

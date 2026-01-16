@@ -1,7 +1,23 @@
 /**
- * @parsrun/core - Environment Variables
- * Runtime-agnostic environment variable access
- * Works in Node.js, Deno, Bun, and Cloudflare Workers
+ * @module
+ * Runtime-agnostic environment variable access.
+ * Works in Node.js, Deno, Bun, and Cloudflare Workers.
+ *
+ * @example
+ * ```typescript
+ * import { getEnv, requireEnv, getEnvNumber, isDevelopment } from '@parsrun/core';
+ *
+ * // Get optional env var with default
+ * const port = getEnvNumber('PORT', 3000);
+ *
+ * // Get required env var (throws if missing)
+ * const apiKey = requireEnv('API_KEY');
+ *
+ * // Check environment
+ * if (isDevelopment()) {
+ *   console.log('Running in development mode');
+ * }
+ * ```
  */
 
 import { runtime } from "./runtime.js";

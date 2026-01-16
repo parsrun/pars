@@ -1,6 +1,6 @@
 /**
- * @parsrun/payments
- * Edge-compatible payment processing for Pars
+ * @module
+ * Edge-compatible payment processing for Pars.
  *
  * Supports multiple providers:
  * - Stripe

@@ -1,6 +1,6 @@
 /**
- * @parsrun/storage
- * Edge-compatible storage abstraction for Pars
+ * @module
+ * Edge-compatible storage abstraction for Pars.
  *
  * Supports:
  * - AWS S3

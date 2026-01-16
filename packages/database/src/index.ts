@@ -1,6 +1,6 @@
 /**
- * @parsrun/database
- * Database utilities for Pars - Drizzle ORM helpers, multi-runtime support
+ * @module
+ * Database utilities for Pars - Drizzle ORM helpers, multi-runtime support.
  *
  * Supports:
  * - PostgreSQL (via postgres.js)

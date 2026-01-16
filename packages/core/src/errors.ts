@@ -1,7 +1,28 @@
 /**
- * @parsrun/core - Error Classes
+ * @module
+ * Error classes for the Pars framework.
+ * Provides typed errors for auth, validation, rate limiting, and more.
+ *
+ * @example
+ * ```typescript
+ * import { NotFoundError, ValidationError, UnauthorizedError } from '@parsrun/core';
+ *
+ * // Throw typed errors
+ * throw new NotFoundError('User');
+ * throw new ValidationError('Invalid input', [{ field: 'email', message: 'Invalid format' }]);
+ * throw new UnauthorizedError('Token expired');
+ * ```
  */
 
+/**
+ * Base error class for all Pars framework errors.
+ * Includes error code, HTTP status code, and optional details.
+ *
+ * @example
+ * ```typescript
+ * throw new ParsError('Something went wrong', 'CUSTOM_ERROR', 500, { extra: 'info' });
+ * ```
+ */
 export class ParsError extends Error {
   public readonly code: string;
   public readonly statusCode: number;
@@ -36,6 +57,7 @@ export class ParsError extends Error {
 // AUTH ERRORS
 // ============================================
 
+/** Base class for authentication-related errors (HTTP 401/403) */
 export class AuthError extends ParsError {
   constructor(
     message: string,
@@ -48,6 +70,7 @@ export class AuthError extends ParsError {
   }
 }
 
+/** User is not authenticated (HTTP 401) */
 export class UnauthorizedError extends AuthError {
   constructor(message: string = "Unauthorized", details?: Record<string, unknown>) {
     super(message, "UNAUTHORIZED", 401, details);
@@ -55,6 +78,7 @@ export class UnauthorizedError extends AuthError {
   }
 }
 
+/** User lacks permission for the requested action (HTTP 403) */
 export class ForbiddenError extends AuthError {
   constructor(message: string = "Forbidden", details?: Record<string, unknown>) {
     super(message, "FORBIDDEN", 403, details);
@@ -158,6 +182,7 @@ export class MembershipExpiredError extends MembershipError {
 // VALIDATION ERRORS
 // ============================================
 
+/** Request validation failed with one or more field errors (HTTP 400) */
 export class ValidationError extends ParsError {
   constructor(
     message: string = "Validation failed",
@@ -169,9 +194,13 @@ export class ValidationError extends ParsError {
   }
 }
 
+/** Details about a single validation error */
 export interface ValidationErrorDetail {
+  /** Field path that failed validation */
   field: string;
+  /** Human-readable error message */
   message: string;
+  /** Optional error code for programmatic handling */
   code?: string;
 }
 
@@ -179,6 +208,7 @@ export interface ValidationErrorDetail {
 // RATE LIMIT ERRORS
 // ============================================
 
+/** Too many requests - rate limit exceeded (HTTP 429) */
 export class RateLimitError extends ParsError {
   constructor(
     message: string = "Rate limit exceeded",
@@ -194,6 +224,7 @@ export class RateLimitError extends ParsError {
 // NOT FOUND ERRORS
 // ============================================
 
+/** Requested resource was not found (HTTP 404) */
 export class NotFoundError extends ParsError {
   constructor(
     resource: string = "Resource",
@@ -209,6 +240,7 @@ export class NotFoundError extends ParsError {
 // CONFLICT ERRORS
 // ============================================
 
+/** Resource conflict, such as duplicate entry (HTTP 409) */
 export class ConflictError extends ParsError {
   constructor(message: string = "Conflict", details?: Record<string, unknown>) {
     super(message, "CONFLICT", 409, details);

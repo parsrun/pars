@@ -1,21 +1,27 @@
 /**
- * @parsrun/types
- * Core types and validation schemas for Pars framework
- *
- * Uses ArkType for runtime validation + type inference
+ * @module
+ * Core types and validation schemas for the Pars framework.
+ * Uses ArkType for runtime validation with automatic TypeScript type inference.
  *
  * @example
  * ```typescript
- * import { user, User, validateWithSchema } from '@parsrun/types';
+ * import { user, validateWithSchema, safeValidate, type User } from '@parsrun/types';
  *
- * // Runtime validation
- * const result = user(data);
- * if (result instanceof type.errors) {
- *   console.error(result.summary);
+ * // Runtime validation (throws on error)
+ * const userData = validateWithSchema(user, input);
+ *
+ * // Safe validation (returns result object)
+ * const result = safeValidate(user, input);
+ * if (result.success) {
+ *   console.log(result.data);
+ * } else {
+ *   console.error(result.errors);
  * }
  *
- * // Type inference
- * const userData: User = result;
+ * // Type guard
+ * if (isValid(user, input)) {
+ *   // input is typed as User
+ * }
  * ```
  */
 
@@ -75,8 +81,13 @@ export * from "./server";
 import { type, type Type } from "arktype";
 
 /**
- * Validate data against an ArkType schema
- * Returns the validated data or throws an error
+ * Validate data against an ArkType schema.
+ * Returns the validated data or throws an error.
+ *
+ * @param schema - The ArkType schema to validate against
+ * @param data - The data to validate
+ * @returns The validated and typed data
+ * @throws Error if validation fails
  *
  * @example
  * ```typescript
@@ -98,8 +109,12 @@ export function validateWithSchema<T extends Type>(
 }
 
 /**
- * Safely validate data against an ArkType schema
- * Returns a result object with success/error
+ * Safely validate data against an ArkType schema.
+ * Returns a result object instead of throwing.
+ *
+ * @param schema - The ArkType schema to validate against
+ * @param data - The data to validate
+ * @returns Object with success status and either data or errors
  *
  * @example
  * ```typescript
@@ -131,7 +146,11 @@ export function safeValidate<T extends Type>(
 }
 
 /**
- * Check if data matches an ArkType schema (type guard)
+ * Check if data matches an ArkType schema (type guard).
+ *
+ * @param schema - The ArkType schema to validate against
+ * @param data - The data to check
+ * @returns True if data matches schema, with TypeScript type narrowing
  *
  * @example
  * ```typescript
@@ -149,7 +168,10 @@ export function isValid<T extends Type>(
 }
 
 /**
- * Format ArkType errors to a user-friendly object
+ * Format ArkType errors to a user-friendly object.
+ *
+ * @param errors - The ArkType errors to format
+ * @returns Object mapping field paths to error messages
  *
  * @example
  * ```typescript

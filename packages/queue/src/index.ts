@@ -1,6 +1,6 @@
 /**
- * @parsrun/queue
- * Edge-compatible message queues for Pars
+ * @module
+ * Edge-compatible message queues for Pars.
  *
  * Supports multiple adapters:
  * - Memory (development)

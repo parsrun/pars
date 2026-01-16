@@ -1,7 +1,25 @@
 /**
- * @parsrun/core - Logger
- * Lightweight, edge-compatible structured logging
- * Can be used standalone or as abstraction over pino/winston in Node.js
+ * @module
+ * Lightweight, edge-compatible structured logging.
+ * Works standalone or as abstraction over pino/winston in Node.js.
+ *
+ * @example
+ * ```typescript
+ * import { createLogger, Logger, LogLevel } from '@parsrun/core';
+ *
+ * // Create a logger
+ * const log = createLogger({
+ *   name: 'my-service',
+ *   level: 'DEBUG',
+ *   pretty: true
+ * });
+ *
+ * log.info('Server started', { port: 3000 });
+ * log.error('Request failed', error, { userId: '123' });
+ *
+ * // Create child logger with context
+ * const requestLog = log.child({ requestId: 'abc123' });
+ * ```
  */
 
 import { getEnv } from "./env.js";

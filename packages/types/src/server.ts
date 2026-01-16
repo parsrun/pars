@@ -1,6 +1,18 @@
 /**
- * @parsrun/types - Server Schemas
- * HTTP server validation schemas
+ * @module
+ * HTTP server validation schemas for request/response handling.
+ * Includes pagination, CORS, rate limiting, and middleware context types.
+ *
+ * @example
+ * ```typescript
+ * import { serverConfig, healthResponse, type ServerConfig } from '@parsrun/types';
+ *
+ * const config: ServerConfig = {
+ *   port: 3000,
+ *   cors: { origin: '*', credentials: true },
+ *   rateLimit: { windowMs: 60000, max: 100 }
+ * };
+ * ```
  */
 
 import { type } from "arktype";
