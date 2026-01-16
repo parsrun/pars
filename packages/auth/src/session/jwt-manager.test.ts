@@ -245,7 +245,7 @@ describe("@parsrun/auth - JwtManager", () => {
       jwtManager.rotateKey("secret-3", { maxPreviousSecrets: 2 });
 
       const config = jwtManager.getConfig();
-      expect(config.previousSecrets.length).toBeLessThanOrEqual(2);
+      expect(config.previousSecrets?.length ?? 0).toBeLessThanOrEqual(2);
     });
   });
 

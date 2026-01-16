@@ -297,27 +297,31 @@ describe("@parsrun/server - RBAC", () => {
 
   describe("StandardRoles", () => {
     it("should have OWNER role", () => {
-      expect(StandardRoles.OWNER).toBeDefined();
-      expect(StandardRoles.OWNER.name).toBe("owner");
-      expect(StandardRoles.OWNER.permissions).toContain("*");
-      expect(StandardRoles.OWNER.isSystem).toBe(true);
+      const owner = StandardRoles["OWNER"];
+      expect(owner).toBeDefined();
+      expect(owner!.name).toBe("owner");
+      expect(owner!.permissions).toContain("*");
+      expect(owner!.isSystem).toBe(true);
     });
 
     it("should have ADMIN role", () => {
-      expect(StandardRoles.ADMIN).toBeDefined();
-      expect(StandardRoles.ADMIN.name).toBe("admin");
-      expect(StandardRoles.ADMIN.isSystem).toBe(true);
+      const admin = StandardRoles["ADMIN"];
+      expect(admin).toBeDefined();
+      expect(admin!.name).toBe("admin");
+      expect(admin!.isSystem).toBe(true);
     });
 
     it("should have MEMBER role", () => {
-      expect(StandardRoles.MEMBER).toBeDefined();
-      expect(StandardRoles.MEMBER.name).toBe("member");
+      const member = StandardRoles["MEMBER"];
+      expect(member).toBeDefined();
+      expect(member!.name).toBe("member");
     });
 
     it("should have VIEWER role", () => {
-      expect(StandardRoles.VIEWER).toBeDefined();
-      expect(StandardRoles.VIEWER.name).toBe("viewer");
-      expect(StandardRoles.VIEWER.permissions).toContain("*:read");
+      const viewer = StandardRoles["VIEWER"];
+      expect(viewer).toBeDefined();
+      expect(viewer!.name).toBe("viewer");
+      expect(viewer!.permissions).toContain("*:read");
     });
   });
 
