@@ -133,7 +133,7 @@ export function isServer(): boolean {
 export function getRuntimeVersion(): string {
   switch (runtime) {
     case "node":
-      return `Node.js ${process.versions.node}`;
+      return `Node.js ${process?.versions?.node ?? "unknown"}`;
     case "bun":
       return `Bun ${(globalThis as any).Bun.version}`;
     case "deno":
