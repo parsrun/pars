@@ -30,7 +30,7 @@ jobs:
         run: pnpm build
 
       - name: Publish to npm (OIDC)
-        run: pnpm -r publish --access public --no-git-checks
+        run: pnpm -r publish --access public --no-git-checks --provenance
 
   publish-jsr:
     runs-on: ubuntu-latest
@@ -47,52 +47,52 @@ jobs:
 
       - name: Publish @parsrun/core to JSR
         working-directory: packages/core
-        run: deno publish --allow-slow-types
+        run: deno publish --allow-slow-types --unstable-sloppy-imports
 
       - name: Publish @parsrun/types to JSR
         working-directory: packages/types
-        run: deno publish --allow-slow-types
+        run: deno publish --allow-slow-types --unstable-sloppy-imports
 
       - name: Publish @parsrun/service to JSR
         working-directory: packages/service
-        run: deno publish --allow-slow-types
+        run: deno publish --allow-slow-types --unstable-sloppy-imports
 
       - name: Publish @parsrun/auth to JSR
         working-directory: packages/auth
-        run: deno publish --allow-slow-types
+        run: deno publish --allow-slow-types --unstable-sloppy-imports
 
       - name: Publish @parsrun/server to JSR
         working-directory: packages/server
-        run: deno publish --allow-slow-types
+        run: deno publish --allow-slow-types --unstable-sloppy-imports
 
       - name: Publish @parsrun/database to JSR
         working-directory: packages/database
-        run: deno publish --allow-slow-types
+        run: deno publish --allow-slow-types --unstable-sloppy-imports
 
       - name: Publish @parsrun/cache to JSR
         working-directory: packages/cache
-        run: deno publish --allow-slow-types
+        run: deno publish --allow-slow-types --unstable-sloppy-imports
 
       - name: Publish @parsrun/email to JSR
         working-directory: packages/email
-        run: deno publish --allow-slow-types
+        run: deno publish --allow-slow-types --unstable-sloppy-imports
 
       - name: Publish @parsrun/payments to JSR
         working-directory: packages/payments
-        run: deno publish --allow-slow-types
+        run: deno publish --allow-slow-types --unstable-sloppy-imports
 
       - name: Publish @parsrun/queue to JSR
         working-directory: packages/queue
-        run: deno publish --allow-slow-types
+        run: deno publish --allow-slow-types --unstable-sloppy-imports
 
       - name: Publish @parsrun/realtime to JSR
         working-directory: packages/realtime
-        run: deno publish --allow-slow-types
+        run: deno publish --allow-slow-types --unstable-sloppy-imports
 
       - name: Publish @parsrun/storage to JSR
         working-directory: packages/storage
-        run: deno publish --allow-slow-types
+        run: deno publish --allow-slow-types --unstable-sloppy-imports
 
       - name: Publish @parsrun/service-adapters to JSR
         working-directory: packages/service-adapters
-        run: deno publish --allow-slow-types
+        run: deno publish --allow-slow-types --unstable-sloppy-imports
