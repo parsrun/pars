@@ -1,24 +1,24 @@
 # Pars Basic Service Example
 
-Bu örnek, Pars framework'ünün temel özelliklerini gösterir:
+This example demonstrates the core features of the Pars framework:
 
 - ✅ Service definition (queries, mutations, events)
-- ✅ RPC server ve client iletişimi
+- ✅ RPC server and client communication
 - ✅ Event-driven architecture
 - ✅ Cross-service event handling
 - ✅ HTTP server (Hono)
 
-## Kurulum
+## Installation
 
 ```bash
 cd examples/basic-service
 pnpm install
 ```
 
-## Çalıştırma
+## Running
 
 ```bash
-# Development (tsx ile hot reload)
+# Development (hot reload with tsx)
 pnpm dev
 
 # Production
@@ -26,7 +26,7 @@ pnpm build
 pnpm start
 ```
 
-## Proje Yapısı
+## Project Structure
 
 ```
 src/
@@ -40,31 +40,31 @@ src/
         └── handlers.ts
 ```
 
-## Ne Yapar?
+## What Does It Do?
 
-1. **Users Service**: Kullanıcı CRUD işlemleri
-   - `getUser` - Kullanıcı getir
-   - `listUsers` - Kullanıcıları listele
-   - `createUser` - Yeni kullanıcı oluştur
-   - `updateUser` - Kullanıcı güncelle
-   - `deleteUser` - Kullanıcı sil
+1. **Users Service**: User CRUD operations
+   - `getUser` - Get a user
+   - `listUsers` - List users
+   - `createUser` - Create a new user
+   - `updateUser` - Update a user
+   - `deleteUser` - Delete a user
 
-2. **Email Service**: E-posta gönderimi
-   - `getStatus` - Servis durumu
-   - `sendWelcome` - Hoşgeldin e-postası
-   - `send` - Genel e-posta
+2. **Email Service**: Email sending
+   - `getStatus` - Service status
+   - `sendWelcome` - Welcome email
+   - `send` - General email
 
 3. **Event Flow**:
    ```
    createUser() → user.created event → sendWelcome() → email.sent event
    ```
 
-## API Kullanımı
+## API Usage
 
-### RPC İsteği
+### RPC Request
 
 ```bash
-# Kullanıcı oluştur
+# Create user
 curl -X POST http://localhost:3000/rpc/users \
   -H "Content-Type: application/json" \
   -d '{
@@ -78,7 +78,7 @@ curl -X POST http://localhost:3000/rpc/users \
     }
   }'
 
-# Kullanıcı getir
+# Get user
 curl -X POST http://localhost:3000/rpc/users \
   -H "Content-Type: application/json" \
   -d '{
@@ -91,7 +91,7 @@ curl -X POST http://localhost:3000/rpc/users \
     }
   }'
 
-# Kullanıcıları listele
+# List users
 curl -X POST http://localhost:3000/rpc/users \
   -H "Content-Type: application/json" \
   -d '{
@@ -105,7 +105,7 @@ curl -X POST http://localhost:3000/rpc/users \
   }'
 ```
 
-## Öğrenme Noktaları
+## Learning Points
 
 ### 1. Service Definition
 
@@ -156,9 +156,9 @@ const client = createRpcClient({
 const user = await client.call("getUser", { userId: "123" });
 ```
 
-## Sonraki Adımlar
+## Next Steps
 
-- HTTP transport ile uzak servis çağrısı
-- Circuit breaker ve retry pattern'leri
+- Remote service calls with HTTP transport
+- Circuit breaker and retry patterns
 - Distributed tracing
 - Cloudflare Workers deployment

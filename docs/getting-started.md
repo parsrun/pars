@@ -1,24 +1,24 @@
 # Getting Started with Pars
 
-Bu rehber, Pars framework'ü ile hızlıca başlamanızı sağlar.
+This guide will help you get started quickly with the Pars framework.
 
-## Kurulum
+## Installation
 
 ```bash
-# Core paketler
+# Core packages
 pnpm add @parsrun/core @parsrun/server @parsrun/service
 
-# Veritabanı (opsiyonel)
+# Database (optional)
 pnpm add @parsrun/database drizzle-orm
 
-# Auth (opsiyonel)
+# Auth (optional)
 pnpm add @parsrun/auth
 
-# Cache (opsiyonel)
+# Cache (optional)
 pnpm add @parsrun/cache
 ```
 
-## Proje Yapısı
+## Project Structure
 
 ```
 my-app/
@@ -39,14 +39,14 @@ my-app/
 │       └── cache.ts
 ├── package.json
 ├── tsconfig.json
-└── wrangler.toml         # Cloudflare için
+└── wrangler.toml         # For Cloudflare
 ```
 
-## Temel Kavramlar
+## Core Concepts
 
 ### 1. Service Definition
 
-Her servis, queries (okuma), mutations (yazma) ve events (async iletişim) tanımlar:
+Each service defines queries (read), mutations (write), and events (async communication):
 
 ```typescript
 // src/services/users/definition.ts
@@ -89,7 +89,7 @@ export const usersService = defineService({
 
 ### 2. Service Handlers
 
-Handler'lar service definition'a karşılık gelen iş mantığını içerir:
+Handlers contain the business logic corresponding to the service definition:
 
 ```typescript
 // src/services/users/handlers.ts
@@ -151,24 +151,24 @@ export function createUsersHandlers(deps: { db: Database; eventTransport: EventT
 
 ### 3. Service Client
 
-Diğer servislerden çağrı yapmak için client kullanın:
+Use the client to make calls from other services:
 
 ```typescript
-// Başka bir servisten users servisini kullan
+// Use users service from another service
 import { useService } from "@parsrun/service";
 
 async function handleSubscriptionCanceled(customerId: string) {
   const users = useService("users");
 
-  // Query çağır
+  // Call query
   const user = await users.query("getUser", { userId: customerId });
 
-  // Mutation çağır
+  // Call mutation
   await users.mutate("updateUser", { userId: customerId, name: "Canceled User" });
 }
 ```
 
-## Adım Adım Örnek
+## Step-by-Step Example
 
 ### 1. Entry Point
 
@@ -180,19 +180,19 @@ import { createHttpHandler } from "@parsrun/service/rpc";
 import { createUsersHandlers } from "./services/users/handlers";
 import { createEmailHandlers } from "./services/email/handlers";
 
-// Event transport (tüm servisler paylaşır)
+// Event transport (shared by all services)
 const eventTransport = createMemoryEventTransport();
 
-// Database (örnek)
+// Database (example)
 const db = createDatabase();
 
-// Servisleri oluştur
+// Create services
 const users = createUsersHandlers({ db, eventTransport });
 const email = createEmailHandlers({ eventTransport });
 
-// Event dinleyicileri kaydet
+// Register event listeners
 eventTransport.subscribe("user.created", async (event) => {
-  // Hoşgeldin e-postası gönder
+  // Send welcome email
   await email.server.handle({
     id: crypto.randomUUID(),
     service: "email",
@@ -205,7 +205,7 @@ eventTransport.subscribe("user.created", async (event) => {
 // HTTP app
 const app = new Hono();
 
-// RPC endpoint'leri
+// RPC endpoints
 app.post("/rpc/users", async (c) => {
   const handler = createHttpHandler(users.server);
   return handler(c.req.raw);
@@ -222,7 +222,7 @@ app.get("/health", (c) => c.json({ status: "ok" }));
 export default app;
 ```
 
-### 2. Cloudflare Workers için
+### 2. For Cloudflare Workers
 
 ```typescript
 // src/index.ts (Cloudflare Workers)
@@ -238,7 +238,7 @@ interface Env {
 const app = new Hono<{ Bindings: Env }>();
 
 app.post("/api/users", async (c) => {
-  // Service binding ile RPC
+  // RPC via service binding
   const transport = new WorkerRpcTransport({ binding: c.env.USERS_SERVICE });
 
   const response = await transport.call({
@@ -274,19 +274,19 @@ export default {
 import { CircuitBreaker } from "@parsrun/service/resilience";
 
 const circuitBreaker = new CircuitBreaker({
-  failureThreshold: 5,    // 5 hata sonrası aç
-  resetTimeout: 30000,    // 30 saniye sonra half-open
-  successThreshold: 2,    // 2 başarı ile kapat
+  failureThreshold: 5,    // Open after 5 failures
+  resetTimeout: 30000,    // Half-open after 30 seconds
+  successThreshold: 2,    // Close after 2 successes
 });
 
-// Kullanım
+// Usage
 try {
   const result = await circuitBreaker.execute(async () => {
     return await externalApi.call();
   });
 } catch (error) {
   if (error.message === "Circuit breaker open") {
-    // Fallback davranış
+    // Fallback behavior
     return cachedResult;
   }
   throw error;
@@ -323,7 +323,7 @@ import { withTimeout, TimeoutExceededError } from "@parsrun/service/resilience";
 
 const fetchWithTimeout = withTimeout(
   async () => fetch("https://slow-api.com/data"),
-  5000 // 5 saniye
+  5000 // 5 seconds
 );
 
 try {
@@ -346,11 +346,11 @@ const tracer = createTracer({
   exporter: new ConsoleExporter({ pretty: true }),
 });
 
-// Otomatik span oluşturma
+// Automatic span creation
 const result = await tracer.trace("process-order", async (span) => {
   span?.attributes["order.id"] = orderId;
 
-  // Alt işlemler
+  // Child operations
   await tracer.trace("validate-order", async () => {
     // ...
   });
@@ -391,12 +391,12 @@ RESEND_API_KEY=re_xxxxx
 STRIPE_SECRET_KEY=sk_test_xxxxx
 ```
 
-## Sonraki Adımlar
+## Next Steps
 
-1. **Auth Entegrasyonu**: `@parsrun/auth` ile passwordless authentication ekleyin
-2. **Database**: `@parsrun/database` ile Drizzle ORM kullanın
-3. **Caching**: `@parsrun/cache` ile Redis/Upstash cache ekleyin
-4. **Payments**: `@parsrun/payments` ile Stripe entegrasyonu yapın
-5. **Email**: `@parsrun/email` ile transactional email gönderin
+1. **Auth Integration**: Add passwordless authentication with `@parsrun/auth`
+2. **Database**: Use Drizzle ORM with `@parsrun/database`
+3. **Caching**: Add Redis/Upstash cache with `@parsrun/cache`
+4. **Payments**: Integrate Stripe with `@parsrun/payments`
+5. **Email**: Send transactional emails with `@parsrun/email`
 
-Detaylı API dokümantasyonu için [API Reference](./api/service.md) sayfasına bakın.
+For detailed API documentation, see the [API Reference](./api/service.md) page.

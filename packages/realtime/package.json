@@ -1,6 +1,6 @@
 {
   "name": "@parsrun/realtime",
-  "version": "0.1.31",
+  "version": "0.1.32",
   "description": "Edge-compatible realtime for Pars - SSE, WebSocket, Durable Objects",
   "type": "module",
   "main": "./dist/index.js",
