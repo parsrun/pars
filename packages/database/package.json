@@ -1,6 +1,6 @@
 {
   "name": "@parsrun/database",
-  "version": "0.1.32",
+  "version": "0.1.33",
   "description": "Database utilities for Pars - Drizzle ORM helpers, migrations, multi-runtime support",
   "type": "module",
   "main": "./dist/index.js",
@@ -57,9 +57,9 @@
     "drizzle-orm": "^0.44.0"
   },
   "devDependencies": {
-    "tsup": "^8.0.0",
-    "typescript": "^5.0.0",
-    "vitest": "^2.0.0"
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
   },
   "peerDependencies": {
     "@neondatabase/serverless": "^0.10.0",

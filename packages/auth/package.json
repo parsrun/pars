@@ -1,6 +1,6 @@
 {
   "name": "@parsrun/auth",
-  "version": "0.1.32",
+  "version": "0.1.33",
   "description": "Passwordless-first, multi-runtime authentication for Pars framework",
   "keywords": [
     "pars",
@@ -73,7 +73,7 @@
     "jose": "^5.9.6"
   },
   "devDependencies": {
-    "drizzle-orm": "^0.38.4",
+    "drizzle-orm": "^0.44.0",
     "hono": "^4.6.14",
     "tsup": "^8.3.5",
     "typescript": "^5.7.2",

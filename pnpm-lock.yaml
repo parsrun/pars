@@ -49,8 +49,8 @@ importers:
         version: 5.10.0
     devDependencies:
       drizzle-orm:
-        specifier: ^0.38.4
-        version: 0.38.4(@cloudflare/workers-types@4.20260109.0)(@neondatabase/serverless@0.10.4)(@types/pg@8.11.6)(postgres@3.4.8)(react@19.2.3)
+        specifier: ^0.44.0
+        version: 0.44.7(@cloudflare/workers-types@4.20260109.0)(@neondatabase/serverless@0.10.4)(@types/pg@8.11.6)(@upstash/redis@1.36.1)(postgres@3.4.8)
       hono:
         specifier: ^4.6.14
         version: 4.11.3
@@ -80,13 +80,13 @@ importers:
         version: 5.9.1
     devDependencies:
       tsup:
-        specifier: ^8.0.0
+        specifier: ^8.3.5
         version: 8.5.1(postcss@8.5.6)(typescript@5.9.3)
       typescript:
-        specifier: ^5.0.0
+        specifier: ^5.7.2
         version: 5.9.3
       vitest:
-        specifier: ^2.0.0
+        specifier: ^2.1.8
         version: 2.1.9(@types/node@22.19.5)
 
   packages/core:
@@ -117,13 +117,13 @@ importers:
         version: 3.4.8
     devDependencies:
       tsup:
-        specifier: ^8.0.0
+        specifier: ^8.3.5
         version: 8.5.1(postcss@8.5.6)(typescript@5.9.3)
       typescript:
-        specifier: ^5.0.0
+        specifier: ^5.7.2
         version: 5.9.3
       vitest:
-        specifier: ^2.0.0
+        specifier: ^2.1.8
         version: 2.1.9(@types/node@22.19.5)
 
   packages/email:
@@ -139,13 +139,13 @@ importers:
         version: 4.8.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
     devDependencies:
       tsup:
-        specifier: ^8.0.0
+        specifier: ^8.3.5
         version: 8.5.1(postcss@8.5.6)(typescript@5.9.3)
       typescript:
-        specifier: ^5.0.0
+        specifier: ^5.7.2
         version: 5.9.3
       vitest:
-        specifier: ^2.0.0
+        specifier: ^2.1.8
         version: 2.1.9(@types/node@22.19.5)
 
   packages/payments:
@@ -158,16 +158,16 @@ importers:
         version: link:../types
     devDependencies:
       drizzle-orm:
-        specifier: ^0.38.0
-        version: 0.38.4(@cloudflare/workers-types@4.20260109.0)(@neondatabase/serverless@0.10.4)(@types/pg@8.11.6)(postgres@3.4.8)(react@19.2.3)
+        specifier: ^0.44.0
+        version: 0.44.7(@cloudflare/workers-types@4.20260109.0)(@neondatabase/serverless@0.10.4)(@types/pg@8.11.6)(@upstash/redis@1.36.1)(postgres@3.4.8)
       tsup:
-        specifier: ^8.0.0
+        specifier: ^8.3.5
         version: 8.5.1(postcss@8.5.6)(typescript@5.9.3)
       typescript:
-        specifier: ^5.0.0
+        specifier: ^5.7.2
         version: 5.9.3
       vitest:
-        specifier: ^2.0.0
+        specifier: ^2.1.8
         version: 2.1.9(@types/node@22.19.5)
 
   packages/queue:
@@ -183,13 +183,13 @@ importers:
         version: 2.8.4
     devDependencies:
       tsup:
-        specifier: ^8.0.0
+        specifier: ^8.3.5
         version: 8.5.1(postcss@8.5.6)(typescript@5.9.3)
       typescript:
-        specifier: ^5.0.0
+        specifier: ^5.7.2
         version: 5.9.3
       vitest:
-        specifier: ^2.0.0
+        specifier: ^2.1.8
         version: 2.1.9(@types/node@22.19.5)
 
   packages/realtime:
@@ -208,13 +208,13 @@ importers:
         specifier: ^4.6.0
         version: 4.11.3
       tsup:
-        specifier: ^8.0.0
+        specifier: ^8.3.5
         version: 8.5.1(postcss@8.5.6)(typescript@5.9.3)
       typescript:
-        specifier: ^5.0.0
+        specifier: ^5.7.2
         version: 5.9.3
       vitest:
-        specifier: ^2.0.0
+        specifier: ^2.1.8
         version: 2.1.9(@types/node@22.19.5)
 
   packages/server:
@@ -302,13 +302,13 @@ importers:
         version: link:../types
     devDependencies:
       tsup:
-        specifier: ^8.0.0
+        specifier: ^8.3.5
         version: 8.5.1(postcss@8.5.6)(typescript@5.9.3)
       typescript:
-        specifier: ^5.0.0
+        specifier: ^5.7.2
         version: 5.9.3
       vitest:
-        specifier: ^2.0.0
+        specifier: ^2.1.8
         version: 2.1.9(@types/node@22.19.5)
 
   packages/types:
@@ -1512,98 +1512,6 @@ packages:
 
   domutils@3.2.2:
     resolution: {integrity: sha512-6kZKyUajlDuqlHKVX1w7gyslj9MPIXzIFiz/rGu35uC1wMi+kMhQwGhl4lt9unC9Vb9INnY9Z3/ZA3+FhASLaw==}
-
-  drizzle-orm@0.38.4:
-    resolution: {integrity: sha512-s7/5BpLKO+WJRHspvpqTydxFob8i1vo2rEx4pY6TGY7QSMuUfWUuzaY0DIpXCkgHOo37BaFC+SJQb99dDUXT3Q==}
-    peerDependencies:
-      '@aws-sdk/client-rds-data': '>=3'
-      '@cloudflare/workers-types': '>=4'
-      '@electric-sql/pglite': '>=0.2.0'
-      '@libsql/client': '>=0.10.0'
-      '@libsql/client-wasm': '>=0.10.0'
-      '@neondatabase/serverless': '>=0.10.0'
-      '@op-engineering/op-sqlite': '>=2'
-      '@opentelemetry/api': ^1.4.1
-      '@planetscale/database': '>=1'
-      '@prisma/client': '*'
-      '@tidbcloud/serverless': '*'
-      '@types/better-sqlite3': '*'
-      '@types/pg': '*'
-      '@types/react': '>=18'
-      '@types/sql.js': '*'
-      '@vercel/postgres': '>=0.8.0'
-      '@xata.io/client': '*'
-      better-sqlite3: '>=7'
-      bun-types: '*'
-      expo-sqlite: '>=14.0.0'
-      knex: '*'
-      kysely: '*'
-      mysql2: '>=2'
-      pg: '>=8'
-      postgres: '>=3'
-      prisma: '*'
-      react: '>=18'
-      sql.js: '>=1'
-      sqlite3: '>=5'
-    peerDependenciesMeta:
-      '@aws-sdk/client-rds-data':
-        optional: true
-      '@cloudflare/workers-types':
-        optional: true
-      '@electric-sql/pglite':
-        optional: true
-      '@libsql/client':
-        optional: true
-      '@libsql/client-wasm':
-        optional: true
-      '@neondatabase/serverless':
-        optional: true
-      '@op-engineering/op-sqlite':
-        optional: true
-      '@opentelemetry/api':
-        optional: true
-      '@planetscale/database':
-        optional: true
-      '@prisma/client':
-        optional: true
-      '@tidbcloud/serverless':
-        optional: true
-      '@types/better-sqlite3':
-        optional: true
-      '@types/pg':
-        optional: true
-      '@types/react':
-        optional: true
-      '@types/sql.js':
-        optional: true
-      '@vercel/postgres':
-        optional: true
-      '@xata.io/client':
-        optional: true
-      better-sqlite3:
-        optional: true
-      bun-types:
-        optional: true
-      expo-sqlite:
-        optional: true
-      knex:
-        optional: true
-      kysely:
-        optional: true
-      mysql2:
-        optional: true
-      pg:
-        optional: true
-      postgres:
-        optional: true
-      prisma:
-        optional: true
-      react:
-        optional: true
-      sql.js:
-        optional: true
-      sqlite3:
-        optional: true
 
   drizzle-orm@0.44.7:
     resolution: {integrity: sha512-quIpnYznjU9lHshEOAYLoZ9s3jweleHlZIAWR/jX9gAWNg/JhQ1wj0KGRf7/Zm+obRrYd9GjPVJg790QY9N5AQ==}
@@ -4025,14 +3933,6 @@ snapshots:
       dom-serializer: 2.0.0
       domelementtype: 2.3.0
       domhandler: 5.0.3
-
-  drizzle-orm@0.38.4(@cloudflare/workers-types@4.20260109.0)(@neondatabase/serverless@0.10.4)(@types/pg@8.11.6)(postgres@3.4.8)(react@19.2.3):
-    optionalDependencies:
-      '@cloudflare/workers-types': 4.20260109.0
-      '@neondatabase/serverless': 0.10.4
-      '@types/pg': 8.11.6
-      postgres: 3.4.8
-      react: 19.2.3
 
   drizzle-orm@0.44.7(@cloudflare/workers-types@4.20260109.0)(@neondatabase/serverless@0.10.4)(@types/pg@8.11.6)(@upstash/redis@1.36.1)(postgres@3.4.8):
     optionalDependencies:

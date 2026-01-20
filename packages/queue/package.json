@@ -1,6 +1,6 @@
 {
   "name": "@parsrun/queue",
-  "version": "0.1.32",
+  "version": "0.1.33",
   "description": "Edge-compatible message queues for Pars - Memory, Cloudflare Queues, Upstash QStash",
   "type": "module",
   "main": "./dist/index.js",
@@ -63,9 +63,9 @@
     "@parsrun/types": "workspace:*"
   },
   "devDependencies": {
-    "tsup": "^8.0.0",
-    "typescript": "^5.0.0",
-    "vitest": "^2.0.0"
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
   },
   "peerDependencies": {
     "@upstash/qstash": "^2.0.0"

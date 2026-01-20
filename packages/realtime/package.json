@@ -1,6 +1,6 @@
 {
   "name": "@parsrun/realtime",
-  "version": "0.1.32",
+  "version": "0.1.33",
   "description": "Edge-compatible realtime for Pars - SSE, WebSocket, Durable Objects",
   "type": "module",
   "main": "./dist/index.js",
@@ -66,9 +66,9 @@
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20241205.0",
     "hono": "^4.6.0",
-    "tsup": "^8.0.0",
-    "typescript": "^5.0.0",
-    "vitest": "^2.0.0"
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
   },
   "peerDependencies": {
     "hono": "^4.0.0"

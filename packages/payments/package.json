@@ -1,6 +1,6 @@
 {
   "name": "@parsrun/payments",
-  "version": "0.1.32",
+  "version": "0.1.33",
   "description": "Edge-compatible payment processing for Pars - Stripe, Paddle, iyzico",
   "type": "module",
   "main": "./dist/index.js",
@@ -89,9 +89,9 @@
     }
   },
   "devDependencies": {
-    "drizzle-orm": "^0.38.0",
-    "tsup": "^8.0.0",
-    "typescript": "^5.0.0",
-    "vitest": "^2.0.0"
+    "drizzle-orm": "^0.44.0",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
   }
 }
