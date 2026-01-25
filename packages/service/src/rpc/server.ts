@@ -63,7 +63,9 @@ export type RpcHandlers = {
  */
 export interface RpcServerOptions {
   /** Service definition */
-  definition: ServiceDefinition;
+  definition?: ServiceDefinition;
+  /** Service definition (alias for definition) */
+  service?: ServiceDefinition;
   /** RPC handlers */
   handlers: RpcHandlers;
   /** Logger */
@@ -100,9 +102,14 @@ export class RpcServer {
   private readonly middleware: RpcMiddleware[];
 
   constructor(options: RpcServerOptions) {
-    this.definition = options.definition;
+    // Support both 'definition' and 'service' for backwards compatibility
+    const definition = options.definition ?? options.service;
+    if (!definition) {
+      throw new Error("RpcServerOptions requires either 'definition' or 'service' to be provided");
+    }
+    this.definition = definition;
     this.handlers = options.handlers;
-    this.logger = options.logger ?? createLogger({ name: `rpc:${options.definition.name}` });
+    this.logger = options.logger ?? createLogger({ name: `rpc:${definition.name}` });
     this.defaultTimeout = options.defaultTimeout ?? 30_000;
     this.middleware = options.middleware ?? [];
   }
