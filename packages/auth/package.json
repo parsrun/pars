@@ -1,6 +1,6 @@
 {
   "name": "@parsrun/auth",
-  "version": "0.1.35",
+  "version": "0.1.36",
   "description": "Passwordless-first, multi-runtime authentication for Pars framework",
   "keywords": [
     "pars",
@@ -58,7 +58,9 @@
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",

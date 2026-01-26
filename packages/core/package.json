@@ -1,8 +1,16 @@
 {
   "name": "@parsrun/core",
-  "version": "0.1.35",
+  "version": "0.1.36",
   "description": "Core utilities and types for Pars framework - Edge compatible",
-  "keywords": ["pars", "core", "utilities", "edge", "cloudflare", "deno", "bun"],
+  "keywords": [
+    "pars",
+    "core",
+    "utilities",
+    "edge",
+    "cloudflare",
+    "deno",
+    "bun"
+  ],
   "homepage": "https://pars.run",
   "repository": {
     "type": "git",
@@ -51,7 +59,9 @@
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",

@@ -1,8 +1,16 @@
 {
   "name": "@parsrun/server",
-  "version": "0.1.35",
+  "version": "0.1.36",
   "description": "Server framework for Pars - Edge-compatible, multi-tenant, modular",
-  "keywords": ["pars", "server", "hono", "edge", "cloudflare", "deno", "bun"],
+  "keywords": [
+    "pars",
+    "server",
+    "hono",
+    "edge",
+    "cloudflare",
+    "deno",
+    "bun"
+  ],
   "homepage": "https://pars.run",
   "repository": {
     "type": "git",
@@ -55,7 +63,9 @@
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
