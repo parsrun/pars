@@ -1,5 +1,5 @@
 {
-  "name": "@parsrun/storage",
+  "name": "@parsrun/entity",
   "version": "0.1.35",
   "license": "MIT",
   "compilerOptions": {
@@ -7,10 +7,13 @@
   },
   "imports": {
     "@parsrun/core": "npm:@parsrun/core@^0.1.0",
-    "@parsrun/types": "npm:@parsrun/types@^0.1.0"
+    "arktype": "npm:arktype@^2.0.0",
+    "drizzle-orm": "npm:drizzle-orm@^0.44.0"
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./pg": "./src/pg.ts",
+    "./sqlite": "./src/sqlite.ts"
   },
   "publish": {
     "include": ["src/**/*.ts", "README.md", "LICENSE"],

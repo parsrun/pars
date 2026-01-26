@@ -1,6 +1,6 @@
 {
   "name": "@parsrun/auth",
-  "version": "0.1.33",
+  "version": "0.1.35",
   "license": "MIT",
   "compilerOptions": {
     "lib": ["deno.window"]

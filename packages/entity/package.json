@@ -1,0 +1,62 @@
+{
+  "name": "@parsrun/entity",
+  "version": "0.1.35",
+  "description": "Single-source entity definitions for Pars - generates ArkType schemas and Drizzle tables",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./pg": {
+      "types": "./dist/pg.d.ts",
+      "import": "./dist/pg.js"
+    },
+    "./sqlite": {
+      "types": "./dist/sqlite.d.ts",
+      "import": "./dist/sqlite.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@parsrun/core": "workspace:*",
+    "arktype": "^2.0.0"
+  },
+  "devDependencies": {
+    "drizzle-orm": "^0.44.0",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  },
+  "peerDependencies": {
+    "drizzle-orm": ">=0.30.0"
+  },
+  "keywords": [
+    "pars",
+    "entity",
+    "schema",
+    "arktype",
+    "drizzle",
+    "orm",
+    "validation"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nicetomytyuk/pars.git",
+    "directory": "packages/entity"
+  }
+}
