@@ -16,6 +16,11 @@ function fieldToArkType(field: Field): string {
 
   let typeStr = def.type
 
+  // Handle json type - ArkType doesn't have 'json', use 'object' instead
+  if (typeStr === 'json') {
+    typeStr = 'object'
+  }
+
   // Handle min/max constraints
   if (def.min !== undefined || def.max !== undefined) {
     if (typeStr === 'string' || typeStr.startsWith('string')) {

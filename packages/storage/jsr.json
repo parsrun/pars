@@ -1,6 +1,6 @@
 {
   "name": "@parsrun/storage",
-  "version": "0.1.36",
+  "version": "0.1.37",
   "license": "MIT",
   "compilerOptions": {
     "lib": ["deno.window"]
