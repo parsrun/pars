@@ -88,6 +88,8 @@ export interface EntityDefinition<TFields extends Record<string, Field>> {
   description?: string
   /** Whether this entity is tenant-scoped (adds tenantId field) */
   tenant?: boolean
+  /** ID type for primary key and references (default: 'string.uuid') */
+  idType?: FieldType
   /** Field definitions */
   fields: TFields
   /** Index definitions */

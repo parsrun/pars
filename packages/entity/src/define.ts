@@ -60,19 +60,20 @@ function buildSchemaObject(
   mode: 'full' | 'create' | 'update' | 'query'
 ): Record<string, string> {
   const schema: Record<string, string> = {}
+  const idType = definition.idType ?? 'string.uuid'
 
   // Add id field for full schema
   if (mode === 'full') {
-    schema['id'] = 'string.uuid'
+    schema['id'] = idType
   }
 
   // Add tenantId if tenant-scoped
   if (definition.tenant) {
     if (mode === 'full' || mode === 'create') {
-      schema['tenantId'] = 'string.uuid'
+      schema['tenantId'] = idType
     }
     if (mode === 'query') {
-      schema['tenantId?'] = 'string.uuid'
+      schema['tenantId?'] = idType
     }
   }
 
@@ -233,11 +234,13 @@ export function ref(
     field?: string
     onDelete?: 'cascade' | 'set null' | 'restrict' | 'no action'
     optional?: boolean
+    /** ID type for this reference (default: 'string.uuid') */
+    idType?: string
   }
 ): FieldDefinition {
   const entityName = typeof entity === 'string' ? entity : entity.name
   const result: FieldDefinition = {
-    type: 'string.uuid',
+    type: (options?.idType ?? 'string.uuid') as FieldDefinition['type'],
     db: {
       references: {
         entity: entityName,

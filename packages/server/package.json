@@ -1,6 +1,6 @@
 {
   "name": "@parsrun/server",
-  "version": "0.1.38",
+  "version": "0.1.39",
   "description": "Server framework for Pars - Edge-compatible, multi-tenant, modular",
   "keywords": [
     "pars",
