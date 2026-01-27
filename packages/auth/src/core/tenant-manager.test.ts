@@ -337,8 +337,8 @@ describe("@parsrun/auth - TenantManager Hierarchy", () => {
       const ancestors = await tenantManager.getAncestors(leaf.tenant.id);
 
       expect(ancestors).toHaveLength(2);
-      expect(ancestors[0].id).toBe(root.tenant.id);
-      expect(ancestors[1].id).toBe(middle.tenant.id);
+      expect(ancestors[0]!.id).toBe(root.tenant.id);
+      expect(ancestors[1]!.id).toBe(middle.tenant.id);
     });
 
     it("should return empty array for root tenant", async () => {
@@ -441,7 +441,7 @@ describe("@parsrun/auth - TenantManager Hierarchy", () => {
       const siblings = await tenantManager.getSiblings(root1.tenant.id);
 
       expect(siblings).toHaveLength(1);
-      expect(siblings[0].name).toBe("Root 2");
+      expect(siblings[0]!.name).toBe("Root 2");
     });
   });
 
@@ -728,17 +728,17 @@ describe("@parsrun/auth - TenantManager Hierarchy", () => {
 
       // Verify depths
       for (let i = 0; i < 10; i++) {
-        const tenant = await tenantManager.getTenantById(tenants[i].id);
+        const tenant = await tenantManager.getTenantById(tenants[i]!.id);
         expect(tenant?.depth).toBe(i);
       }
 
       // Verify ancestors from deepest level
-      const deepestTenant = tenants[9];
+      const deepestTenant = tenants[9]!;
       const ancestors = await tenantManager.getAncestors(deepestTenant.id);
       expect(ancestors).toHaveLength(9);
 
       // Verify descendants from root
-      const rootTenant = tenants[0];
+      const rootTenant = tenants[0]!;
       const descendants = await tenantManager.getDescendants(rootTenant.id);
       expect(descendants).toHaveLength(9);
 
