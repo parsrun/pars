@@ -1,6 +1,6 @@
 {
   "name": "@parsrun/auth",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Passwordless-first, multi-runtime authentication for Pars framework",
   "keywords": [
     "pars",
