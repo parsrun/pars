@@ -117,6 +117,16 @@ export interface EntitySchemas<T> {
 }
 
 /**
+ * Drizzle table type placeholder (actual type comes from drizzle-orm)
+ */
+export type DrizzleTable = any
+
+/**
+ * Table generator function type
+ */
+export type TableGenerator = (tableRefs?: Record<string, DrizzleTable>) => DrizzleTable
+
+/**
  * The complete entity object returned by defineEntity
  */
 export interface Entity<
@@ -144,6 +154,16 @@ export interface Entity<
   requiredFields: string[]
   /** Field names that are optional */
   optionalFields: string[]
+  /**
+   * Generate PostgreSQL Drizzle table
+   * @param tableRefs Optional map of table references for foreign keys
+   */
+  pgTable: TableGenerator
+  /**
+   * Generate SQLite Drizzle table
+   * @param tableRefs Optional map of table references for foreign keys
+   */
+  sqliteTable: TableGenerator
 }
 
 /**

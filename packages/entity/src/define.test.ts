@@ -110,3 +110,85 @@ describe('helper functions', () => {
     expect(field.min).toBe(0)
   })
 })
+
+describe('table generation', () => {
+  it('should generate pgTable', () => {
+    const Product = defineEntity({
+      name: 'products',
+      tenant: true,
+      timestamps: true,
+      fields: {
+        name: 'string',
+        price: 'number',
+      },
+    })
+
+    const table = Product.pgTable()
+
+    expect(table).toBeDefined()
+    // Drizzle tables have columns as properties
+    expect(table.id).toBeDefined()
+    expect(table.name).toBeDefined()
+    expect(table.price).toBeDefined()
+    expect(table.tenantId).toBeDefined()
+    expect(table.insertedAt).toBeDefined()
+    expect(table.updatedAt).toBeDefined()
+  })
+
+  it('should generate sqliteTable', () => {
+    const Product = defineEntity({
+      name: 'products',
+      tenant: true,
+      timestamps: true,
+      fields: {
+        name: 'string',
+        price: 'number',
+      },
+    })
+
+    const table = Product.sqliteTable()
+
+    expect(table).toBeDefined()
+    // Drizzle tables have columns as properties
+    expect(table.id).toBeDefined()
+    expect(table.name).toBeDefined()
+    expect(table.price).toBeDefined()
+    expect(table.tenantId).toBeDefined()
+  })
+
+  it('should cache generated tables', () => {
+    const Product = defineEntity({
+      name: 'products',
+      fields: {
+        name: 'string',
+      },
+    })
+
+    const table1 = Product.pgTable()
+    const table2 = Product.pgTable()
+
+    expect(table1).toBe(table2)
+  })
+
+  it('should regenerate table when refs change', () => {
+    const Category = defineEntity({
+      name: 'categories',
+      fields: {
+        name: 'string',
+      },
+    })
+
+    const Product = defineEntity({
+      name: 'products',
+      fields: {
+        name: 'string',
+        categoryId: ref('categories'),
+      },
+    })
+
+    const table1 = Product.pgTable()
+    const table2 = Product.pgTable({ categories: Category.pgTable() })
+
+    expect(table1).not.toBe(table2)
+  })
+})

@@ -4,7 +4,10 @@ import type {
   Field,
   FieldDefinition,
   Entity,
+  DrizzleTable,
 } from './types.js'
+import { toPgTable } from './pg.js'
+import { toSqliteTable } from './sqlite.js'
 
 /**
  * Convert a field definition to an ArkType type string
@@ -211,7 +214,13 @@ export function defineEntity<
     }
   }
 
-  return {
+  // Cache for generated tables
+  let cachedPgTable: DrizzleTable | null = null
+  let cachedSqliteTable: DrizzleTable | null = null
+  let lastPgRefs: Record<string, DrizzleTable> | undefined
+  let lastSqliteRefs: Record<string, DrizzleTable> | undefined
+
+  const entity: Entity<TName, TFields, Record<string, unknown>> = {
     name: definition.name as TName,
     definition,
     schema: schema as Type<Record<string, unknown>>,
@@ -222,7 +231,27 @@ export function defineEntity<
     autoFields,
     requiredFields,
     optionalFields,
+    pgTable: (tableRefs?: Record<string, DrizzleTable>) => {
+      // Return cached if refs haven't changed
+      if (cachedPgTable && tableRefs === lastPgRefs) {
+        return cachedPgTable
+      }
+      cachedPgTable = toPgTable(entity, tableRefs)
+      lastPgRefs = tableRefs
+      return cachedPgTable
+    },
+    sqliteTable: (tableRefs?: Record<string, DrizzleTable>) => {
+      // Return cached if refs haven't changed
+      if (cachedSqliteTable && tableRefs === lastSqliteRefs) {
+        return cachedSqliteTable
+      }
+      cachedSqliteTable = toSqliteTable(entity, tableRefs)
+      lastSqliteRefs = tableRefs
+      return cachedSqliteTable
+    },
   }
+
+  return entity
 }
 
 /**
