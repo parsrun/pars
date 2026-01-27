@@ -3,7 +3,7 @@
  * Implements AuthAdapter interface using Drizzle ORM with PostgreSQL
  */
 
-import { eq, and, desc, isNull } from 'drizzle-orm';
+import { eq, and, desc, isNull, like } from 'drizzle-orm';
 import type {
   AuthAdapter,
   AdapterUser,
@@ -15,6 +15,7 @@ import type {
   CreateSessionInput,
   CreateAuthMethodInput,
   CreateMembershipInput,
+  CreateTenantInput,
 } from '../../config.js';
 import type {
   DrizzleDatabase,
@@ -107,6 +108,9 @@ function toAdapterTenant(tenant: DrizzleTenant): AdapterTenant {
     name: tenant.name,
     slug: tenant.slug,
     status: tenant.status as AdapterTenant['status'],
+    parentId: tenant.parentId,
+    path: tenant.path,
+    depth: tenant.depth,
     createdAt: tenant.insertedAt,
     updatedAt: tenant.updatedAt,
   };
@@ -449,6 +453,108 @@ export function createDrizzleAdapter(config: DrizzleAdapterConfig): AuthAdapter 
       if (!tenant) return null;
 
       return toAdapterTenant(tenant);
+    },
+
+    async createTenant(input: CreateTenantInput): Promise<AdapterTenant> {
+      if (!tenants) {
+        throw new Error('Tenants table not configured');
+      }
+
+      const [tenant] = await db
+        .insert(tenants)
+        .values({
+          name: input.name,
+          slug: input.slug,
+          status: input.status ?? 'active',
+          parentId: input.parentId ?? null,
+          path: input.path ?? null,
+          depth: input.depth ?? null,
+          subscriptionPlan: 'free',
+          settings: {},
+        })
+        .returning();
+
+      return toAdapterTenant(tenant);
+    },
+
+    async updateTenant(id: string, data: Partial<AdapterTenant>): Promise<AdapterTenant> {
+      if (!tenants) {
+        throw new Error('Tenants table not configured');
+      }
+
+      const updateData: Record<string, unknown> = {
+        updatedAt: new Date(),
+      };
+
+      if (data.name !== undefined) updateData['name'] = data.name;
+      if (data.slug !== undefined) updateData['slug'] = data.slug;
+      if (data.status !== undefined) updateData['status'] = data.status;
+      if (data.parentId !== undefined) updateData['parentId'] = data.parentId;
+      if (data.path !== undefined) updateData['path'] = data.path;
+      if (data.depth !== undefined) updateData['depth'] = data.depth;
+
+      const [tenant] = await db
+        .update(tenants)
+        .set(updateData)
+        .where(eq(tenants.id, id))
+        .returning();
+
+      return toAdapterTenant(tenant);
+    },
+
+    async deleteTenant(id: string): Promise<void> {
+      if (!tenants) return;
+
+      if (softDelete) {
+        await db.update(tenants).set({ deletedAt: new Date() }).where(eq(tenants.id, id));
+      } else {
+        await db.delete(tenants).where(eq(tenants.id, id));
+      }
+    },
+
+    // ============================================
+    // Tenant Hierarchy Operations (Optional)
+    // ============================================
+
+    async findTenantsByParentId(parentId: string | null): Promise<AdapterTenant[]> {
+      if (!tenants) return [];
+
+      const result = await db
+        .select()
+        .from(tenants)
+        .where(
+          and(
+            parentId === null ? isNull(tenants.parentId) : eq(tenants.parentId, parentId),
+            softDelete ? isNull(tenants.deletedAt) : undefined
+          )
+        );
+
+      return result.map(toAdapterTenant);
+    },
+
+    async findTenantsByPath(pathPrefix: string): Promise<AdapterTenant[]> {
+      if (!tenants) return [];
+
+      const result = await db
+        .select()
+        .from(tenants)
+        .where(
+          and(
+            like(tenants.path, `${pathPrefix}%`),
+            softDelete ? isNull(tenants.deletedAt) : undefined
+          )
+        );
+
+      return result.map(toAdapterTenant);
+    },
+
+    async updateTenantPath(tenantId: string, path: string, depth: number): Promise<void> {
+      if (!tenants) return;
+
+      await db
+        .update(tenants)
+        .set({ path, depth, updatedAt: new Date() })
+        .where(eq(tenants.id, tenantId));
     },
 
     // ============================================

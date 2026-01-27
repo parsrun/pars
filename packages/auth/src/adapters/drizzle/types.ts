@@ -106,6 +106,12 @@ export interface DrizzleTenant {
   status: string;
   subscriptionPlan: string;
   settings: Record<string, unknown>;
+  /** Parent tenant ID for hierarchical tenants */
+  parentId: string | null;
+  /** Materialized path for efficient ancestor/descendant queries (e.g., "/root-id/parent-id/id/") */
+  path: string | null;
+  /** Hierarchy depth (0 = root tenant) */
+  depth: number | null;
   insertedAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;

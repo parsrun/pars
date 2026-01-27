@@ -19,6 +19,8 @@ export interface CreateTenantInput {
   ownerRole?: string;
   /** Initial status (default: 'active') */
   status?: 'active' | 'suspended' | 'inactive';
+  /** Parent tenant ID for creating child tenants */
+  parentId?: string;
 }
 
 /**
@@ -96,8 +98,12 @@ export class TenantManager {
     membership: AdapterMembership;
   }> {
     // Check if adapter supports tenant operations
-    if (!this.adapter.findTenantById) {
+    if (!this.adapter.findTenantById || !this.adapter.createTenant) {
       throw new Error('Tenant operations not supported by adapter');
+    }
+
+    if (!this.adapter.createMembership) {
+      throw new Error('Membership operations not supported by adapter');
     }
 
     // Generate slug if not provided
@@ -109,13 +115,55 @@ export class TenantManager {
       throw new Error(`Tenant with slug '${slug}' already exists`);
     }
 
-    // Create tenant - need to use adapter directly
-    // Since adapter doesn't have createTenant, we need to extend it
-    // For now, throw an informative error
-    throw new Error(
-      'createTenant not implemented in adapter. ' +
-      'Please implement createTenant in your adapter or use direct database access.'
-    );
+    // Calculate path and depth for hierarchy
+    let parentId: string | null = null;
+    let path: string | null = null;
+    let depth: number = 0;
+
+    if (input.parentId) {
+      const parent = await this.adapter.findTenantById(input.parentId);
+      if (!parent) {
+        throw new Error(`Parent tenant '${input.parentId}' not found`);
+      }
+      parentId = input.parentId;
+      depth = (parent.depth ?? 0) + 1;
+      // Path will be updated after we get the tenant ID
+    }
+
+    // Create tenant
+    const tenant = await this.adapter.createTenant({
+      name: input.name,
+      slug,
+      status: input.status ?? 'active',
+      parentId,
+      path: null, // Will be updated after creation
+      depth,
+    });
+
+    // Calculate and update path with tenant ID
+    if (input.parentId) {
+      const parent = await this.adapter.findTenantById(input.parentId);
+      const parentPath = parent?.path ?? `/${input.parentId}/`;
+      path = `${parentPath.replace(/\/$/, '')}/${tenant.id}/`;
+    } else {
+      path = `/${tenant.id}/`;
+    }
+
+    // Update tenant with path
+    if (this.adapter.updateTenantPath) {
+      await this.adapter.updateTenantPath(tenant.id, path, depth);
+      tenant.path = path;
+      tenant.depth = depth;
+    }
+
+    // Create owner membership
+    const membership = await this.adapter.createMembership({
+      userId: input.ownerId,
+      tenantId: tenant.id,
+      role: input.ownerRole ?? 'owner',
+    });
+
+    return { tenant, membership };
   }
 
   /**
@@ -137,6 +185,238 @@ export class TenantManager {
     }
     return this.adapter.findTenantBySlug(slug);
   }
+
+  // ============================================
+  // Tenant Hierarchy Operations
+  // ============================================
+
+  /**
+   * Get direct children of a tenant
+   */
+  async getChildren(tenantId: string): Promise<AdapterTenant[]> {
+    if (!this.adapter.findTenantsByParentId) {
+      return [];
+    }
+    return this.adapter.findTenantsByParentId(tenantId);
+  }
+
+  /**
+   * Get parent of a tenant
+   */
+  async getParent(tenantId: string): Promise<AdapterTenant | null> {
+    if (!this.adapter.findTenantById) {
+      return null;
+    }
+
+    const tenant = await this.adapter.findTenantById(tenantId);
+    if (!tenant || !tenant.parentId) {
+      return null;
+    }
+
+    return this.adapter.findTenantById(tenant.parentId);
+  }
+
+  /**
+   * Get all ancestors of a tenant (from immediate parent to root)
+   */
+  async getAncestors(tenantId: string): Promise<AdapterTenant[]> {
+    if (!this.adapter.findTenantById) {
+      return [];
+    }
+
+    const tenant = await this.adapter.findTenantById(tenantId);
+    if (!tenant || !tenant.path) {
+      return [];
+    }
+
+    // Parse path to get ancestor IDs: "/root/parent/child/" -> ["root", "parent"]
+    const pathParts = tenant.path.split('/').filter(Boolean);
+    // Remove current tenant ID (last element)
+    const ancestorIds = pathParts.slice(0, -1);
+
+    // Fetch ancestors in order (root to immediate parent)
+    const ancestors: AdapterTenant[] = [];
+    for (const ancestorId of ancestorIds) {
+      const ancestor = await this.adapter.findTenantById(ancestorId);
+      if (ancestor) {
+        ancestors.push(ancestor);
+      }
+    }
+
+    return ancestors;
+  }
+
+  /**
+   * Get all descendants of a tenant (all levels)
+   */
+  async getDescendants(tenantId: string): Promise<AdapterTenant[]> {
+    if (!this.adapter.findTenantById || !this.adapter.findTenantsByPath) {
+      return [];
+    }
+
+    const tenant = await this.adapter.findTenantById(tenantId);
+    if (!tenant) {
+      return [];
+    }
+
+    // Use path for efficient descendant query
+    const path = tenant.path ?? `/${tenantId}/`;
+    const allDescendants = await this.adapter.findTenantsByPath(path);
+
+    // Filter out the tenant itself
+    return allDescendants.filter(t => t.id !== tenantId);
+  }
+
+  /**
+   * Get siblings of a tenant (same parent)
+   */
+  async getSiblings(tenantId: string): Promise<AdapterTenant[]> {
+    if (!this.adapter.findTenantById || !this.adapter.findTenantsByParentId) {
+      return [];
+    }
+
+    const tenant = await this.adapter.findTenantById(tenantId);
+    if (!tenant) {
+      return [];
+    }
+
+    // Get all tenants with the same parent
+    const siblings = await this.adapter.findTenantsByParentId(tenant.parentId ?? null);
+
+    // Filter out the tenant itself
+    return siblings.filter(t => t.id !== tenantId);
+  }
+
+  /**
+   * Get root tenant of a hierarchy
+   */
+  async getRootTenant(tenantId: string): Promise<AdapterTenant | null> {
+    if (!this.adapter.findTenantById) {
+      return null;
+    }
+
+    const tenant = await this.adapter.findTenantById(tenantId);
+    if (!tenant) {
+      return null;
+    }
+
+    // If no parent, this is the root
+    if (!tenant.parentId) {
+      return tenant;
+    }
+
+    // Get root from path
+    if (tenant.path) {
+      const pathParts = tenant.path.split('/').filter(Boolean);
+      const rootId = pathParts[0];
+      if (rootId) {
+        return this.adapter.findTenantById(rootId);
+      }
+    }
+
+    // Fallback: traverse up the hierarchy
+    let current = tenant;
+    while (current.parentId) {
+      const parent = await this.adapter.findTenantById(current.parentId);
+      if (!parent) break;
+      current = parent;
+    }
+
+    return current;
+  }
+
+  /**
+   * Move a tenant to a new parent
+   */
+  async moveToParent(tenantId: string, newParentId: string | null): Promise<void> {
+    if (!this.adapter.findTenantById || !this.adapter.updateTenant || !this.adapter.updateTenantPath) {
+      throw new Error('Tenant hierarchy operations not supported by adapter');
+    }
+
+    const tenant = await this.adapter.findTenantById(tenantId);
+    if (!tenant) {
+      throw new Error('Tenant not found');
+    }
+
+    // Prevent circular reference
+    if (newParentId) {
+      const isDescendant = await this.isDescendantOf(newParentId, tenantId);
+      if (isDescendant) {
+        throw new Error('Cannot move tenant to its own descendant');
+      }
+    }
+
+    // Get descendants BEFORE updating path (they still have old paths)
+    const oldPath = tenant.path ?? `/${tenantId}/`;
+    const descendants = await this.getDescendants(tenantId);
+
+    // Calculate new path and depth
+    let newPath: string;
+    let newDepth: number;
+
+    if (newParentId) {
+      const newParent = await this.adapter.findTenantById(newParentId);
+      if (!newParent) {
+        throw new Error('New parent tenant not found');
+      }
+      const parentPath = newParent.path ?? `/${newParentId}/`;
+      newPath = `${parentPath.replace(/\/$/, '')}/${tenantId}/`;
+      newDepth = (newParent.depth ?? 0) + 1;
+    } else {
+      newPath = `/${tenantId}/`;
+      newDepth = 0;
+    }
+
+    // Update tenant
+    await this.adapter.updateTenant(tenantId, { parentId: newParentId });
+    await this.adapter.updateTenantPath(tenantId, newPath, newDepth);
+
+    for (const descendant of descendants) {
+      if (descendant.path) {
+        const descendantNewPath = descendant.path.replace(oldPath, newPath);
+        const descendantNewDepth = (descendant.depth ?? 0) - (tenant.depth ?? 0) + newDepth;
+        await this.adapter.updateTenantPath(descendant.id, descendantNewPath, descendantNewDepth);
+      }
+    }
+  }
+
+  /**
+   * Check if a tenant is an ancestor of another tenant
+   */
+  async isAncestorOf(ancestorId: string, descendantId: string): Promise<boolean> {
+    if (!this.adapter.findTenantById) {
+      return false;
+    }
+
+    const descendant = await this.adapter.findTenantById(descendantId);
+    if (!descendant || !descendant.path) {
+      return false;
+    }
+
+    // Check if ancestor ID is in the descendant's path
+    return descendant.path.includes(`/${ancestorId}/`);
+  }
+
+  /**
+   * Check if a tenant is a descendant of another tenant
+   */
+  async isDescendantOf(descendantId: string, ancestorId: string): Promise<boolean> {
+    return this.isAncestorOf(ancestorId, descendantId);
+  }
+
+  /**
+   * Get all root tenants (tenants without parent)
+   */
+  async getRootTenants(): Promise<AdapterTenant[]> {
+    if (!this.adapter.findTenantsByParentId) {
+      return [];
+    }
+    return this.adapter.findTenantsByParentId(null);
+  }
+
+  // ============================================
+  // Membership Operations
+  // ============================================
 
   /**
    * Check if user is member of tenant

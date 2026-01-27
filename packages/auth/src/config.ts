@@ -280,6 +280,14 @@ export interface AuthAdapter {
   // Tenant operations (optional for multi-tenant)
   findTenantById?(id: string): Promise<AdapterTenant | null>;
   findTenantBySlug?(slug: string): Promise<AdapterTenant | null>;
+  createTenant?(data: CreateTenantInput): Promise<AdapterTenant>;
+  updateTenant?(id: string, data: Partial<AdapterTenant>): Promise<AdapterTenant>;
+  deleteTenant?(id: string): Promise<void>;
+
+  // Tenant hierarchy operations (optional)
+  findTenantsByParentId?(parentId: string | null): Promise<AdapterTenant[]>;
+  findTenantsByPath?(pathPrefix: string): Promise<AdapterTenant[]>;
+  updateTenantPath?(tenantId: string, path: string, depth: number): Promise<void>;
 
   // Membership operations (optional for multi-tenant)
   findMembership?(userId: string, tenantId: string): Promise<AdapterMembership | null>;
@@ -335,6 +343,12 @@ export interface AdapterTenant {
   name: string;
   slug: string;
   status: 'active' | 'suspended' | 'inactive';
+  /** Parent tenant ID for hierarchical tenants */
+  parentId?: string | null;
+  /** Materialized path for efficient ancestor/descendant queries (e.g., "/root-id/parent-id/id/") */
+  path?: string | null;
+  /** Hierarchy depth (0 = root tenant) */
+  depth?: number | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -383,6 +397,15 @@ export interface CreateMembershipInput {
   tenantId: string;
   role: string;
   permissions?: string[];
+}
+
+export interface CreateTenantInput {
+  name: string;
+  slug: string;
+  status?: 'active' | 'suspended' | 'inactive';
+  parentId?: string | null;
+  path?: string | null;
+  depth?: number | null;
 }
 
 /**

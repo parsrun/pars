@@ -33,6 +33,12 @@ export const tenant = type({
   "timezone?": "string",
   "locale?": "string",
   "currency?": "string",
+  /** Parent tenant ID for hierarchical tenants */
+  "parentId?": uuid,
+  /** Materialized path for efficient ancestor/descendant queries (e.g., "/root-id/parent-id/id/") */
+  "path?": "string",
+  /** Hierarchy depth (0 = root tenant) */
+  "depth?": "number.integer",
   insertedAt: timestamp,
   updatedAt: timestamp,
   "deletedAt?": timestamp,
@@ -49,6 +55,8 @@ export const createTenantRequest = type({
   "timezone?": "string",
   "locale?": "string",
   "currency?": "string",
+  /** Parent tenant ID for creating child tenants */
+  "parentId?": uuid,
 });
 
 /** Tenant update request */
