@@ -55,7 +55,7 @@ jobs:
       - name: Publish to JSR
         run: |
           set -e
-          for pkg in core types entity database cache queue storage email payments realtime server auth service service-adapters; do
+          for pkg in core types entity database cache queue storage email payments realtime server auth service service-adapters sms; do
             echo "---------------------------------------------------"
             echo "Publishing @parsrun/$pkg to JSR..."
             cd packages/$pkg
