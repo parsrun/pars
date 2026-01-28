@@ -1,6 +1,6 @@
 {
   "name": "@parsrun/payments",
-  "version": "0.1.39",
+  "version": "0.2.6",
   "license": "MIT",
   "compilerOptions": {
     "lib": ["deno.window"]
