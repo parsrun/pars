@@ -1,6 +1,6 @@
 {
   "name": "@parsrun/entity",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Single-source entity definitions for Pars - generates ArkType schemas and Drizzle tables",
   "type": "module",
   "main": "./dist/index.js",
