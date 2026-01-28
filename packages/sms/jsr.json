@@ -1,0 +1,23 @@
+{
+  "name": "@parsrun/sms",
+  "version": "0.2.1",
+  "license": "MIT",
+  "compilerOptions": {
+    "lib": ["deno.window"]
+  },
+  "imports": {
+    "@parsrun/core": "npm:@parsrun/core@^0.1.0",
+    "@parsrun/types": "npm:@parsrun/types@^0.1.0"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./types": "./src/types.ts",
+    "./providers": "./src/providers/index.ts",
+    "./providers/netgsm": "./src/providers/netgsm.ts",
+    "./providers/console": "./src/providers/console.ts"
+  },
+  "publish": {
+    "include": ["src/**/*.ts", "README.md", "LICENSE"],
+    "exclude": ["**/*.test.ts", "**/*.spec.ts"]
+  }
+}
