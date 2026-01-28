@@ -1,6 +1,6 @@
 {
   "name": "@parsrun/payments",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Edge-compatible payment processing for Pars - Stripe, Paddle, iyzico",
   "type": "module",
   "main": "./dist/index.js",
