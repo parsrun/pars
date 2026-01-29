@@ -1,15 +1,24 @@
 {
   "name": "@parsrun/core",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "license": "MIT",
   "exports": {
     ".": "./src/index.ts"
   },
   "compilerOptions": {
-    "lib": ["deno.window"]
+    "lib": [
+      "deno.window"
+    ]
   },
   "publish": {
-    "include": ["src/**/*.ts", "README.md", "LICENSE"],
-    "exclude": ["**/*.test.ts", "**/*.spec.ts"]
+    "include": [
+      "src/**/*.ts",
+      "README.md",
+      "LICENSE"
+    ],
+    "exclude": [
+      "**/*.test.ts",
+      "**/*.spec.ts"
+    ]
   }
 }

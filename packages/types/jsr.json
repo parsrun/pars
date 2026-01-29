@@ -1,9 +1,11 @@
 {
   "name": "@parsrun/types",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "license": "MIT",
   "compilerOptions": {
-    "lib": ["deno.window"]
+    "lib": [
+      "deno.window"
+    ]
   },
   "imports": {
     "arktype": "npm:arktype@^2.0.0"
@@ -12,7 +14,14 @@
     ".": "./src/index.ts"
   },
   "publish": {
-    "include": ["src/**/*.ts", "README.md", "LICENSE"],
-    "exclude": ["**/*.test.ts", "**/*.spec.ts"]
+    "include": [
+      "src/**/*.ts",
+      "README.md",
+      "LICENSE"
+    ],
+    "exclude": [
+      "**/*.test.ts",
+      "**/*.spec.ts"
+    ]
   }
 }

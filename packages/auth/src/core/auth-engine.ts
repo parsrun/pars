@@ -17,6 +17,11 @@ import { mergeConfig, validateConfig } from '../config.js';
 import { createStorage } from '../storage/index.js';
 import { ProviderRegistry, type ProviderInfo } from '../providers/index.js';
 import { OTPProvider, type RequestOTPInput, type RequestOTPResult } from '../providers/otp/index.js';
+import { PasswordProvider } from '../providers/password/index.js';
+import { MagicLinkProvider } from '../providers/magic-link/index.js';
+import { TOTPProvider } from '../providers/totp/index.js';
+import { WebAuthnProvider } from '../providers/webauthn/index.js';
+import { OAuthManager, type OAuthConfig } from '../providers/oauth/index.js';
 import {
   JwtManager,
   SessionBlocklist,
@@ -69,6 +74,9 @@ export interface SignInResult {
   tokens?: TokenPair;
   requiresTwoFactor?: boolean;
   twoFactorChallengeId?: string;
+  // OAuth için yeni alanlar
+  requiresRedirect?: boolean;
+  redirectUrl?: string;
   error?: string;
   errorCode?: string;
 }
@@ -85,6 +93,8 @@ export interface SignUpInput {
   name?: string;
   /** Avatar URL */
   avatar?: string;
+  /** Whether the auth method should be marked as verified (default: false) */
+  verified?: boolean;
   /** Request metadata */
   metadata?: {
     ipAddress?: string;
@@ -157,6 +167,9 @@ export class ParsAuthEngine {
   private tenantResolver?: TenantResolver;
   private invitationService?: InvitationService;
 
+  // OAuth manager
+  private oauthManager?: OAuthManager;
+
   constructor(config: ParsAuthConfig) {
     // Validate and merge config
     validateConfig(config);
@@ -202,8 +215,107 @@ export class ParsAuthEngine {
       this.providers.register(otpProvider);
     }
 
-    // Register other providers here as they are implemented
-    // Magic Link, OAuth, Password, etc.
+    // === PASSWORD PROVIDER ===
+    if (this.config.providers.password?.enabled) {
+      const passwordProvider = new PasswordProvider(this.storage, this.config.providers.password);
+      passwordProvider.enable();
+      this.providers.register(passwordProvider);
+    }
+
+    // === MAGIC LINK PROVIDER ===
+    if (this.config.providers.magicLink?.enabled !== false && this.config.providers.magicLink?.send) {
+      const magicLinkProvider = new MagicLinkProvider(this.storage, {
+        baseUrl: this.config.baseUrl,
+        ...this.config.providers.magicLink,
+      });
+      this.providers.register(magicLinkProvider);
+    }
+
+    // === TOTP PROVIDER (2FA) ===
+    if (this.config.providers.totp?.enabled && this.config.providers.totp?.issuer) {
+      const totpProvider = new TOTPProvider(this.storage, {
+        issuer: this.config.providers.totp.issuer,
+        ...this.config.providers.totp,
+      });
+      this.providers.register(totpProvider);
+    }
+
+    // === WEBAUTHN PROVIDER ===
+    const webauthnConfig = this.config.providers.webauthn;
+    if (webauthnConfig?.enabled && webauthnConfig.rpName && webauthnConfig.rpId) {
+      const webauthnProvider = new WebAuthnProvider(this.storage, {
+        ...webauthnConfig,
+        rpName: webauthnConfig.rpName,
+        rpId: webauthnConfig.rpId,
+        origin: this.config.baseUrl || `https://${webauthnConfig.rpId}`,
+      });
+      this.providers.register(webauthnProvider);
+    }
+
+    // === OAUTH MANAGER ===
+    if (this.config.providers.oauth) {
+      const hasAnyOAuth =
+        this.config.providers.oauth.google?.clientId ||
+        this.config.providers.oauth.github?.clientId ||
+        this.config.providers.oauth.microsoft?.clientId ||
+        this.config.providers.oauth.apple?.clientId;
+
+      if (hasAnyOAuth) {
+        // Convert config format: ParsAuthConfig uses callbackUrl, OAuth providers use redirectUri
+        const oauthConfig: OAuthConfig = {};
+        const configOAuth = this.config.providers.oauth;
+
+        if (configOAuth.google?.clientId && configOAuth.google?.clientSecret) {
+          oauthConfig.google = {
+            clientId: configOAuth.google.clientId,
+            clientSecret: configOAuth.google.clientSecret,
+            redirectUri: configOAuth.google.callbackUrl ?? `${this.config.baseUrl}/auth/callback/google`,
+            scopes: configOAuth.google.scopes,
+          };
+        }
+
+        if (configOAuth.github?.clientId && configOAuth.github?.clientSecret) {
+          oauthConfig.github = {
+            clientId: configOAuth.github.clientId,
+            clientSecret: configOAuth.github.clientSecret,
+            redirectUri: configOAuth.github.callbackUrl ?? `${this.config.baseUrl}/auth/callback/github`,
+            scopes: configOAuth.github.scopes,
+          };
+        }
+
+        if (configOAuth.microsoft?.clientId && configOAuth.microsoft?.clientSecret) {
+          oauthConfig.microsoft = {
+            clientId: configOAuth.microsoft.clientId,
+            clientSecret: configOAuth.microsoft.clientSecret,
+            redirectUri: configOAuth.microsoft.callbackUrl ?? `${this.config.baseUrl}/auth/callback/microsoft`,
+            scopes: configOAuth.microsoft.scopes,
+          };
+        }
+
+        if (configOAuth.apple?.clientId && configOAuth.apple?.clientSecret) {
+          // Apple OAuth requires additional properties, but we'll pass what we have
+          // Users need to provide full Apple config if they want Apple Sign-In
+          const appleConfig = configOAuth.apple as unknown as {
+            clientId: string;
+            clientSecret: string;
+            callbackUrl?: string;
+            scopes?: string[];
+            teamId?: string;
+            keyId?: string;
+          };
+          oauthConfig.apple = {
+            clientId: appleConfig.clientId,
+            teamId: appleConfig.teamId ?? '',
+            keyId: appleConfig.keyId ?? '',
+            privateKey: appleConfig.clientSecret,
+            redirectUri: appleConfig.callbackUrl ?? `${this.config.baseUrl}/auth/callback/apple`,
+            scopes: appleConfig.scopes,
+          };
+        }
+
+        this.oauthManager = new OAuthManager(this.storage, oauthConfig);
+      }
+    }
 
     // Initialize multi-tenant components
     this.tenantManager = createTenantManager(this.adapter);
@@ -277,6 +389,30 @@ export class ParsAuthEngine {
 
     const { provider: providerName, identifier, credential, data, metadata } = input;
 
+    // Handle OAuth providers
+    const oauthProviders = ['google', 'github', 'microsoft', 'apple'];
+    if (oauthProviders.includes(providerName)) {
+      if (!this.oauthManager?.hasProvider(providerName)) {
+        return {
+          success: false,
+          error: `OAuth provider '${providerName}' not configured`,
+          errorCode: 'PROVIDER_NOT_CONFIGURED',
+        };
+      }
+
+      // Start OAuth flow - return redirect URL
+      const flow = await this.oauthManager.startFlow(providerName as 'google' | 'github' | 'microsoft' | 'apple', {
+        tenantId: metadata?.tenantId,
+        redirectUrl: data?.['redirectUrl'] as string,
+      });
+
+      return {
+        success: true,
+        requiresRedirect: true,
+        redirectUrl: flow.authorizationUrl,
+      };
+    }
+
     // Get provider
     const provider = this.providers.get(providerName);
     if (!provider) {
@@ -315,11 +451,13 @@ export class ParsAuthEngine {
 
     if (!user) {
       // Auto-create user if verified via OTP
+      // OTP verification counts as identity verification, so mark auth method as verified
       if (providerName === 'otp') {
         const otpType = data?.['type'] as 'email' | 'sms' | undefined;
         const createResult = await this.signUp({
           email: otpType === 'email' || !otpType ? identifier : undefined,
           phone: otpType === 'sms' ? identifier : undefined,
+          verified: true, // OTP verification proves identity ownership
           metadata,
         });
 
@@ -400,7 +538,7 @@ export class ParsAuthEngine {
   async signUp(input: SignUpInput): Promise<SignUpResult> {
     this.ensureInitialized();
 
-    const { email, phone, name, avatar, metadata } = input;
+    const { email, phone, name, avatar, verified = false, metadata } = input;
 
     if (!email && !phone) {
       return {
@@ -433,14 +571,14 @@ export class ParsAuthEngine {
       }
     }
 
-    // Create user
+    // Create user with auth method
+    // Verification status is tracked on the auth method, not the user
     const user = await this.adapter.createUser({
       email,
       phone,
       name,
       avatar,
-      emailVerified: !!email, // OTP verification counts as email verification
-      phoneVerified: !!phone,
+      verified, // Passed to auth method creation
     });
 
     // Create session
@@ -998,6 +1136,143 @@ export class ParsAuthEngine {
    */
   getTenantResolver(): TenantResolver | undefined {
     return this.tenantResolver;
+  }
+
+  // ============================================
+  // OAUTH OPERATIONS
+  // ============================================
+
+  /**
+   * Handle OAuth callback after user authorization
+   */
+  async handleOAuthCallback(
+    provider: 'google' | 'github' | 'microsoft' | 'apple',
+    code: string,
+    state: string,
+    metadata?: SignInInput['metadata']
+  ): Promise<SignInResult> {
+    this.ensureInitialized();
+
+    if (!this.oauthManager) {
+      return {
+        success: false,
+        error: 'OAuth not configured',
+        errorCode: 'OAUTH_NOT_CONFIGURED',
+      };
+    }
+
+    try {
+      const result = await this.oauthManager.handleCallback(provider, code, state);
+      const { userInfo, tokens: oauthTokens } = result;
+
+      // Find or create user by OAuth provider
+      let user = await this.findUserByIdentifier(userInfo.id, provider);
+
+      if (!user) {
+        // Create new user from OAuth info
+        const createResult = await this.signUp({
+          email: userInfo.email,
+          name: userInfo.name,
+          avatar: userInfo.avatarUrl,
+          verified: userInfo.emailVerified ?? false,
+          metadata: { ...metadata, tenantId: result.tenantId },
+        });
+
+        if (!createResult.success) {
+          return createResult;
+        }
+        user = createResult.user!;
+
+        // Create auth method for OAuth
+        await this.adapter.createAuthMethod({
+          userId: user.id,
+          provider,
+          providerId: userInfo.id,
+          verified: userInfo.emailVerified ?? false,
+          metadata: {
+            email: userInfo.email,
+            accessToken: oauthTokens.accessToken,
+            refreshToken: oauthTokens.refreshToken,
+          },
+        });
+      }
+
+      // Create session
+      const session = await this.createSession(user.id, {
+        ...metadata,
+        tenantId: result.tenantId,
+      });
+
+      if (!session) {
+        return {
+          success: false,
+          error: 'Failed to create session',
+          errorCode: 'SESSION_CREATE_FAILED',
+        };
+      }
+
+      const tokens = await this.jwtManager.generateTokenPair({
+        userId: user.id,
+        tenantId: result.tenantId,
+        sessionId: session.id,
+      });
+
+      if (this.callbacks.onSignIn) {
+        await this.callbacks.onSignIn(user, session);
+      }
+
+      return {
+        success: true,
+        user,
+        session,
+        tokens,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'OAuth callback failed',
+        errorCode: 'OAUTH_CALLBACK_FAILED',
+      };
+    }
+  }
+
+  // ============================================
+  // PROVIDER GETTERS
+  // ============================================
+
+  /**
+   * Get the OAuth manager
+   */
+  getOAuthManager(): OAuthManager | undefined {
+    return this.oauthManager;
+  }
+
+  /**
+   * Get TOTP provider for 2FA setup
+   */
+  getTOTPProvider(): TOTPProvider | undefined {
+    return this.providers.get('totp') as TOTPProvider | undefined;
+  }
+
+  /**
+   * Get WebAuthn provider for passkey management
+   */
+  getWebAuthnProvider(): WebAuthnProvider | undefined {
+    return this.providers.get('webauthn') as WebAuthnProvider | undefined;
+  }
+
+  /**
+   * Get Password provider
+   */
+  getPasswordProvider(): PasswordProvider | undefined {
+    return this.providers.get('password') as PasswordProvider | undefined;
+  }
+
+  /**
+   * Get Magic Link provider
+   */
+  getMagicLinkProvider(): MagicLinkProvider | undefined {
+    return this.providers.get('magic-link') as MagicLinkProvider | undefined;
   }
 }
 

@@ -1,9 +1,11 @@
 {
   "name": "@parsrun/realtime",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "license": "MIT",
   "compilerOptions": {
-    "lib": ["deno.window"]
+    "lib": [
+      "deno.window"
+    ]
   },
   "imports": {
     "@parsrun/core": "npm:@parsrun/core@^0.1.0",
@@ -14,7 +16,14 @@
     ".": "./src/index.ts"
   },
   "publish": {
-    "include": ["src/**/*.ts", "README.md", "LICENSE"],
-    "exclude": ["**/*.test.ts", "**/*.spec.ts"]
+    "include": [
+      "src/**/*.ts",
+      "README.md",
+      "LICENSE"
+    ],
+    "exclude": [
+      "**/*.test.ts",
+      "**/*.spec.ts"
+    ]
   }
 }
