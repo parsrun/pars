@@ -43,6 +43,7 @@ function createMockAdapter(): AuthAdapter & {
     async findAuthMethod() { return null; },
     async findAuthMethodsByUserId() { return []; },
     async createAuthMethod() { throw new Error("Not implemented"); },
+    async updateAuthMethod() { throw new Error("Not implemented"); },
     async deleteAuthMethod() {},
 
     // Tenant operations

@@ -1,6 +1,6 @@
 {
   "name": "@parsrun/sms",
-  "version": "0.2.10",
+  "version": "0.2.11",
   "description": "Edge-compatible SMS sending for Pars - NetGSM, Twilio, and more",
   "type": "module",
   "main": "./dist/index.js",
