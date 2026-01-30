@@ -54,8 +54,6 @@ function toAdapterUser(user: DrizzleUser, authMethod?: DrizzleAuthMethod): Adapt
     phone: authMethod?.provider === 'phone' ? authMethod.providerId : null,
     name: user.displayName ?? null,
     avatar: user.avatarUrl ?? null,
-    emailVerified: user.emailVerified,
-    phoneVerified: user.phoneVerified,
     twoFactorEnabled: user.twoFactorEnabled,
     status: user.status as AdapterUser['status'],
     createdAt: user.insertedAt,
@@ -150,8 +148,6 @@ export function createDrizzleAdapter(config: DrizzleAdapterConfig): AuthAdapter 
         .values({
           displayName: input.name,
           avatarUrl: input.avatar,
-          emailVerified: input.emailVerified ?? false,
-          phoneVerified: input.phoneVerified ?? false,
           twoFactorEnabled: false,
           status: 'active',
           metadata: {},
@@ -159,6 +155,7 @@ export function createDrizzleAdapter(config: DrizzleAdapterConfig): AuthAdapter 
         .returning();
 
       // Create auth method if email or phone provided
+      // Verification status is tracked on auth_methods.verified
       let authMethod: DrizzleAuthMethod | undefined;
       if (input.email) {
         [authMethod] = await db
@@ -167,7 +164,7 @@ export function createDrizzleAdapter(config: DrizzleAdapterConfig): AuthAdapter 
             userId: user.id,
             provider: 'email',
             providerId: input.email.toLowerCase(),
-            verified: input.emailVerified ?? false,
+            verified: input.verified ?? false,
           })
           .returning();
       } else if (input.phone) {
@@ -177,7 +174,7 @@ export function createDrizzleAdapter(config: DrizzleAdapterConfig): AuthAdapter 
             userId: user.id,
             provider: 'phone',
             providerId: input.phone,
-            verified: input.phoneVerified ?? false,
+            verified: input.verified ?? false,
           })
           .returning();
       }
@@ -260,8 +257,6 @@ export function createDrizzleAdapter(config: DrizzleAdapterConfig): AuthAdapter 
 
       if (data.name !== undefined) updateData['displayName'] = data.name;
       if (data.avatar !== undefined) updateData['avatarUrl'] = data.avatar;
-      if (data.emailVerified !== undefined) updateData['emailVerified'] = data.emailVerified;
-      if (data.phoneVerified !== undefined) updateData['phoneVerified'] = data.phoneVerified;
       if (data.twoFactorEnabled !== undefined) updateData['twoFactorEnabled'] = data.twoFactorEnabled;
       if (data.status !== undefined) updateData['status'] = data.status;
 
@@ -413,6 +408,26 @@ export function createDrizzleAdapter(config: DrizzleAdapterConfig): AuthAdapter 
         );
 
       return result.map(toAdapterAuthMethod);
+    },
+
+    async updateAuthMethod(
+      id: string,
+      data: Partial<AdapterAuthMethod>
+    ): Promise<AdapterAuthMethod> {
+      const updateData: Record<string, unknown> = {
+        updatedAt: new Date(),
+      };
+
+      if (data.verified !== undefined) updateData['verified'] = data.verified;
+      if (data.metadata !== undefined) updateData['metadata'] = data.metadata;
+
+      const [method] = await db
+        .update(authMethods)
+        .set(updateData)
+        .where(eq(authMethods.id, id))
+        .returning();
+
+      return toAdapterAuthMethod(method);
     },
 
     async deleteAuthMethod(id: string): Promise<void> {

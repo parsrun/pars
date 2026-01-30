@@ -37,13 +37,12 @@ export interface DrizzleAuthSchema {
 
 /**
  * User model
+ * Note: emailVerified/phoneVerified are tracked via auth_methods.verified
  */
 export interface DrizzleUser {
   id: string;
   displayName: string | null;
   avatarUrl: string | null;
-  emailVerified: boolean;
-  phoneVerified: boolean;
   twoFactorEnabled: boolean;
   twoFactorSecret: string | null;
   status: string;

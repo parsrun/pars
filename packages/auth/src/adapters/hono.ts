@@ -484,7 +484,6 @@ export function createAuthRoutes<E extends { Variables: Partial<AuthVariables> }
       email: user.email,
       name: user.name,
       avatar: user.avatar,
-      emailVerified: user.emailVerified,
       twoFactorEnabled: user.twoFactorEnabled,
     });
   });

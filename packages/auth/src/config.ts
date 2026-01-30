@@ -275,6 +275,7 @@ export interface AuthAdapter {
   findAuthMethod(provider: string, providerId: string): Promise<AdapterAuthMethod | null>;
   findAuthMethodsByUserId(userId: string): Promise<AdapterAuthMethod[]>;
   createAuthMethod(data: CreateAuthMethodInput): Promise<AdapterAuthMethod>;
+  updateAuthMethod(id: string, data: Partial<AdapterAuthMethod>): Promise<AdapterAuthMethod>;
   deleteAuthMethod(id: string): Promise<void>;
 
   // Tenant operations (optional for multi-tenant)
@@ -302,8 +303,6 @@ export interface AdapterUser {
   id: string;
   email?: string | null;
   phone?: string | null;
-  emailVerified?: boolean;
-  phoneVerified?: boolean;
   name?: string | null;
   avatar?: string | null;
   twoFactorEnabled?: boolean;
@@ -369,8 +368,8 @@ export interface CreateUserInput {
   phone?: string;
   name?: string;
   avatar?: string;
-  emailVerified?: boolean;
-  phoneVerified?: boolean;
+  /** Whether the auth method should be marked as verified (default: false) */
+  verified?: boolean;
 }
 
 export interface CreateSessionInput {
