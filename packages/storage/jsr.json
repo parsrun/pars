@@ -1,6 +1,6 @@
 {
   "name": "@parsrun/storage",
-  "version": "0.2.9",
+  "version": "0.2.10",
   "license": "MIT",
   "compilerOptions": {
     "lib": [

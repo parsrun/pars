@@ -316,7 +316,7 @@ describe("@parsrun/core - DecimalUtils", () => {
       const data = { name: "Test", price: "10.5", quantity: 5 };
       const result = DecimalUtils.parseFromDatabase(data, ["price"]);
       expect(result.price).toBeInstanceOf(Decimal);
-      expect((result.price as Decimal).toNumber()).toBe(10.5);
+      expect((result.price as unknown as Decimal).toNumber()).toBe(10.5);
       expect(result.quantity).toBe(5);
     });
   });
