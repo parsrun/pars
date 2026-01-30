@@ -1,7 +1,7 @@
 /**
  * @parsrun/core - Decimal Utilities
  * Precise decimal calculations for financial and quantity operations.
- * Edge-compatible - no external dependencies.
+ * Edge-compatible - wraps decimal.js for arbitrary precision arithmetic.
  *
  * @example
  * ```typescript
@@ -15,20 +15,30 @@
  * const total = price.mul(quantity).round(2);
  * console.log(total.toString()); // '59.97'
  *
+ * // Precision info
+ * const d = new Decimal('123.45');
+ * d.precision();      // 5 (total significant digits)
+ * d.decimalPlaces();  // 2 (digits after decimal point)
+ *
  * // Static helpers
  * const sum = Decimal.sum(['10.50', '20.25', '15.75']);
  * const avg = Decimal.avg([100, 200, 300]);
  * ```
  */
 
-/**
- * Internal precision for calculations (number of decimal places)
- */
-const PRECISION = 20;
+import DecimalJS from 'decimal.js';
+
+// Configure decimal.js for financial precision
+DecimalJS.set({
+  precision: 40,
+  rounding: DecimalJS.ROUND_HALF_UP,
+  toExpNeg: -9,
+  toExpPos: 21,
+});
 
 /**
  * Decimal class for precise arithmetic operations.
- * Uses string-based representation internally to avoid floating point issues.
+ * Wraps decimal.js to provide arbitrary precision decimal arithmetic.
  *
  * @example
  * ```typescript
@@ -39,31 +49,16 @@ const PRECISION = 20;
  * ```
  */
 export class Decimal {
-  private value: string;
+  private readonly _value: DecimalJS;
 
-  constructor(value: number | string | Decimal) {
+  constructor(value: number | string | Decimal | DecimalJS) {
     if (value instanceof Decimal) {
-      this.value = value.value;
-    } else if (typeof value === "number") {
-      this.value = this.normalizeNumber(value);
+      this._value = value._value;
+    } else if (value instanceof DecimalJS) {
+      this._value = value;
     } else {
-      this.value = this.normalizeString(value);
+      this._value = new DecimalJS(value);
     }
-  }
-
-  private normalizeNumber(n: number): string {
-    if (!isFinite(n)) {
-      throw new Error(`Invalid number: ${n}`);
-    }
-    return n.toFixed(PRECISION).replace(/\.?0+$/, "") || "0";
-  }
-
-  private normalizeString(s: string): string {
-    const trimmed = s.trim();
-    if (!/^-?\d*\.?\d+$/.test(trimmed)) {
-      throw new Error(`Invalid decimal string: ${s}`);
-    }
-    return trimmed.replace(/^(-?)0+(?=\d)/, "$1").replace(/\.?0+$/, "") || "0";
   }
 
   /**
@@ -72,9 +67,8 @@ export class Decimal {
    * @returns A new Decimal with the result
    */
   add(other: number | string | Decimal): Decimal {
-    const a = parseFloat(this.value);
-    const b = parseFloat(other instanceof Decimal ? other.value : String(other));
-    return new Decimal(a + b);
+    const otherValue = other instanceof Decimal ? other._value : other;
+    return new Decimal(this._value.plus(otherValue));
   }
 
   /**
@@ -83,9 +77,8 @@ export class Decimal {
    * @returns A new Decimal with the result
    */
   sub(other: number | string | Decimal): Decimal {
-    const a = parseFloat(this.value);
-    const b = parseFloat(other instanceof Decimal ? other.value : String(other));
-    return new Decimal(a - b);
+    const otherValue = other instanceof Decimal ? other._value : other;
+    return new Decimal(this._value.minus(otherValue));
   }
 
   /**
@@ -94,9 +87,8 @@ export class Decimal {
    * @returns A new Decimal with the result
    */
   mul(other: number | string | Decimal): Decimal {
-    const a = parseFloat(this.value);
-    const b = parseFloat(other instanceof Decimal ? other.value : String(other));
-    return new Decimal(a * b);
+    const otherValue = other instanceof Decimal ? other._value : other;
+    return new Decimal(this._value.times(otherValue));
   }
 
   /**
@@ -106,12 +98,12 @@ export class Decimal {
    * @throws Error if dividing by zero
    */
   div(other: number | string | Decimal): Decimal {
-    const a = parseFloat(this.value);
-    const b = parseFloat(other instanceof Decimal ? other.value : String(other));
-    if (b === 0) {
-      throw new Error("Division by zero");
+    const otherValue = other instanceof Decimal ? other._value : other;
+    const divisor = new DecimalJS(otherValue);
+    if (divisor.isZero()) {
+      throw new Error('Division by zero');
     }
-    return new Decimal(a / b);
+    return new Decimal(this._value.dividedBy(divisor));
   }
 
   /**
@@ -120,9 +112,8 @@ export class Decimal {
    * @returns A new Decimal with the remainder
    */
   mod(other: number | string | Decimal): Decimal {
-    const a = parseFloat(this.value);
-    const b = parseFloat(other instanceof Decimal ? other.value : String(other));
-    return new Decimal(a % b);
+    const otherValue = other instanceof Decimal ? other._value : other;
+    return new Decimal(this._value.modulo(otherValue));
   }
 
   /**
@@ -131,8 +122,7 @@ export class Decimal {
    * @returns A new Decimal with the result
    */
   pow(exp: number): Decimal {
-    const a = parseFloat(this.value);
-    return new Decimal(Math.pow(a, exp));
+    return new Decimal(this._value.pow(exp));
   }
 
   /**
@@ -141,11 +131,10 @@ export class Decimal {
    * @throws Error if the value is negative
    */
   sqrt(): Decimal {
-    const a = parseFloat(this.value);
-    if (a < 0) {
-      throw new Error("Square root of negative number");
+    if (this._value.isNegative()) {
+      throw new Error('Square root of negative number');
     }
-    return new Decimal(Math.sqrt(a));
+    return new Decimal(this._value.sqrt());
   }
 
   /**
@@ -153,8 +142,7 @@ export class Decimal {
    * @returns A new Decimal with the absolute value
    */
   abs(): Decimal {
-    const a = parseFloat(this.value);
-    return new Decimal(Math.abs(a));
+    return new Decimal(this._value.abs());
   }
 
   /**
@@ -162,8 +150,7 @@ export class Decimal {
    * @returns A new Decimal with the negated value
    */
   neg(): Decimal {
-    const a = parseFloat(this.value);
-    return new Decimal(-a);
+    return new Decimal(this._value.negated());
   }
 
   /**
@@ -172,9 +159,7 @@ export class Decimal {
    * @returns A new Decimal with the rounded value
    */
   round(decimals: number = 0): Decimal {
-    const a = parseFloat(this.value);
-    const factor = Math.pow(10, decimals);
-    return new Decimal(Math.round(a * factor) / factor);
+    return new Decimal(this._value.toDecimalPlaces(decimals, DecimalJS.ROUND_HALF_UP));
   }
 
   /**
@@ -183,9 +168,7 @@ export class Decimal {
    * @returns A new Decimal with the floored value
    */
   floor(decimals: number = 0): Decimal {
-    const a = parseFloat(this.value);
-    const factor = Math.pow(10, decimals);
-    return new Decimal(Math.floor(a * factor) / factor);
+    return new Decimal(this._value.toDecimalPlaces(decimals, DecimalJS.ROUND_FLOOR));
   }
 
   /**
@@ -194,9 +177,7 @@ export class Decimal {
    * @returns A new Decimal with the ceiled value
    */
   ceil(decimals: number = 0): Decimal {
-    const a = parseFloat(this.value);
-    const factor = Math.pow(10, decimals);
-    return new Decimal(Math.ceil(a * factor) / factor);
+    return new Decimal(this._value.toDecimalPlaces(decimals, DecimalJS.ROUND_CEIL));
   }
 
   /**
@@ -205,11 +186,8 @@ export class Decimal {
    * @returns -1 if less, 0 if equal, 1 if greater
    */
   cmp(other: number | string | Decimal): -1 | 0 | 1 {
-    const a = parseFloat(this.value);
-    const b = parseFloat(other instanceof Decimal ? other.value : String(other));
-    if (a < b) return -1;
-    if (a > b) return 1;
-    return 0;
+    const otherValue = other instanceof Decimal ? other._value : other;
+    return this._value.comparedTo(otherValue) as -1 | 0 | 1;
   }
 
   /**
@@ -218,7 +196,8 @@ export class Decimal {
    * @returns True if values are equal
    */
   eq(other: number | string | Decimal): boolean {
-    return this.cmp(other) === 0;
+    const otherValue = other instanceof Decimal ? other._value : other;
+    return this._value.equals(otherValue);
   }
 
   /**
@@ -227,7 +206,8 @@ export class Decimal {
    * @returns True if this is greater
    */
   gt(other: number | string | Decimal): boolean {
-    return this.cmp(other) === 1;
+    const otherValue = other instanceof Decimal ? other._value : other;
+    return this._value.greaterThan(otherValue);
   }
 
   /**
@@ -236,7 +216,8 @@ export class Decimal {
    * @returns True if this is greater or equal
    */
   gte(other: number | string | Decimal): boolean {
-    return this.cmp(other) >= 0;
+    const otherValue = other instanceof Decimal ? other._value : other;
+    return this._value.greaterThanOrEqualTo(otherValue);
   }
 
   /**
@@ -245,7 +226,8 @@ export class Decimal {
    * @returns True if this is less
    */
   lt(other: number | string | Decimal): boolean {
-    return this.cmp(other) === -1;
+    const otherValue = other instanceof Decimal ? other._value : other;
+    return this._value.lessThan(otherValue);
   }
 
   /**
@@ -254,7 +236,8 @@ export class Decimal {
    * @returns True if this is less or equal
    */
   lte(other: number | string | Decimal): boolean {
-    return this.cmp(other) <= 0;
+    const otherValue = other instanceof Decimal ? other._value : other;
+    return this._value.lessThanOrEqualTo(otherValue);
   }
 
   /**
@@ -262,7 +245,7 @@ export class Decimal {
    * @returns True if value is zero
    */
   isZero(): boolean {
-    return parseFloat(this.value) === 0;
+    return this._value.isZero();
   }
 
   /**
@@ -270,7 +253,7 @@ export class Decimal {
    * @returns True if value is positive
    */
   isPositive(): boolean {
-    return parseFloat(this.value) > 0;
+    return this._value.isPositive() && !this._value.isZero();
   }
 
   /**
@@ -278,15 +261,55 @@ export class Decimal {
    * @returns True if value is negative
    */
   isNegative(): boolean {
-    return parseFloat(this.value) < 0;
+    return this._value.isNegative();
+  }
+
+  /**
+   * Check if this decimal is an integer (no decimal places).
+   * @returns True if value is an integer
+   */
+  isInteger(): boolean {
+    return this._value.isInteger();
+  }
+
+  /**
+   * Get the number of decimal places (digits after the decimal point).
+   * @returns Number of decimal places
+   *
+   * @example
+   * ```typescript
+   * new Decimal('123.45').decimalPlaces(); // 2
+   * new Decimal('100').decimalPlaces();    // 0
+   * new Decimal('1.500').decimalPlaces();  // 1 (trailing zeros removed)
+   * ```
+   */
+  decimalPlaces(): number {
+    return this._value.decimalPlaces();
+  }
+
+  /**
+   * Get the precision (total number of significant digits).
+   * @param includeZeros - If true, include trailing zeros in the count
+   * @returns The precision
+   *
+   * @example
+   * ```typescript
+   * new Decimal('123.45').precision();     // 5
+   * new Decimal('100').precision();        // 1
+   * new Decimal('100').precision(true);    // 3
+   * ```
+   */
+  precision(includeZeros: boolean = false): number {
+    return this._value.precision(includeZeros);
   }
 
   /**
    * Convert this decimal to a JavaScript number.
+   * Warning: May lose precision for very large or very precise numbers.
    * @returns The numeric value
    */
   toNumber(): number {
-    return parseFloat(this.value);
+    return this._value.toNumber();
   }
 
   /**
@@ -294,7 +317,7 @@ export class Decimal {
    * @returns The string value
    */
   toString(): string {
-    return this.value;
+    return this._value.toString();
   }
 
   /**
@@ -303,7 +326,7 @@ export class Decimal {
    * @returns Formatted string
    */
   toFixed(decimals: number = 2): string {
-    return parseFloat(this.value).toFixed(decimals);
+    return this._value.toFixed(decimals);
   }
 
   /**
@@ -311,7 +334,16 @@ export class Decimal {
    * @returns The string value for JSON serialization
    */
   toJSON(): string {
-    return this.value;
+    return this._value.toString();
+  }
+
+  /**
+   * Get the underlying decimal.js instance.
+   * Useful for advanced operations not covered by this wrapper.
+   * @returns The underlying DecimalJS instance
+   */
+  toDecimalJS(): DecimalJS {
+    return this._value;
   }
 
   /**
@@ -352,7 +384,7 @@ export class Decimal {
    * @throws Error if no values provided
    */
   static min(...values: (number | string | Decimal)[]): Decimal {
-    if (values.length === 0) throw new Error("No values provided");
+    if (values.length === 0) throw new Error('No values provided');
     return values.reduce<Decimal>((min, val) => {
       const d = new Decimal(val);
       return d.lt(min) ? d : min;
@@ -366,11 +398,37 @@ export class Decimal {
    * @throws Error if no values provided
    */
   static max(...values: (number | string | Decimal)[]): Decimal {
-    if (values.length === 0) throw new Error("No values provided");
+    if (values.length === 0) throw new Error('No values provided');
     return values.reduce<Decimal>((max, val) => {
       const d = new Decimal(val);
       return d.gt(max) ? d : max;
     }, new Decimal(values[0]!));
+  }
+
+  /**
+   * Check if a value is a valid decimal representation.
+   * @param value - The value to check
+   * @returns True if the value can be converted to a Decimal
+   */
+  static isValid(value: unknown): boolean {
+    if (value === null || value === undefined) return false;
+    if (value instanceof Decimal) return true;
+    try {
+      new DecimalJS(value as string | number);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Create a Decimal or return null if the value is invalid.
+   * @param value - The value to convert
+   * @returns A Decimal or null
+   */
+  static tryParse(value: unknown): Decimal | null {
+    if (!Decimal.isValid(value)) return null;
+    return new Decimal(value as number | string | Decimal);
   }
 }
 
@@ -475,10 +533,10 @@ export const DecimalUtils = {
       decimals?: number;
     } = {}
   ): string {
-    const { currency = "USD", locale = "en-US", decimals = 2 } = options;
+    const { currency = 'USD', locale = 'en-US', decimals = 2 } = options;
     const num = new Decimal(value).toNumber();
     return new Intl.NumberFormat(locale, {
-      style: "currency",
+      style: 'currency',
       currency,
       minimumFractionDigits: decimals,
       maximumFractionDigits: decimals,
@@ -499,8 +557,10 @@ export const DecimalUtils = {
     for (const field of decimalFields) {
       if (field in result && result[field] !== undefined && result[field] !== null) {
         const value = result[field];
-        if (typeof value === "number") {
+        if (typeof value === 'number' || typeof value === 'string') {
           (result as Record<string, unknown>)[field] = DecimalUtils.toDecimalString(value);
+        } else if (value instanceof Decimal) {
+          (result as Record<string, unknown>)[field] = value.toString();
         }
       }
     }
@@ -508,10 +568,10 @@ export const DecimalUtils = {
   },
 
   /**
-   * Parse an object from database by converting decimal string fields to JavaScript numbers.
+   * Parse an object from database by converting decimal string fields to Decimal instances.
    * @param data - The object from database
-   * @param decimalFields - Array of field names that should be converted from decimal strings
-   * @returns A new object with specified fields converted to numbers
+   * @param decimalFields - Array of field names that should be converted to Decimal
+   * @returns A new object with specified fields converted to Decimal instances
    */
   parseFromDatabase<T extends Record<string, unknown>>(
     data: T,
@@ -521,12 +581,56 @@ export const DecimalUtils = {
     for (const field of decimalFields) {
       if (field in result && result[field] !== undefined && result[field] !== null) {
         const value = result[field];
-        if (typeof value === "string") {
-          (result as Record<string, unknown>)[field] = DecimalUtils.fromDecimalString(value);
+        if (typeof value === 'string' || typeof value === 'number') {
+          (result as Record<string, unknown>)[field] = new Decimal(value);
         }
       }
     }
     return result;
+  },
+
+  /**
+   * Validate that a value matches the specified precision and scale.
+   * @param value - The value to validate
+   * @param precision - Total number of digits (integer + decimal)
+   * @param scale - Number of decimal places
+   * @returns An error message if invalid, or null if valid
+   *
+   * @example
+   * ```typescript
+   * DecimalUtils.validate('123.45', 5, 2);   // null (valid)
+   * DecimalUtils.validate('123.456', 5, 2);  // "max 2 decimal places allowed"
+   * DecimalUtils.validate('1234.56', 5, 2);  // "max 3 integer digits allowed"
+   * ```
+   */
+  validate(
+    value: number | string | Decimal,
+    precision: number,
+    scale: number
+  ): string | null {
+    const d = value instanceof Decimal ? value : new Decimal(value);
+    const maxIntDigits = precision - scale;
+
+    // Check scale (decimal places)
+    if (d.decimalPlaces() > scale) {
+      return `max ${scale} decimal places allowed`;
+    }
+
+    // Check integer digits
+    const absValue = d.abs();
+    if (!absValue.isZero()) {
+      // Count integer digits: precision(true) - decimalPlaces
+      // But for numbers like 100, precision(true) gives 3, which is correct
+      // For 100.00, we need the integer part's digit count
+      const integerPart = absValue.floor(0);
+      const intDigits = integerPart.isZero() ? 0 : integerPart.precision(true);
+
+      if (intDigits > maxIntDigits) {
+        return `max ${maxIntDigits} integer digits allowed`;
+      }
+    }
+
+    return null;
   },
 };
 

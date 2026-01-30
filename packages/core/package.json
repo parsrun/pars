@@ -1,6 +1,6 @@
 {
   "name": "@parsrun/core",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "description": "Core utilities and types for Pars framework - Edge compatible",
   "keywords": [
     "pars",
@@ -74,5 +74,8 @@
     "tsup": "^8.3.5",
     "typescript": "^5.7.2",
     "vitest": "^2.1.8"
+  },
+  "dependencies": {
+    "decimal.js": "^10.6.0"
   }
 }

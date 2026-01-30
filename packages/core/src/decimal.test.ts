@@ -25,15 +25,17 @@ describe("@parsrun/core - Decimal", () => {
     });
 
     it("should throw for invalid string", () => {
-      expect(() => new Decimal("abc")).toThrow("Invalid decimal string");
+      expect(() => new Decimal("abc")).toThrow();
     });
 
-    it("should throw for Infinity", () => {
-      expect(() => new Decimal(Infinity)).toThrow("Invalid number");
+    it("should handle Infinity", () => {
+      const d = new Decimal(Infinity);
+      expect(d.toNumber()).toBe(Infinity);
     });
 
-    it("should throw for NaN", () => {
-      expect(() => new Decimal(NaN)).toThrow("Invalid number");
+    it("should handle NaN", () => {
+      const d = new Decimal(NaN);
+      expect(d.toNumber()).toBeNaN();
     });
   });
 
@@ -313,7 +315,8 @@ describe("@parsrun/core - DecimalUtils", () => {
     it("should parse object from database", () => {
       const data = { name: "Test", price: "10.5", quantity: 5 };
       const result = DecimalUtils.parseFromDatabase(data, ["price"]);
-      expect(result.price).toBe(10.5);
+      expect(result.price).toBeInstanceOf(Decimal);
+      expect((result.price as Decimal).toNumber()).toBe(10.5);
       expect(result.quantity).toBe(5);
     });
   });
@@ -324,5 +327,90 @@ describe("@parsrun/core - decimal() shorthand", () => {
     const d = decimal(10.5);
     expect(d).toBeInstanceOf(Decimal);
     expect(d.toNumber()).toBe(10.5);
+  });
+});
+
+describe("@parsrun/core - Decimal precision methods", () => {
+  describe("decimalPlaces", () => {
+    it("should return correct decimal places", () => {
+      expect(new Decimal("123.45").decimalPlaces()).toBe(2);
+      expect(new Decimal("100").decimalPlaces()).toBe(0);
+      expect(new Decimal("1.5").decimalPlaces()).toBe(1);
+      expect(new Decimal("0.001").decimalPlaces()).toBe(3);
+    });
+  });
+
+  describe("precision", () => {
+    it("should return correct precision", () => {
+      expect(new Decimal("123.45").precision()).toBe(5);
+      expect(new Decimal("100").precision()).toBe(1);
+      expect(new Decimal("100").precision(true)).toBe(3);
+      expect(new Decimal("0.001").precision()).toBe(1);
+    });
+  });
+
+  describe("isInteger", () => {
+    it("should detect integers", () => {
+      expect(new Decimal("100").isInteger()).toBe(true);
+      expect(new Decimal("100.5").isInteger()).toBe(false);
+      expect(new Decimal("0").isInteger()).toBe(true);
+    });
+  });
+});
+
+describe("@parsrun/core - DecimalUtils.validate", () => {
+  it("should validate correct values", () => {
+    expect(DecimalUtils.validate("123.45", 5, 2)).toBe(null);
+    expect(DecimalUtils.validate("0.99", 3, 2)).toBe(null);
+    expect(DecimalUtils.validate("999.99", 5, 2)).toBe(null);
+  });
+
+  it("should reject too many decimal places", () => {
+    expect(DecimalUtils.validate("123.456", 5, 2)).toBe("max 2 decimal places allowed");
+    expect(DecimalUtils.validate("1.999", 4, 2)).toBe("max 2 decimal places allowed");
+  });
+
+  it("should reject too many integer digits", () => {
+    expect(DecimalUtils.validate("1234.56", 5, 2)).toBe("max 3 integer digits allowed");
+    expect(DecimalUtils.validate("10000", 5, 2)).toBe("max 3 integer digits allowed");
+  });
+
+  it("should handle zero correctly", () => {
+    expect(DecimalUtils.validate("0", 5, 2)).toBe(null);
+    expect(DecimalUtils.validate("0.00", 5, 2)).toBe(null);
+  });
+
+  it("should handle Decimal instances", () => {
+    expect(DecimalUtils.validate(new Decimal("123.45"), 5, 2)).toBe(null);
+    expect(DecimalUtils.validate(new Decimal("123.456"), 5, 2)).toBe("max 2 decimal places allowed");
+  });
+});
+
+describe("@parsrun/core - Decimal static helpers", () => {
+  describe("isValid", () => {
+    it("should return true for valid values", () => {
+      expect(Decimal.isValid("123.45")).toBe(true);
+      expect(Decimal.isValid(123.45)).toBe(true);
+      expect(Decimal.isValid(new Decimal(123))).toBe(true);
+    });
+
+    it("should return false for invalid values", () => {
+      expect(Decimal.isValid("abc")).toBe(false);
+      expect(Decimal.isValid(null)).toBe(false);
+      expect(Decimal.isValid(undefined)).toBe(false);
+    });
+  });
+
+  describe("tryParse", () => {
+    it("should return Decimal for valid values", () => {
+      const result = Decimal.tryParse("123.45");
+      expect(result).toBeInstanceOf(Decimal);
+      expect(result?.toNumber()).toBe(123.45);
+    });
+
+    it("should return null for invalid values", () => {
+      expect(Decimal.tryParse("abc")).toBe(null);
+      expect(Decimal.tryParse(null)).toBe(null);
+    });
   });
 });
