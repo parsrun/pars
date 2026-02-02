@@ -1,6 +1,6 @@
 {
   "name": "pars",
-  "version": "0.2.11",
+  "version": "0.2.12",
   "private": true,
   "description": "Edge-first business application framework for SaaS",
   "keywords": [
