@@ -290,7 +290,9 @@ export class JwtManager {
           audience: this.config.audience,
         });
 
+        // Return all claims including custom ones
         return {
+          ...payload,
           sub: payload.sub as string,
           tid: payload['tid'] as string | undefined,
           sid: payload['sid'] as string | undefined,

@@ -30,6 +30,9 @@ jobs:
       - name: Build
         run: pnpm build
 
+      - name: Sync JSR versions with npm
+        run: pnpm sync-versions
+
       - name: Update npm for OIDC support
         run: npm install -g npm@latest
 

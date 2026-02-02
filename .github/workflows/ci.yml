@@ -52,3 +52,6 @@ jobs:
 
       - name: Format check
         run: pnpm format --check
+
+      - name: Check JSR version sync
+        run: pnpm check-versions
