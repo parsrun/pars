@@ -34,9 +34,15 @@ jobs:
         run: pnpm sync-versions
 
       - name: Publish to npm
-        run: pnpm -r publish --access public --no-git-checks
-        env:
-          NPM_CONFIG_PROVENANCE: true
+        run: |
+          for pkg in packages/*/; do
+            if [ -f "$pkg/package.json" ]; then
+              echo "Publishing $pkg..."
+              cd "$pkg"
+              npm publish --access public --provenance || true
+              cd ../..
+            fi
+          done
 
   publish-jsr:
     needs: publish-npm
