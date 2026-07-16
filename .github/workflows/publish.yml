@@ -34,9 +34,8 @@ jobs:
         run: pnpm sync-versions
 
       - name: Publish to npm
-        run: pnpm -r publish --access public --no-git-checks
+        run: npm publish --access public --workspaces
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
 
   publish-jsr:
