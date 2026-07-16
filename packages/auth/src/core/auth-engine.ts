@@ -11,6 +11,7 @@ import type {
   AdapterSession,
   AdapterMembership,
   AdapterTenant,
+  AdapterDevice,
   AuthCallbacks,
 } from '../config.js';
 import { mergeConfig, validateConfig } from '../config.js';
@@ -31,6 +32,18 @@ import {
 import { TenantManager, createTenantManager } from './tenant-manager.js';
 import { TenantResolver, createTenantResolver, type TenantResolutionResult } from './tenant-resolver.js';
 import { InvitationService, createInvitationService, type SendInvitationResult, type AcceptInvitationResult } from './invitation.js';
+import {
+  DeviceAuthManager,
+  createDeviceAuthManager,
+  type CreatePairingCodeInput,
+  type CreatePairingCodeResult,
+  type RegisterDeviceInput,
+  type RegisterDeviceResult,
+  type VerifyDeviceTokenResult,
+  type DeviceListResult,
+  type RevokeDeviceResult,
+  type RegenerateDeviceTokenResult,
+} from './device-auth.js';
 
 /**
  * Auth context passed to handlers
@@ -169,6 +182,9 @@ export class ParsAuthEngine {
 
   // OAuth manager
   private oauthManager?: OAuthManager;
+
+  // Device auth manager
+  private deviceAuthManager?: DeviceAuthManager;
 
   constructor(config: ParsAuthConfig) {
     // Validate and merge config
@@ -334,6 +350,15 @@ export class ParsAuthEngine {
         this.storage,
         this.adapter,
         { baseUrl: this.config.baseUrl }
+      );
+    }
+
+    // Initialize device auth manager if enabled
+    if (this.config.device?.enabled) {
+      this.deviceAuthManager = createDeviceAuthManager(
+        this.storage,
+        this.adapter,
+        this.config.device
       );
     }
 
@@ -1234,6 +1259,129 @@ export class ParsAuthEngine {
         errorCode: 'OAUTH_CALLBACK_FAILED',
       };
     }
+  }
+
+  // ============================================
+  // DEVICE AUTHENTICATION OPERATIONS
+  // ============================================
+
+  /**
+   * Check if device authentication is enabled
+   */
+  isDeviceAuthEnabled(): boolean {
+    return this.deviceAuthManager?.isEnabled() ?? false;
+  }
+
+  /**
+   * Get device auth header name
+   */
+  getDeviceAuthHeaderName(): string {
+    return this.deviceAuthManager?.getHeaderName() ?? 'X-Device-Token';
+  }
+
+  /**
+   * Create a pairing code for device registration (Admin)
+   */
+  async createPairingCode(input: CreatePairingCodeInput): Promise<CreatePairingCodeResult> {
+    this.ensureInitialized();
+
+    if (!this.deviceAuthManager) {
+      return { success: false, error: 'Device authentication is not enabled' };
+    }
+
+    return this.deviceAuthManager.createPairingCode(input);
+  }
+
+  /**
+   * Register a device using a pairing code (Kiosk)
+   */
+  async registerDevice(input: RegisterDeviceInput): Promise<RegisterDeviceResult> {
+    this.ensureInitialized();
+
+    if (!this.deviceAuthManager) {
+      return { success: false, error: 'Device authentication is not enabled' };
+    }
+
+    return this.deviceAuthManager.registerDevice(input);
+  }
+
+  /**
+   * Verify a device token
+   */
+  async verifyDeviceToken(token: string, tenantId: string): Promise<VerifyDeviceTokenResult> {
+    this.ensureInitialized();
+
+    if (!this.deviceAuthManager) {
+      return { valid: false, error: 'Device authentication is not enabled' };
+    }
+
+    return this.deviceAuthManager.verifyDeviceToken(token, tenantId);
+  }
+
+  /**
+   * Get all devices for a tenant (Admin)
+   */
+  async getDevices(tenantId: string): Promise<DeviceListResult> {
+    this.ensureInitialized();
+
+    if (!this.deviceAuthManager) {
+      return { success: false, devices: [], error: 'Device authentication is not enabled' };
+    }
+
+    return this.deviceAuthManager.getDevices(tenantId);
+  }
+
+  /**
+   * Update a device
+   */
+  async updateDevice(
+    deviceId: string,
+    updates: {
+      name?: string;
+      status?: 'pending' | 'active' | 'inactive';
+      metadata?: Record<string, unknown>;
+    }
+  ): Promise<AdapterDevice | null> {
+    this.ensureInitialized();
+
+    if (!this.deviceAuthManager) {
+      return null;
+    }
+
+    return this.deviceAuthManager.updateDevice(deviceId, updates);
+  }
+
+  /**
+   * Revoke a device (Admin)
+   */
+  async revokeDevice(deviceId: string, reason?: string): Promise<RevokeDeviceResult> {
+    this.ensureInitialized();
+
+    if (!this.deviceAuthManager) {
+      return { success: false, error: 'Device authentication is not enabled' };
+    }
+
+    return this.deviceAuthManager.revokeDevice(deviceId, reason);
+  }
+
+  /**
+   * Regenerate a device token (Admin)
+   */
+  async regenerateDeviceToken(deviceId: string): Promise<RegenerateDeviceTokenResult> {
+    this.ensureInitialized();
+
+    if (!this.deviceAuthManager) {
+      return { success: false, error: 'Device authentication is not enabled' };
+    }
+
+    return this.deviceAuthManager.regenerateDeviceToken(deviceId);
+  }
+
+  /**
+   * Get the device auth manager instance
+   */
+  getDeviceAuthManager(): DeviceAuthManager | undefined {
+    return this.deviceAuthManager;
   }
 
   // ============================================

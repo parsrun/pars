@@ -11,11 +11,14 @@ import type {
   AdapterAuthMethod,
   AdapterTenant,
   AdapterMembership,
+  AdapterDevice,
   CreateUserInput,
   CreateSessionInput,
   CreateAuthMethodInput,
   CreateMembershipInput,
   CreateTenantInput,
+  CreateDeviceInput,
+  UpdateDeviceInput,
 } from '../../config.js';
 import type {
   DrizzleDatabase,
@@ -25,6 +28,7 @@ import type {
   DrizzleAuthMethod,
   DrizzleTenant,
   DrizzleTenantMembership,
+  DrizzleDevice,
 } from './types.js';
 
 // Re-export types
@@ -127,6 +131,30 @@ function toAdapterMembership(membership: DrizzleTenantMembership, roleName?: str
     status: membership.status as AdapterMembership['status'],
     createdAt: membership.insertedAt,
     updatedAt: membership.updatedAt,
+  };
+}
+
+/**
+ * Convert Drizzle device to adapter device
+ */
+function toAdapterDevice(device: DrizzleDevice): AdapterDevice {
+  return {
+    id: device.id,
+    tenantId: device.tenantId,
+    name: device.name,
+    deviceTokenHash: device.deviceTokenHash,
+    status: device.status as AdapterDevice['status'],
+    deviceType: device.deviceType,
+    deviceModel: device.deviceModel,
+    osVersion: device.osVersion,
+    appVersion: device.appVersion,
+    lastSeenAt: device.lastSeenAt,
+    lastIpAddress: device.lastIpAddress,
+    metadata: device.metadata ?? undefined,
+    createdAt: device.insertedAt,
+    updatedAt: device.updatedAt,
+    revokedAt: device.revokedAt,
+    revokedReason: device.revokedReason,
   };
 }
 
@@ -730,6 +758,135 @@ export function createDrizzleAdapter(config: DrizzleAdapterConfig): AuthAdapter 
           .where(eq(tenantMemberships.id, id));
       } else {
         await db.delete(tenantMemberships).where(eq(tenantMemberships.id, id));
+      }
+    },
+
+    // ============================================
+    // Device Operations (Optional)
+    // ============================================
+
+    async findDeviceById(id: string): Promise<AdapterDevice | null> {
+      const { devices } = schema;
+      if (!devices) return null;
+
+      const [device] = await db
+        .select()
+        .from(devices)
+        .where(and(eq(devices.id, id), softDelete ? isNull(devices.deletedAt) : undefined))
+        .limit(1);
+
+      if (!device) return null;
+
+      return toAdapterDevice(device);
+    },
+
+    async findDeviceByTokenHash(tokenHash: string, tenantId: string): Promise<AdapterDevice | null> {
+      const { devices } = schema;
+      if (!devices) return null;
+
+      const [device] = await db
+        .select()
+        .from(devices)
+        .where(
+          and(
+            eq(devices.deviceTokenHash, tokenHash),
+            eq(devices.tenantId, tenantId),
+            softDelete ? isNull(devices.deletedAt) : undefined
+          )
+        )
+        .limit(1);
+
+      if (!device) return null;
+
+      return toAdapterDevice(device);
+    },
+
+    async findDevicesByTenantId(tenantId: string): Promise<AdapterDevice[]> {
+      const { devices } = schema;
+      if (!devices) return [];
+
+      const result = await db
+        .select()
+        .from(devices)
+        .where(
+          and(
+            eq(devices.tenantId, tenantId),
+            softDelete ? isNull(devices.deletedAt) : undefined
+          )
+        )
+        .orderBy(desc(devices.insertedAt));
+
+      return result.map(toAdapterDevice);
+    },
+
+    async createDevice(input: CreateDeviceInput): Promise<AdapterDevice> {
+      const { devices } = schema;
+      if (!devices) {
+        throw new Error('Devices table not configured');
+      }
+
+      const [device] = await db
+        .insert(devices)
+        .values({
+          tenantId: input.tenantId,
+          name: input.name,
+          deviceTokenHash: input.deviceTokenHash,
+          status: input.status ?? 'active',
+          deviceType: input.deviceType ?? null,
+          deviceModel: input.deviceModel ?? null,
+          osVersion: input.osVersion ?? null,
+          appVersion: input.appVersion ?? null,
+          lastIpAddress: input.lastIpAddress ?? null,
+          metadata: input.metadata ?? {},
+        })
+        .returning();
+
+      return toAdapterDevice(device);
+    },
+
+    async updateDevice(id: string, data: UpdateDeviceInput): Promise<AdapterDevice> {
+      const { devices } = schema;
+      if (!devices) {
+        throw new Error('Devices table not configured');
+      }
+
+      const updateData: Record<string, unknown> = {
+        updatedAt: new Date(),
+      };
+
+      if (data.name !== undefined) updateData['name'] = data.name;
+      if (data.deviceTokenHash !== undefined) updateData['deviceTokenHash'] = data.deviceTokenHash;
+      if (data.status !== undefined) updateData['status'] = data.status;
+      if (data.deviceType !== undefined) updateData['deviceType'] = data.deviceType;
+      if (data.deviceModel !== undefined) updateData['deviceModel'] = data.deviceModel;
+      if (data.osVersion !== undefined) updateData['osVersion'] = data.osVersion;
+      if (data.appVersion !== undefined) updateData['appVersion'] = data.appVersion;
+      if (data.lastSeenAt !== undefined) updateData['lastSeenAt'] = data.lastSeenAt;
+      if (data.lastIpAddress !== undefined) updateData['lastIpAddress'] = data.lastIpAddress;
+      if (data.metadata !== undefined) updateData['metadata'] = data.metadata;
+      if (data.revokedAt !== undefined) updateData['revokedAt'] = data.revokedAt;
+      if (data.revokedReason !== undefined) updateData['revokedReason'] = data.revokedReason;
+
+      const [device] = await db
+        .update(devices)
+        .set(updateData)
+        .where(eq(devices.id, id))
+        .returning();
+
+      return toAdapterDevice(device);
+    },
+
+    async deleteDevice(id: string): Promise<void> {
+      const { devices } = schema;
+      if (!devices) return;
+
+      if (softDelete) {
+        await db
+          .update(devices)
+          .set({ deletedAt: new Date(), status: 'revoked' })
+          .where(eq(devices.id, id));
+      } else {
+        await db.delete(devices).where(eq(devices.id, id));
       }
     },
   };

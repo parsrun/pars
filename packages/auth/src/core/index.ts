@@ -50,3 +50,17 @@ export {
   type AcceptInvitationResult,
   type InvitationStatusResult,
 } from './invitation.js';
+
+// Device Authentication
+export {
+  DeviceAuthManager,
+  createDeviceAuthManager,
+  type CreatePairingCodeInput,
+  type CreatePairingCodeResult,
+  type RegisterDeviceInput,
+  type RegisterDeviceResult,
+  type VerifyDeviceTokenResult,
+  type DeviceListResult,
+  type RevokeDeviceResult,
+  type RegenerateDeviceTokenResult,
+} from './device-auth.js';

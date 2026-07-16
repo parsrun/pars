@@ -33,6 +33,8 @@ export interface DrizzleAuthSchema {
   magicLinkTokens?: any;
   /** Audit log table */
   authAuditLog?: any;
+  /** Devices table (for kiosk/tablet authentication) */
+  devices?: any;
 }
 
 /**
@@ -168,6 +170,29 @@ export interface DrizzleEmailVerificationToken {
   createdBy: string | null;
   insertedAt: Date;
   updatedAt: Date;
+}
+
+/**
+ * Device model for kiosk/tablet authentication
+ */
+export interface DrizzleDevice {
+  id: string;
+  tenantId: string;
+  name: string;
+  deviceTokenHash: string;
+  status: string;
+  deviceType: string | null;
+  deviceModel: string | null;
+  osVersion: string | null;
+  appVersion: string | null;
+  lastSeenAt: Date | null;
+  lastIpAddress: string | null;
+  metadata: Record<string, unknown> | null;
+  insertedAt: Date;
+  updatedAt: Date;
+  revokedAt: Date | null;
+  revokedReason: string | null;
+  deletedAt: Date | null;
 }
 
 /**

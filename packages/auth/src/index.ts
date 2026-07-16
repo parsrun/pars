@@ -85,6 +85,7 @@ export {
   type CsrfConfig,
   type TenantConfig,
   type TenantResolutionStrategy,
+  type DeviceConfig,
   type OtpConfig,
   type MagicLinkConfig,
   type TotpConfig,
@@ -99,10 +100,13 @@ export {
   type AdapterAuthMethod,
   type AdapterTenant,
   type AdapterMembership,
+  type AdapterDevice,
   type CreateUserInput,
   type CreateSessionInput,
   type CreateAuthMethodInput,
   type CreateMembershipInput,
+  type CreateDeviceInput,
+  type UpdateDeviceInput,
   defaultConfig,
   mergeConfig,
   validateConfig,
@@ -160,6 +164,20 @@ export {
   type AcceptInvitationInput,
   type AcceptInvitationResult,
   type InvitationStatusResult,
+} from './core/index.js';
+
+// Device Authentication
+export {
+  DeviceAuthManager,
+  createDeviceAuthManager,
+  type CreatePairingCodeInput,
+  type CreatePairingCodeResult,
+  type RegisterDeviceInput,
+  type RegisterDeviceResult,
+  type VerifyDeviceTokenResult,
+  type DeviceListResult,
+  type RevokeDeviceResult,
+  type RegenerateDeviceTokenResult,
 } from './core/index.js';
 
 // ============================================
@@ -372,6 +390,7 @@ export {
 export {
   createAuthMiddleware,
   createOptionalAuthMiddleware,
+  createDeviceAuthMiddleware,
   createAuthRoutes,
   createHonoAuth,
   createAuthCookies,
@@ -387,7 +406,10 @@ export {
   requireAll,
   requireAny,
   type AuthVariables,
+  type DeviceVariables,
+  type DeviceContext,
   type HonoAdapterConfig,
+  type DeviceAuthMiddlewareConfig,
   type AuthContext as AdapterAuthContext,
   type CookieOptions,
   type AuthResponse,
@@ -406,6 +428,7 @@ export {
   type DrizzleTenantMembership,
   type DrizzleRole,
   type DrizzleEmailVerificationToken,
+  type DrizzleDevice,
 } from './adapters/drizzle/index.js';
 
 // ============================================

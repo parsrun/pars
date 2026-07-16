@@ -20,10 +20,14 @@ export {
 export {
   createAuthMiddleware,
   createOptionalAuthMiddleware,
+  createDeviceAuthMiddleware,
   createAuthRoutes,
   createHonoAuth,
   type AuthVariables,
+  type DeviceVariables,
+  type DeviceContext,
   type HonoAdapterConfig,
+  type DeviceAuthMiddlewareConfig,
   // Authorization middleware helpers
   requireRole,
   requirePermission,

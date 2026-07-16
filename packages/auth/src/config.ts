@@ -64,6 +64,25 @@ export interface CsrfConfig {
 }
 
 /**
+ * Device authentication configuration
+ * For kiosk/tablet devices that connect to workspace without user login
+ */
+export interface DeviceConfig {
+  /** Enable device authentication (default: false) */
+  enabled?: boolean;
+  /** Device token length in bytes (default: 32) */
+  tokenLength?: number;
+  /** Pairing code format (default: 'alphanumeric') */
+  pairingCodeFormat?: 'alphanumeric' | 'numeric';
+  /** Pairing code length excluding separator (default: 8, e.g., "ABC-12345") */
+  pairingCodeLength?: number;
+  /** Pairing code expiry in minutes (default: 30) */
+  pairingExpiryMinutes?: number;
+  /** Header name for device token (default: 'X-Device-Token') */
+  headerName?: string;
+}
+
+/**
  * Tenant resolution strategy
  */
 export type TenantResolutionStrategy =
@@ -296,6 +315,14 @@ export interface AuthAdapter {
   createMembership?(data: CreateMembershipInput): Promise<AdapterMembership>;
   updateMembership?(id: string, data: Partial<AdapterMembership>): Promise<AdapterMembership>;
   deleteMembership?(id: string): Promise<void>;
+
+  // Device operations (optional for device authentication)
+  findDeviceById?(id: string): Promise<AdapterDevice | null>;
+  findDeviceByTokenHash?(tokenHash: string, tenantId: string): Promise<AdapterDevice | null>;
+  findDevicesByTenantId?(tenantId: string): Promise<AdapterDevice[]>;
+  createDevice?(data: CreateDeviceInput): Promise<AdapterDevice>;
+  updateDevice?(id: string, data: UpdateDeviceInput): Promise<AdapterDevice>;
+  deleteDevice?(id: string): Promise<void>;
 }
 
 // Adapter types
@@ -363,6 +390,28 @@ export interface AdapterMembership {
   updatedAt: Date;
 }
 
+/**
+ * Device model for kiosk/tablet authentication
+ */
+export interface AdapterDevice {
+  id: string;
+  tenantId: string;
+  name: string;
+  deviceTokenHash: string;
+  status: 'pending' | 'active' | 'inactive' | 'revoked';
+  deviceType?: string | null;
+  deviceModel?: string | null;
+  osVersion?: string | null;
+  appVersion?: string | null;
+  lastSeenAt?: Date | null;
+  lastIpAddress?: string | null;
+  metadata?: Record<string, unknown>;
+  createdAt: Date;
+  updatedAt: Date;
+  revokedAt?: Date | null;
+  revokedReason?: string | null;
+}
+
 export interface CreateUserInput {
   email?: string;
   phone?: string;
@@ -405,6 +454,34 @@ export interface CreateTenantInput {
   parentId?: string | null;
   path?: string | null;
   depth?: number | null;
+}
+
+export interface CreateDeviceInput {
+  tenantId: string;
+  name: string;
+  deviceTokenHash: string;
+  status?: 'pending' | 'active' | 'inactive' | 'revoked';
+  deviceType?: string;
+  deviceModel?: string;
+  osVersion?: string;
+  appVersion?: string;
+  lastIpAddress?: string;
+  metadata?: Record<string, unknown>;
+}
+
+export interface UpdateDeviceInput {
+  name?: string;
+  deviceTokenHash?: string;
+  status?: 'pending' | 'active' | 'inactive' | 'revoked';
+  deviceType?: string;
+  deviceModel?: string;
+  osVersion?: string;
+  appVersion?: string;
+  lastSeenAt?: Date;
+  lastIpAddress?: string;
+  metadata?: Record<string, unknown>;
+  revokedAt?: Date;
+  revokedReason?: string;
 }
 
 /**
@@ -471,6 +548,9 @@ export interface ParsAuthConfig {
 
   /** Multi-tenant configuration */
   tenant?: TenantConfig;
+
+  /** Device authentication configuration */
+  device?: DeviceConfig;
 
   /** Database adapter (required) */
   adapter: AuthAdapter;

@@ -26,6 +26,24 @@ export interface AuthVariables {
 }
 
 /**
+ * Device context for authenticated devices
+ */
+export interface DeviceContext {
+  deviceId: string;
+  tenantId: string;
+  name: string;
+  deviceType?: string | null;
+  metadata?: Record<string, unknown>;
+}
+
+/**
+ * Hono device auth context variables
+ */
+export interface DeviceVariables {
+  device: DeviceContext;
+}
+
+/**
  * Hono adapter configuration
  */
 export interface HonoAdapterConfig {
@@ -181,6 +199,90 @@ export function createOptionalAuthMiddleware(
         c.set('auth', authContext);
       }
     }
+
+    await next();
+  };
+}
+
+/**
+ * Device auth middleware configuration
+ */
+export interface DeviceAuthMiddlewareConfig extends HonoAdapterConfig {
+  /** Tenant ID to use for device verification */
+  tenantId?: string;
+  /** Function to extract tenant ID from request */
+  getTenantId?: (c: Context) => string | undefined;
+  /** Custom unauthorized handler */
+  onDeviceUnauthorized?: (c: Context, message?: string) => Response | Promise<Response>;
+}
+
+/**
+ * Create device auth middleware
+ * Validates device token and attaches device context to request
+ */
+export function createDeviceAuthMiddleware(
+  config: DeviceAuthMiddlewareConfig
+): MiddlewareHandler<{ Variables: DeviceVariables }> {
+  const { auth, onDeviceUnauthorized } = config;
+
+  return async (c, next) => {
+    // Check if device auth is enabled
+    if (!auth.isDeviceAuthEnabled()) {
+      if (onDeviceUnauthorized) {
+        return onDeviceUnauthorized(c, 'Device authentication is not enabled');
+      }
+      return c.json({ error: 'Forbidden', message: 'Device authentication is not enabled' }, 403);
+    }
+
+    // Get device token from header
+    const headerName = auth.getDeviceAuthHeaderName();
+    const token = c.req.header(headerName);
+
+    if (!token) {
+      if (onDeviceUnauthorized) {
+        return onDeviceUnauthorized(c, 'No device token provided');
+      }
+      return c.json({ error: 'Unauthorized', message: 'No device token provided' }, 401);
+    }
+
+    // Get tenant ID
+    let tenantId: string | undefined;
+    if (config.getTenantId) {
+      tenantId = config.getTenantId(c);
+    } else if (config.tenantId) {
+      tenantId = config.tenantId;
+    } else {
+      // Try to get from header
+      tenantId = c.req.header('x-tenant-id') ?? undefined;
+    }
+
+    if (!tenantId) {
+      if (onDeviceUnauthorized) {
+        return onDeviceUnauthorized(c, 'Tenant ID is required for device authentication');
+      }
+      return c.json({ error: 'Bad Request', message: 'Tenant ID is required' }, 400);
+    }
+
+    // Verify device token
+    const result = await auth.verifyDeviceToken(token, tenantId);
+
+    if (!result.valid || !result.device) {
+      if (onDeviceUnauthorized) {
+        return onDeviceUnauthorized(c, result.error);
+      }
+      return c.json({ error: 'Unauthorized', message: result.error }, 401);
+    }
+
+    // Attach device context
+    const deviceContext: DeviceContext = {
+      deviceId: result.device.id,
+      tenantId: result.device.tenantId,
+      name: result.device.name,
+      deviceType: result.device.deviceType,
+      metadata: result.device.metadata,
+    };
+
+    c.set('device', deviceContext);
 
     await next();
   };
@@ -896,6 +998,362 @@ export function createAuthRoutes<E extends { Variables: Partial<AuthVariables> }
     }
   });
 
+  // ============================================
+  // DEVICE AUTH ROUTES
+  // ============================================
+
+  /**
+   * Create pairing code (Admin)
+   * POST /devices/pairing-code
+   */
+  app.post('/devices/pairing-code', async (c) => {
+    const authContext = c.get('auth') as AuthContext | undefined;
+
+    if (!authContext) {
+      return c.json({ error: 'Unauthorized' }, 401);
+    }
+
+    try {
+      const body = await c.req.json<{
+        tenantId: string;
+        name: string;
+        deviceType?: string;
+        metadata?: Record<string, unknown>;
+      }>();
+
+      if (!body.tenantId || !body.name) {
+        return c.json({ error: 'Bad Request', message: 'tenantId and name are required' }, 400);
+      }
+
+      // Check if user is admin of tenant
+      const isAdmin = await auth.hasRoleInTenant(authContext.userId, body.tenantId, 'admin') ||
+                      await auth.hasRoleInTenant(authContext.userId, body.tenantId, 'owner');
+
+      if (!isAdmin) {
+        return c.json({ error: 'Forbidden', message: 'Admin access required' }, 403);
+      }
+
+      const result = await auth.createPairingCode({
+        tenantId: body.tenantId,
+        name: body.name,
+        deviceType: body.deviceType,
+        metadata: body.metadata,
+      });
+
+      if (!result.success) {
+        return c.json({ success: false, error: result.error }, 400);
+      }
+
+      return c.json({
+        success: true,
+        pairingCode: result.pairingCode,
+        expiresAt: result.expiresAt,
+      });
+    } catch (error) {
+      if (config.onError) {
+        return config.onError(error as Error, c);
+      }
+      return c.json({ error: 'Internal Server Error' }, 500);
+    }
+  });
+
+  /**
+   * Register device (Kiosk - no auth required)
+   * POST /devices/register
+   */
+  app.post('/devices/register', async (c) => {
+    try {
+      const body = await c.req.json<{
+        pairingCode: string;
+        osVersion?: string;
+        appVersion?: string;
+        deviceModel?: string;
+      }>();
+
+      if (!body.pairingCode) {
+        return c.json({ error: 'Bad Request', message: 'pairingCode is required' }, 400);
+      }
+
+      const ipAddress = c.req.header('x-forwarded-for') ?? c.req.header('x-real-ip');
+
+      const result = await auth.registerDevice({
+        pairingCode: body.pairingCode,
+        osVersion: body.osVersion,
+        appVersion: body.appVersion,
+        deviceModel: body.deviceModel,
+        ipAddress: ipAddress ?? undefined,
+      });
+
+      if (!result.success) {
+        return c.json({ success: false, error: result.error }, 400);
+      }
+
+      return c.json({
+        success: true,
+        deviceToken: result.deviceToken,
+        device: result.device ? {
+          id: result.device.id,
+          tenantId: result.device.tenantId,
+          name: result.device.name,
+          deviceType: result.device.deviceType,
+        } : undefined,
+      });
+    } catch (error) {
+      if (config.onError) {
+        return config.onError(error as Error, c);
+      }
+      return c.json({ error: 'Internal Server Error' }, 500);
+    }
+  });
+
+  /**
+   * Verify device token (utility - no auth required)
+   * POST /devices/verify
+   */
+  app.post('/devices/verify', async (c) => {
+    try {
+      const body = await c.req.json<{
+        token: string;
+        tenantId: string;
+      }>();
+
+      if (!body.token || !body.tenantId) {
+        return c.json({ error: 'Bad Request', message: 'token and tenantId are required' }, 400);
+      }
+
+      const result = await auth.verifyDeviceToken(body.token, body.tenantId);
+
+      return c.json({
+        valid: result.valid,
+        device: result.valid && result.device ? {
+          id: result.device.id,
+          name: result.device.name,
+          deviceType: result.device.deviceType,
+          status: result.device.status,
+        } : undefined,
+        error: result.error,
+      });
+    } catch (error) {
+      if (config.onError) {
+        return config.onError(error as Error, c);
+      }
+      return c.json({ error: 'Internal Server Error' }, 500);
+    }
+  });
+
+  /**
+   * Get devices (Admin)
+   * GET /devices
+   */
+  app.get('/devices', async (c) => {
+    const authContext = c.get('auth') as AuthContext | undefined;
+
+    if (!authContext) {
+      return c.json({ error: 'Unauthorized' }, 401);
+    }
+
+    try {
+      const tenantId = c.req.query('tenantId') ?? authContext.tenantId;
+
+      if (!tenantId) {
+        return c.json({ error: 'Bad Request', message: 'tenantId is required' }, 400);
+      }
+
+      // Check if user is admin of tenant
+      const isAdmin = await auth.hasRoleInTenant(authContext.userId, tenantId, 'admin') ||
+                      await auth.hasRoleInTenant(authContext.userId, tenantId, 'owner');
+
+      if (!isAdmin) {
+        return c.json({ error: 'Forbidden', message: 'Admin access required' }, 403);
+      }
+
+      const result = await auth.getDevices(tenantId);
+
+      if (!result.success) {
+        return c.json({ success: false, error: result.error }, 400);
+      }
+
+      return c.json({
+        success: true,
+        devices: result.devices.map((d) => ({
+          id: d.id,
+          tenantId: d.tenantId,
+          name: d.name,
+          deviceType: d.deviceType,
+          deviceModel: d.deviceModel,
+          osVersion: d.osVersion,
+          appVersion: d.appVersion,
+          status: d.status,
+          lastSeenAt: d.lastSeenAt,
+          lastIpAddress: d.lastIpAddress,
+          createdAt: d.createdAt,
+          metadata: d.metadata,
+        })),
+      });
+    } catch (error) {
+      if (config.onError) {
+        return config.onError(error as Error, c);
+      }
+      return c.json({ error: 'Internal Server Error' }, 500);
+    }
+  });
+
+  /**
+   * Update device (Admin)
+   * PUT /devices/:id
+   */
+  app.put('/devices/:id', async (c) => {
+    const authContext = c.get('auth') as AuthContext | undefined;
+
+    if (!authContext) {
+      return c.json({ error: 'Unauthorized' }, 401);
+    }
+
+    try {
+      const deviceId = c.req.param('id');
+      const body = await c.req.json<{
+        name?: string;
+        status?: 'pending' | 'active' | 'inactive';
+        metadata?: Record<string, unknown>;
+      }>();
+
+      // Get device to check tenant
+      const devicesResult = await auth.getDevices(authContext.tenantId ?? '');
+      const device = devicesResult.devices.find((d) => d.id === deviceId);
+
+      if (!device) {
+        return c.json({ error: 'Not Found', message: 'Device not found' }, 404);
+      }
+
+      // Check if user is admin of tenant
+      const isAdmin = await auth.hasRoleInTenant(authContext.userId, device.tenantId, 'admin') ||
+                      await auth.hasRoleInTenant(authContext.userId, device.tenantId, 'owner');
+
+      if (!isAdmin) {
+        return c.json({ error: 'Forbidden', message: 'Admin access required' }, 403);
+      }
+
+      const updatedDevice = await auth.updateDevice(deviceId, body);
+
+      if (!updatedDevice) {
+        return c.json({ success: false, error: 'Failed to update device' }, 400);
+      }
+
+      return c.json({
+        success: true,
+        device: {
+          id: updatedDevice.id,
+          name: updatedDevice.name,
+          status: updatedDevice.status,
+          metadata: updatedDevice.metadata,
+        },
+      });
+    } catch (error) {
+      if (config.onError) {
+        return config.onError(error as Error, c);
+      }
+      return c.json({ error: 'Internal Server Error' }, 500);
+    }
+  });
+
+  /**
+   * Revoke device (Admin)
+   * DELETE /devices/:id
+   */
+  app.delete('/devices/:id', async (c) => {
+    const authContext = c.get('auth') as AuthContext | undefined;
+
+    if (!authContext) {
+      return c.json({ error: 'Unauthorized' }, 401);
+    }
+
+    try {
+      const deviceId = c.req.param('id');
+      const reason = c.req.query('reason');
+
+      // Get device to check tenant
+      const devicesResult = await auth.getDevices(authContext.tenantId ?? '');
+      const device = devicesResult.devices.find((d) => d.id === deviceId);
+
+      if (!device) {
+        return c.json({ error: 'Not Found', message: 'Device not found' }, 404);
+      }
+
+      // Check if user is admin of tenant
+      const isAdmin = await auth.hasRoleInTenant(authContext.userId, device.tenantId, 'admin') ||
+                      await auth.hasRoleInTenant(authContext.userId, device.tenantId, 'owner');
+
+      if (!isAdmin) {
+        return c.json({ error: 'Forbidden', message: 'Admin access required' }, 403);
+      }
+
+      const result = await auth.revokeDevice(deviceId, reason ?? undefined);
+
+      if (!result.success) {
+        return c.json({ success: false, error: result.error }, 400);
+      }
+
+      return c.json({ success: true });
+    } catch (error) {
+      if (config.onError) {
+        return config.onError(error as Error, c);
+      }
+      return c.json({ error: 'Internal Server Error' }, 500);
+    }
+  });
+
+  /**
+   * Regenerate device token (Admin)
+   * POST /devices/:id/regenerate-token
+   */
+  app.post('/devices/:id/regenerate-token', async (c) => {
+    const authContext = c.get('auth') as AuthContext | undefined;
+
+    if (!authContext) {
+      return c.json({ error: 'Unauthorized' }, 401);
+    }
+
+    try {
+      const deviceId = c.req.param('id');
+
+      // Get device to check tenant
+      const devicesResult = await auth.getDevices(authContext.tenantId ?? '');
+      const device = devicesResult.devices.find((d) => d.id === deviceId);
+
+      if (!device) {
+        return c.json({ error: 'Not Found', message: 'Device not found' }, 404);
+      }
+
+      // Check if user is admin of tenant
+      const isAdmin = await auth.hasRoleInTenant(authContext.userId, device.tenantId, 'admin') ||
+                      await auth.hasRoleInTenant(authContext.userId, device.tenantId, 'owner');
+
+      if (!isAdmin) {
+        return c.json({ error: 'Forbidden', message: 'Admin access required' }, 403);
+      }
+
+      const result = await auth.regenerateDeviceToken(deviceId);
+
+      if (!result.success) {
+        return c.json({ success: false, error: result.error }, 400);
+      }
+
+      return c.json({
+        success: true,
+        deviceToken: result.deviceToken,
+        device: result.device ? {
+          id: result.device.id,
+          name: result.device.name,
+        } : undefined,
+      });
+    } catch (error) {
+      if (config.onError) {
+        return config.onError(error as Error, c);
+      }
+      return c.json({ error: 'Internal Server Error' }, 500);
+    }
+  });
+
   return app;
 }
 
@@ -908,6 +1366,9 @@ export function createHonoAuth(config: HonoAdapterConfig) {
     middleware: createAuthMiddleware(config),
     /** Optional auth middleware (attaches auth if present) */
     optionalMiddleware: createOptionalAuthMiddleware(config),
+    /** Device auth middleware (requires device token) */
+    deviceMiddleware: (deviceConfig?: Partial<DeviceAuthMiddlewareConfig>) =>
+      createDeviceAuthMiddleware({ ...config, ...deviceConfig }),
     /** Create auth routes on an app */
     createRoutes: <E extends { Variables: Partial<AuthVariables> }>(app: Hono<E>) =>
       createAuthRoutes(app, config),
