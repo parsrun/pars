@@ -34,15 +34,7 @@ jobs:
         run: pnpm sync-versions
 
       - name: Publish to npm
-        run: |
-          for pkg in packages/*/; do
-            if [ -f "$pkg/package.json" ]; then
-              echo "Publishing $pkg..."
-              cd "$pkg"
-              npm publish --access public --provenance || true
-              cd ../..
-            fi
-          done
+        run: pnpm -r publish --access public --no-git-checks
 
   publish-jsr:
     needs: publish-npm
